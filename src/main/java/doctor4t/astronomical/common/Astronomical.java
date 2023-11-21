@@ -1,6 +1,8 @@
 package doctor4t.astronomical.common;
 
 import doctor4t.astronomical.common.init.*;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;

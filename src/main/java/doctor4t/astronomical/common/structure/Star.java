@@ -1,23 +1,23 @@
 package doctor4t.astronomical.common.structure;
 
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
+import doctor4t.astronomical.common.Astronomical;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
-import java.awt.*;
-
-/**
- * Base class used to represent a star.
- **/
-public abstract class Star {
-	public final Color start, end;
-
-	protected Star(Color start, Color end) {
-		this.start = start;
-		this.end = end;
+public class Star implements CelestialObject {
+	private static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
+	protected Vec3d directionalVector;
+	public Star(Vec3d vec) {
+		this.directionalVector = vec;
 	}
 
-	public abstract Vec3d getPos();
-	public abstract void emit(Vec3d position, World clientWorld, ClientPlayerEntity view);
+	@Override
+	public Vec3d getDirectionVector() {
+		return directionalVector;
+	}
+
+	@Override
+	public Identifier getTexture() {
+		return TEMPTEX;
+	}
 }

@@ -15,7 +15,8 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"init": "doctor4t.astronomical.common.Astronomical",
-			"client_init": "doctor4t.astronomical.client.AstronomicalClient"
+			"client_init": "doctor4t.astronomical.client.AstronomicalClient",
+			"cardinal-components-world": "doctor4t.astronomical.cca.AstraWorldComponentInit"
 		},
 		"depends": [
 			{
@@ -32,5 +33,9 @@
 			}
 		]
 	},
-	"mixin": "astronomical.mixins.json"
+	"mixin": "astronomical.mixins.json",
+	"cardinal-components": [
+		"astronomical:sky"
+	]
+
 }
