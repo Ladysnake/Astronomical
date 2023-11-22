@@ -7,13 +7,20 @@ import net.minecraft.util.math.Vec3d;
 public class Star implements CelestialObject {
 	private static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
 	protected Vec3d directionalVector;
-	public Star(Vec3d vec) {
+	private float size;
+	public Star(Vec3d vec, float size) {
 		this.directionalVector = vec;
+		this.size = size;
 	}
 
 	@Override
 	public Vec3d getDirectionVector() {
 		return directionalVector;
+	}
+
+	@Override
+	public float getSize() {
+		return size;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 	@Override
 	public void readFromNbt(NbtCompound tag) {
 		for(int i = 0; i < 9000; i++) {
-			heavenlySpheres.add(new Star(generateDirectionalVector()));
+			heavenlySpheres.add(new Star(generateDirectionalVector(), 1f+0.7f*random.nextFloat()));
 		}
 	}
 

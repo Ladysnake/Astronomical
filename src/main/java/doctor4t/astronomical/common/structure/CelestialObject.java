@@ -5,5 +5,6 @@ import net.minecraft.util.math.Vec3d;
 
 public interface CelestialObject {
 	Vec3d getDirectionVector();
+	float getSize();
 	Identifier getTexture();
 }

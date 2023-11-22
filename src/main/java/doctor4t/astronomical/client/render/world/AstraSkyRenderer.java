@@ -49,7 +49,7 @@ public class AstraSkyRenderer {
 			Vec3d vector = c.getDirectionVector();
 			RenderSystem.setShaderTexture(0, c.getTexture());
 
-			VertexData p = createVertexData(vector, up, 100, yeah);
+			VertexData p = createVertexData(vector, up, c.getSize(), 100, yeah);
 			if(shouldRender(((AstraFrustum)frustum), p, rotation))
 				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p, (float) MathHelper.clamp(up.dotProduct(vector)+0.2f, 0, 1));
 		//			ParticleBuilders.create(ModParticles.ORB)
@@ -82,7 +82,7 @@ public class AstraSkyRenderer {
 		return false;
 	}
 
-	private static VertexData createVertexData(Vec3d dir, Vec3d up, float distance, Color c) {
+	private static VertexData createVertexData(Vec3d dir, Vec3d up, float size, float distance, Color c) {
 		float x = (float) dir.x;
 		float y = (float) dir.y;
 		float z = (float) dir.z;
@@ -98,6 +98,7 @@ public class AstraSkyRenderer {
 		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
 
 		t1x /= t1d2; t1y /= t1d2; t1z /= t1d2;
+		t1x *= size; t1y *= size; t1z *= size;
 
 		float t2x = -y*t1z+(z*t1y);
 		float t2y = -z*t1x+(x*t1z);
@@ -106,6 +107,7 @@ public class AstraSkyRenderer {
 		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
 
 		t2x /= t2d2; t2y /= t2d2; t2z /= t2d2;
+		t2x *= size; t2y *= size; t2z *= size;
 
 		x *= distance;
 		y *= distance;
