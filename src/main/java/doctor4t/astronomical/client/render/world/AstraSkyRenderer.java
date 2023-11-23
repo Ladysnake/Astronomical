@@ -3,34 +3,32 @@ package doctor4t.astronomical.client.render.world;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.sammy.lodestone.helpers.RenderHelper;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.setup.LodestoneShaders;
-import com.sammy.lodestone.systems.rendering.VFXBuilders;
-import com.sammy.lodestone.systems.rendering.particle.ParticleBuilders;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
-import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.structure.CelestialObject;
+import doctor4t.astronomical.common.structure.Star;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.*;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.awt.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import static com.sammy.lodestone.handlers.RenderHandler.DELAYED_RENDER;
 
 public class AstraSkyRenderer {
 	private static final Color yeah = new Color(255, 107, 160, 200);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
-	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client, VertexBuffer lightSkyBuffer, VertexBuffer darkSkyBuffer, VertexBuffer starsBuffer) {
+	private static VertexBuffer stars = null;
+	private static boolean shouldTankPerformanceForAFewFrames = false;
+	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
+		if(stars == null || shouldTankPerformanceForAFewFrames) {
+			renderToStarBuffer(matrices, provider, projectionMatrix, frustum, tickDelta, runnable, world, client);
+			shouldTankPerformanceForAFewFrames = false;
+		}
 		Quaternion rotation = Vec3f.POSITIVE_Z.getDegreesQuaternion(world.getSkyAngle(1) * 360.0F);
-		Vec3d up = rotateViaQuat(UP, invert(rotation));
+//		Vec3d up = rotateViaQuat(UP, invert(rotation));
 		rotation.normalize();
 
 		matrices.push();
@@ -39,35 +37,48 @@ public class AstraSkyRenderer {
 		RenderSystem.enableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
+		RenderSystem.setShaderColor(1, 1, 1, world.getStarBrightness(tickDelta));
+		RenderSystem.setShaderTexture(0, Star.TEMPTEX);
+
+		stars.bind();
+		stars.setShader(matrices.peek().getModel(), projectionMatrix, LodestoneShaders.ADDITIVE_TEXTURE.getInstance().get());
+		VertexBuffer.unbind();
+
+		RenderSystem.disableBlend();
+		RenderSystem.disableTexture();
+		matrices.pop();
+	}
+	public void redrawStars() {
+		shouldTankPerformanceForAFewFrames = true;
+	}
+	public static void renderToStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
+		Vec3d up = UP;
+
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		RenderSystem.setShader(LodestoneShaders.ADDITIVE_TEXTURE.getInstance());
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		Matrix4f matrix4f = matrices.peek().getModel();
 
+		if(stars != null) {
+			stars.close();
+		}
+		stars = new VertexBuffer();
+
 		for(CelestialObject c : world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects()) {
 			Vec3d vector = c.getDirectionVector();
-			RenderSystem.setShaderTexture(0, c.getTexture());
 
 			VertexData p = createVertexData(vector, up, c.getSize(), 100, yeah);
-			if(shouldRender(((AstraFrustum)frustum), p, rotation))
-				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p, (float) MathHelper.clamp(up.dotProduct(vector)+0.2f, 0, 1));
-		//			ParticleBuilders.create(ModParticles.ORB)
-		//				.setScale((10f + world.random.nextFloat() / 10f))
-		//				.setAlpha(0, 1f, 0)
-		//				.enableNoClip()
-		//				.setLifetime(20)
-		//				.setSpin(-world.random.nextFloat() / 7f)
-		//				.spawn(world, pos.x, pos.y, pos.z);
+//			if(shouldRender(((AstraFrustum)frustum), p, rotation))
+			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 		}
-		BufferRenderer.drawWithShader(bufferBuilder.end());
-		RenderSystem.disableBlend();
-		RenderSystem.disableTexture();
-		matrices.pop();
+		stars.bind();
+		stars.upload(bufferBuilder.end());
+		VertexBuffer.unbind();
 	}
-	private static void apply(TriConsumer<Vec3f, Color, Vec2f> gungy, VertexData data, float dot) {
+	private static void apply(TriConsumer<Vec3f, Color, Vec2f> gungy, VertexData data) {
 		for(int i = 0; i < 4; i++) {
-			gungy.accept(data.vertices()[i], new Color(data.color().getRed()/255f, data.color().getGreen()/255f, data.color().getBlue()/255f, data.color().getAlpha()*dot/255f), data.uv()[i]);
+			gungy.accept(data.vertices()[i], data.color(), data.uv()[i]);
 		}
 	}
 
@@ -126,10 +137,28 @@ public class AstraSkyRenderer {
 	}
 
 	public static Vec3d rotateViaQuat(Vec3d rot, Quaternion quat) {
-		Quaternion q = quat.copy();
-		Quaternion qPrime = new Quaternion(-q.getX(), -q.getY(), -q.getZ(), q.getW());
-		q.hamiltonProduct(new Quaternion((float)rot.getX(), (float)rot.getY(), (float)rot.getZ(), 0));
-		q.hamiltonProduct(qPrime);
-		return new Vec3d(q.getX(), q.getY(), q.getZ());
+		float x = (float) rot.x;
+		float y = (float) rot.y;
+		float z = (float) rot.z;
+
+		float ux = quat.getX();
+		float uy = quat.getY();
+		float uz = quat.getZ();
+
+		float scalar = quat.getW();
+
+		float cx = -y*uz+(z*uy);
+		float cy = -z*ux+(x*uz);
+		float cz = -x*uy+(y*ux);
+
+		double s1 = 2.0f * (ux*x + uy*y + uz*z);
+		double s2 = scalar*scalar - (ux*ux + uy*uy + uz*uz);
+		double s3 = 2.0f * scalar;
+
+		double vpx = s1 * ux + s2 * x + s3 * cx;
+		double vpy = s1 * uy + s2 * y + s3 * cy;
+		double vpz = s1 * uz + s2 * z + s3 * cz;
+
+		return new Vec3d(vpx, vpy, vpz);
 	}
 }
