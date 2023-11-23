@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
 
 public interface ModParticles {
 	OrbParticleType ORB = new OrbParticleType();
+	OrbParticleType STAR = new OrbParticleType();
 
 	static void initialize() {
 		initParticles(bind(Registry.PARTICLE_TYPE));
@@ -20,10 +21,12 @@ public interface ModParticles {
 
 	static void registerFactories() {
 		ParticleFactoryRegistry.getInstance().register(ORB, OrbParticleType.Factory::new);
+		ParticleFactoryRegistry.getInstance().register(STAR, OrbParticleType.Factory::new);
 	}
 
 	private static void initParticles(BiConsumer<ParticleType<?>, Identifier> registry) {
 		registry.accept(ORB, new Identifier(Astronomical.MOD_ID, "orb"));
+		registry.accept(STAR, new Identifier(Astronomical.MOD_ID, "star"));
 	}
 
 	private static <T> BiConsumer<T, Identifier> bind(Registry<? super T> registry) {

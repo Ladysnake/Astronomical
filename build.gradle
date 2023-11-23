@@ -7,6 +7,10 @@ archivesBaseName = project.archives_base_name
 version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
+loom {
+	accessWidenerPath = file("src/main/resources/astronomical.accesswidener")
+}
+
 repositories {
 	// publishing
 	maven {
@@ -70,9 +74,12 @@ dependencies {
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 	// lodestone lib
-	modImplementation include ("com.github.Arathain:LodestoneLib-Quilt:${project.lodestone_version}")
+	modImplementation include ("com.github.Arathain:LodestoneLib-Quilt:${project.lodestone_version}"){ transitive = false }
 
-	//ease of multiplayer testing & game control
+	modImplementation include("io.github.ladysnake:satin:${project.satin_version}")
+	modImplementation include("maven.modrinth:midnightlib:$project.midnightlib_version")
+
+	// ease of multiplayer testing & game control
 	modImplementation "carpet:fabric-carpet:${project.minecraft_version}-${project.carpet_core_version}"
 }
 

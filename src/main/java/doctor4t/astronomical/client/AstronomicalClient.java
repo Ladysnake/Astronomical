@@ -1,9 +1,12 @@
 package doctor4t.astronomical.client;
 
 import doctor4t.astronomical.client.render.entity.StarEntityRenderer;
+import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
+import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.init.ModEntities;
 import doctor4t.astronomical.common.init.ModParticles;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
@@ -18,6 +21,7 @@ public class AstronomicalClient implements ClientModInitializer {
 //		ModModelLayers.initialize();
 
 		// entity renderers registration
+		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
 		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
 
 		// particle renderers registration

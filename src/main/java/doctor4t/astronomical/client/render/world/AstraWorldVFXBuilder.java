@@ -1,12 +1,21 @@
 package doctor4t.astronomical.client.render.world;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormats;
+import com.sammy.lodestone.helpers.RenderHelper;
+import com.sammy.lodestone.setup.LodestoneRenderLayers;
+import com.sammy.lodestone.setup.LodestoneShaders;
+import com.sammy.lodestone.systems.rendering.Phases;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
 public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
+	public static final LodestoneRenderLayers.RenderLayerProvider ADDITIVE_TEXTURE_ACTUAL_TRIANGLE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "additive_texture_actual_triangle", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.TRIANGLES, RenderPhase.POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER, Phases.NO_TRANSPARENCY, texture));
 
 	float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
 	WorldVertexPlacementSupplier supplier;

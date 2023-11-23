@@ -1,11 +1,14 @@
 package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
 import java.util.LinkedHashMap;
@@ -16,7 +19,7 @@ import static doctor4t.astronomical.common.init.ModItems.ITEMS;
 public interface ModBlocks {
 	Map<Block, Identifier> BLOCKS = new LinkedHashMap<>();
 
-//	Block LIMINAL_END_PORTAL_FRAME = createBlock("liminal_end_portal_frame", new LiminalEndPortalFrameBlock(QuiltBlockSettings.copy(Blocks.END_PORTAL_FRAME)), false, null);
+	Block ASTRAL_DISPLAY = createBlock("astral_display", new AstralDisplayBlock(QuiltBlockSettings.copy(Blocks.OBSERVER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 
 	static void initialize() {
 		BLOCKS.keySet().forEach(block -> Registry.register(Registry.BLOCK, BLOCKS.get(block), block));
