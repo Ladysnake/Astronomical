@@ -41,11 +41,14 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			float speedModifier = 0.01f;
 			float value = time;
 			float selfRotation = -time *1f;
+			float scale = .5f;
+			float distance = 5f;
 
-			matrixStack.translate(Math.sin(value * speedModifier) * 10f, 0, Math.cos(value * speedModifier) * 10f);
+			matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
 //			matrixStack.scale(20, 20, 20);
 
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+			matrixStack.scale(scale, scale,scale);
 
 			float SIZE = 2f;
 			RandomGenerator random = entity.getWorld().random;
@@ -60,18 +63,56 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/2.png"))),
 					matrixStack,
 					1,
-					25,
-					25);
+					20,
+					20);
 			matrixStack.pop();
 
-//			ParticleBuilders.create(ModParticles.STAR)
-//				.setScale(SIZE/1.5f * (1 + random.nextFloat()))
-//				.setAlpha(0, 0.2f, 0)
-//				.setSpin((float) random.nextGaussian() / 100f)
-//				.enableNoClip()
-//				.setLifetime(20)
-//				.setColor(1f, 1f, 1f)
-//				.spawn(entity.getWorld(), x2, y2, z2);
+			matrixStack.push();
+			matrixStack.translate(.5f, .5f,.5f);
+			builder.setColor(new Color(0xFFFFFF))
+				.setAlpha(1f)
+				.renderSphere(
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
+					matrixStack,
+					1,
+					20,
+					20);
+			matrixStack.pop();
+
+			ParticleBuilders.create(LodestoneParticles.WISP_PARTICLE)
+				.setScale(SIZE/1.5f * (1 + random.nextFloat()))
+				.setAlpha(0, 0.2f, 0)
+				.setSpin((float) random.nextGaussian() / 100f)
+				.enableNoClip()
+				.setLifetime(20)
+				.setColor(1f, 1f, 1f)
+				.spawn(entity.getWorld(), x2, y2, z2);
+
+
+			matrixStack.push();
+			matrixStack.translate(.5f, .5f,.5f);
+			matrixStack.scale(20f,20f,20f);
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time*.1f));
+			builder.setColor(new Color(0xFFFFFF))
+				.setAlpha(1f)
+				.renderSphere(
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/stars.png"))),
+					matrixStack,
+					-1,
+					50,
+					50);
+
+			matrixStack.scale(1.01f,1.01f,1.01f);
+			builder.setColor(new Color(0xFFFFFF))
+				.setAlpha(1f)
+				.renderSphere(
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
+					matrixStack,
+					-1,
+					50,
+					50);
+			matrixStack.pop();
+
 		}
 	}
 }
