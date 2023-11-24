@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "astronomical:block/astral_display",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "astronomical:block/astral_display",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "astronomical:block/astral_display",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "astronomical:block/astral_display",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "astronomical:block/astral_display"
+    },
+    "facing=west": {
+      "model": "astronomical:block/astral_display",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
