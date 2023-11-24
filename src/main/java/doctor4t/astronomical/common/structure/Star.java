@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class Star implements CelestialObject {
-	private static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
+	public static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
 	protected Vec3d directionalVector;
 	private float size;
 	public Star(Vec3d vec, float size) {
