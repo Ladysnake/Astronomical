@@ -1,8 +1,10 @@
 package doctor4t.astronomical.common.block.entity;
 
 import doctor4t.astronomical.common.init.ModBlockEntities;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
@@ -16,20 +18,16 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
-public class AstralDisplayBlockEntity extends LootableContainerBlockEntity implements InventoryChangedListener {
+public class AstralDisplayBlockEntity extends LockableContainerBlockEntity implements InventoryChangedListener {
 	public static final int SIZE = 9;
-	private SimpleInventory inventory = new SimpleInventory(SIZE);
-	{
-		this.inventory.addListener(this);
-	}
-
-	BlockPos parentPos;
+	private final SimpleInventory inventory = new SimpleInventory(SIZE);
+	private BlockPos parentPos;
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
+		this.inventory.addListener(this);
 	}
 
 	public BlockPos getParentPos() {
@@ -46,6 +44,47 @@ public class AstralDisplayBlockEntity extends LootableContainerBlockEntity imple
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return this.inventory.isEmpty();
+	}
+
+	@Override
+	public ItemStack getStack(int slot) {
+		return this.inventory.getStack(slot);
+	}
+
+	@Override
+	public ItemStack removeStack(int slot, int amount) {
+        return this.inventory.removeStack(slot, amount);
+	}
+
+	@Override
+	public ItemStack removeStack(int slot) {
+		return this.inventory.removeStack(slot);
+	}
+
+	@Override
+	public void setStack(int slot, ItemStack stack) {
+		this.inventory.setStack(slot, stack);
+		if (stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
+		}
+	}
+
+	@Override
+	public void clear() {
+		this.inventory.clear();
+	}
+
+	@Override
+	public boolean canPlayerUse(PlayerEntity player) {
+		if (this.world != null && this.world.getBlockEntity(this.pos) != this) {
+			return false;
+		}
+		return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+	}
+
+	@Override
 	protected Text getContainerName() {
 		return Text.translatable("container.astral_display");
 	}
@@ -53,39 +92,20 @@ public class AstralDisplayBlockEntity extends LootableContainerBlockEntity imple
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
-
 		if (nbt.contains("parentPos")) {
 			this.setParentPos(NbtHelper.toBlockPos(nbt.getCompound("parentPos")));
 		}
-
+		this.inventory.clear();
 		this.inventory.readNbtList(nbt.getList("inventory", 10));
 	}
 
 	@Override
 	public void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-
 		if (this.getParentPos() != null) {
 			nbt.put("parentPos", NbtHelper.fromBlockPos(this.getParentPos()));
 		}
-
-		nbt.put("inventory", inventory.toNbtList());
-	}
-
-	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
-		return this.inventory.stacks;
-	}
-
-	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
-		if (list.size() != this.inventory.size()) {
-			return;
-		}
-
-		for (int i = 0; i < SIZE; i++) {
-			this.inventory.setStack(i, list.get(i));
-		}
+		nbt.put("inventory", this.inventory.toNbtList());
 	}
 
 	@Override
@@ -101,19 +121,16 @@ public class AstralDisplayBlockEntity extends LootableContainerBlockEntity imple
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
 		var nbt = super.toInitialChunkDataNbt();
-
-		if (this.getParentPos() != null) {
-			nbt.put("parentPos", NbtHelper.fromBlockPos(this.getParentPos()));
-		}
-
-		nbt.put("inventory", inventory.toNbtList());
-
+		this.writeNbt(nbt);
 		return nbt;
 	}
 
 	@Override
 	public void onInventoryChanged(Inventory sender) {
-		System.out.println("TEST");
-		this.markDirty();
+		if (this.world != null && !this.world.isClient()) {
+			var state = this.world.getBlockState(this.pos);
+			this.world.updateListeners(this.pos, state, state, Block.NOTIFY_LISTENERS);
+			this.markDirty();
+		}
 	}
 }

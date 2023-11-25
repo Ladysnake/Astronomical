@@ -24,6 +24,4 @@ public interface ModBlockEntities {
 	static void initialize() {
 		BLOCK_ENTITIES.keySet().forEach(entityType -> Registry.register(Registry.BLOCK_ENTITY_TYPE, BLOCK_ENTITIES.get(entityType), entityType));
 	}
-
-
 }
