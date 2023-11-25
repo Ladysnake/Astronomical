@@ -20,10 +20,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import net.minecraft.util.random.RandomGenerator;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -51,13 +48,16 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 //		VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
 		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
+		matrixStack.translate(0.5f, 0.5f, 0.5f);
 
+		BlockPos parentPos = astralDisplayBlockEntity.getPos();
 		// if connected child, render object orbiting around parent
 		if (astralDisplayBlockEntity.getParentPos() != null
 			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
 			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)
 			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
-			matrixStack.translate(0.5f, 0.5f, 0.5f);
+
+			parentPos = astralDisplayBlockEntity.getParentPos();
 
 			this.builder.setColor(new Color(0xFFD88F))
 				.setAlpha(1f)
@@ -65,8 +65,10 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					RenderHandler.LATE_DELAYED_RENDER.getBuffer(ASTRAL_DISPLAY_LINK),
 					matrixStack,
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-					Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos()),
+					Vec3d.ofCenter(parentPos),
 					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
+
+		}
 
 			// render test orbiting planet
 			for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
@@ -76,14 +78,14 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					int color2 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
 					float value = time;
 					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-					float distance = astralDisplayBlockEntity.getParentPos().getManhattanDistance(astralDisplayBlockEntity.getPos());
+					float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
 					float selfRotation = -time * (distance / 10f);
 					float speedModifier = 0.001f * distance;
 
 					matrixStack.push();
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - astralDisplayBlockEntity.getParentPos().getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - astralDisplayBlockEntity.getParentPos().getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - astralDisplayBlockEntity.getParentPos().getZ()));
+					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
+						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
+						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
 					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
@@ -111,23 +113,23 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 					float value = time;
 					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-					float distance = astralDisplayBlockEntity.getParentPos().getManhattanDistance(astralDisplayBlockEntity.getPos());
+					float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
 					float selfRotation = -time * (distance / 10f);
 					float speedModifier = 0.001f * distance;
 
 					matrixStack.push();
 
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - astralDisplayBlockEntity.getParentPos().getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - astralDisplayBlockEntity.getParentPos().getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - astralDisplayBlockEntity.getParentPos().getZ()));
+					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
+						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
+						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
 					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
 
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
 
-					double x2 =astralDisplayBlockEntity.getParentPos().getX() +.5+Math.sin(value * speedModifier) * distance;
-					double y2 = astralDisplayBlockEntity.getParentPos().getY() + .5;
-					double z2 = astralDisplayBlockEntity.getParentPos().getZ() + .5 + Math.cos(value * speedModifier) * distance;
+					double x2 =parentPos.getX() +.5+Math.sin(value * speedModifier) * distance;
+					double y2 = parentPos.getY() + .5;
+					double z2 = parentPos.getZ() + .5 + Math.cos(value * speedModifier) * distance;
 
 					this.builder.setColor(new Color(color))
 						.setAlpha(1f)
@@ -202,7 +204,6 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 //					50,
 //					50);
 //			matrixStack.pop();
-	}
 
 	@Override
 	public int getRenderDistance() {
