@@ -3,7 +3,9 @@
   "minVersion": "0.8",
   "package": "doctor4t.astronomical.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+    "VertexConsumerMixin"
+  ],
   "client": [
     "FrustumMixin",
     "WorldRendererMixin"
