@@ -10,7 +10,6 @@ import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
-import doctor4t.astronomical.common.item.NanoPlanetItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -62,9 +61,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					(float) (.25f+((Math.cos(time/10f)+1)/2f)/10f));
 
 			// render test orbiting planet
-			for (int slot = 0; slot < AstralDisplayBlockEntity.SLOTS; slot++) {
+			for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
 				ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
-				System.out.println(stackToDisplay);
 				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
 					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 					float value = time;
