@@ -9,6 +9,8 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
+import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.item.NanoPlanetItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -16,6 +18,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -35,18 +38,18 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 		builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
 	}
 
-	public void render(T entity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		RandomGenerator random = entity.getWorld().random;
-		BlockState blockState = entity.getWorld().getBlockState(entity.getPos());
+	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
+		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
 
 //		VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
 		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
 
 		// if connected child, render object orbiting around parent
-		if (entity.getParentPos() != null
-			&& entity.getWorld().getBlockState(entity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
-			&& entity.getWorld().getBlockState(entity.getParentPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)
-			&& entity.getWorld().getBlockEntity(entity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
+		if (astralDisplayBlockEntity.getParentPos() != null
+			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
+			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)
+			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
 			matrixStack.translate(0.5f, 0.5f, 0.5f);
 
 			builder.setColor(new Color(0xFFD88F))
@@ -54,47 +57,51 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 				.renderBeam(
 					vertexConsumerProvider.getBuffer(ASTRAL_DISPLAY_LINK),
 					matrixStack,
-					Vec3d.ofCenter(entity.getPos()),
-					Vec3d.ofCenter(entity.getParentPos()),
+					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
+					Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos()),
 					(float) (.25f+((Math.cos(time/10f)+1)/2f)/10f));
 
 			// render test orbiting planet
-			float value = time;
-			float scale = .5f;
-			float distance = entity.getParentPos().getManhattanDistance(entity.getPos());
-			float selfRotation = -time * (distance/10f);
-			float speedModifier = 0.001f * distance;
+			for (int slot = 0; slot < AstralDisplayBlockEntity.SLOTS; slot++) {
+				ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
+				System.out.println(stackToDisplay);
+				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
+					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
+					float value = time;
+					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+					float distance = astralDisplayBlockEntity.getParentPos().getManhattanDistance(astralDisplayBlockEntity.getPos());
+					float selfRotation = -time * (distance/10f);
+					float speedModifier = 0.001f * distance;
 
-			matrixStack.push();
-			matrixStack.translate(-(entity.getPos().getX() - entity.getParentPos().getX()),
-				-(entity.getPos().getY() - entity.getParentPos().getY()),
-				-(entity.getPos().getZ() - entity.getParentPos().getZ()));
-			matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-			matrixStack.scale(scale, scale, scale);
+					matrixStack.push();
+					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - astralDisplayBlockEntity.getParentPos().getX()),
+						-(astralDisplayBlockEntity.getPos().getY() - astralDisplayBlockEntity.getParentPos().getY()),
+						-(astralDisplayBlockEntity.getPos().getZ() - astralDisplayBlockEntity.getParentPos().getZ()));
+					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
+					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+					matrixStack.scale(scale, scale, scale);
 
-			float SIZE = 2f;
-			double x2 = entity.getParentPos().getX();
-			double y2 = entity.getParentPos().getY();
-			double z2 = entity.getParentPos().getZ();
+					builder.setColor(new Color(color))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/2.png"))),
+							matrixStack,
+							1,
+							20,
+							20);
+					matrixStack.pop();
+				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
 
-			builder.setColor(new Color(0xFFFFFF))
-				.setAlpha(1f)
-				.renderSphere(
-					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/2.png"))),
-					matrixStack,
-					1,
-					20,
-					20);
-			matrixStack.pop();
+				}
+			}
 		}
 
 		// if parent render static object
 		if (blockState.isOf(ModBlocks.ASTRAL_DISPLAY) && blockState.get(AstralDisplayBlock.FACING).equals(Direction.UP)) {
 			float SIZE = 2f;
-			double x2 = entity.getPos().getX() + .5;
-			double y2 = entity.getPos().getY() + .5;
-			double z2 = entity.getPos().getZ() + .5;
+			double x2 = astralDisplayBlockEntity.getPos().getX() + .5;
+			double y2 = astralDisplayBlockEntity.getPos().getY() + .5;
+			double z2 = astralDisplayBlockEntity.getPos().getZ() + .5;
 
 			ParticleBuilders.create(LodestoneParticles.WISP_PARTICLE)
 				.setScale(SIZE / 1.5f * (1 + random.nextFloat()))
@@ -103,7 +110,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 				.enableNoClip()
 				.setLifetime(20)
 				.setColor(1f, 1f, 1f)
-				.spawn(entity.getWorld(), x2, y2, z2);
+				.spawn(astralDisplayBlockEntity.getWorld(), x2, y2, z2);
 
 
 			matrixStack.push();
