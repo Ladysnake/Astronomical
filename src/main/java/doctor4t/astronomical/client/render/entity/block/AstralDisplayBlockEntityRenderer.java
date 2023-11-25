@@ -29,13 +29,13 @@ import org.spongepowered.asm.mixin.Unique;
 import java.awt.*;
 
 public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity> implements BlockEntityRenderer<T> {
-	public static final RenderLayer ASTRAL_DISPLAY_LINK = LodestoneRenderLayers.ADDITIVE_TEXTURE.apply(new Identifier(Astronomical.MOD_ID, "textures/vfx/astral_display_link.png"));
+	public static final RenderLayer ASTRAL_DISPLAY_LINK = LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(new Identifier(Astronomical.MOD_ID, "textures/vfx/astral_display_link.png"));
 
 	@Unique
 	VFXBuilders.WorldVFXBuilder builder;
 
 	public AstralDisplayBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
+        this.builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 	}
 
 	@Override
