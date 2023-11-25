@@ -33,7 +33,7 @@ public class OrbParticleType extends ParticleType<WorldParticleEffect> {
 
 		@Override
 		public Particle createParticle(WorldParticleEffect data, ClientWorld world, double x, double y, double z, double mx, double my, double mz) {
-			return new OrbParticle(world, data, (FabricSpriteProviderImpl) sprite, x, y, z, mx, my, mz);
+			return new OrbParticle(world, data, (FabricSpriteProviderImpl) this.sprite, x, y, z, mx, my, mz);
 		}
 	}
 }

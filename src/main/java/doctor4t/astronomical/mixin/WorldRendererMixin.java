@@ -69,7 +69,7 @@ public class WorldRendererMixin {
 				frustum = this.frustum;
 			}
 			RenderSystem.depthMask(false);
-			AstraSkyRenderer.renderSky(matrices, this.bufferBuilders.getEntityVertexConsumers(), projectionMatrix, frustum, tickDelta, runnable, world, client);
+			AstraSkyRenderer.renderSky(matrices, this.bufferBuilders.getEntityVertexConsumers(), projectionMatrix, frustum, tickDelta, runnable, this.world, this.client);
 			runnable.run();
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();

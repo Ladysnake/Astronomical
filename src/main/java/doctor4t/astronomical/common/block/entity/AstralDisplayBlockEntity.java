@@ -65,7 +65,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-		this.inventory.setStack(slot, stack);
+        this.inventory.setStack(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
@@ -93,7 +93,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("parentPos")) {
-			this.setParentPos(NbtHelper.toBlockPos(nbt.getCompound("parentPos")));
+            this.setParentPos(NbtHelper.toBlockPos(nbt.getCompound("parentPos")));
 		}
 		this.inventory.clear();
 		this.inventory.readNbtList(nbt.getList("inventory", 10));

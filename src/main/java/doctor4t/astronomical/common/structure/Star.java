@@ -15,12 +15,12 @@ public class Star implements CelestialObject {
 
 	@Override
 	public Vec3d getDirectionVector() {
-		return directionalVector;
+		return this.directionalVector;
 	}
 
 	@Override
 	public float getSize() {
-		return size;
+		return this.size;
 	}
 
 	@Override

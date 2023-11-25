@@ -19,14 +19,14 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 	private final World obj;
 	public AstraSkyComponent(World object) {
 		this.obj = object;
-		long seed = getWorldSeed(obj);
+		long seed = this.getWorldSeed(this.obj);
 		this.random = RandomGenerator.createLegacy(seed);
 	}
 
 	private Vec3d generateDirectionalVector() {
-		double x = random.nextGaussian();
-		double y = random.nextGaussian();
-		double z = random.nextGaussian();
+		double x = this.random.nextGaussian();
+		double y = this.random.nextGaussian();
+		double z = this.random.nextGaussian();
 		return new Vec3d(x, y, z).normalize();
 	}
 
@@ -37,12 +37,12 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 	@Override
 	public void readFromNbt(NbtCompound tag) {
 		for(int i = 0; i < 9000; i++) {
-			heavenlySpheres.add(new Star(generateDirectionalVector(), 1f+0.7f*random.nextFloat()));
+            this.heavenlySpheres.add(new Star(this.generateDirectionalVector(), 1f+0.7f* this.random.nextFloat()));
 		}
 	}
 
 	public List<CelestialObject> getCelestialObjects() {
-		return heavenlySpheres;
+		return this.heavenlySpheres;
 	}
 
 	@Override

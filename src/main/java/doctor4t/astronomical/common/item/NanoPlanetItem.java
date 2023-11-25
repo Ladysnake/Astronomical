@@ -89,23 +89,23 @@ public class NanoPlanetItem extends Item {
 	}
 
 	public boolean hasColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-		return nbtCompound != null && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE);
+		NbtCompound nbtCompound = stack.getSubNbt(this.DISPLAY_KEY);
+		return nbtCompound != null && nbtCompound.contains(this.COLOR_KEY, NbtElement.NUMBER_TYPE);
 	}
 
 	public int getColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-		return nbtCompound != null && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE) ? nbtCompound.getInt(COLOR_KEY) : DEFAULT_COLOR;
+		NbtCompound nbtCompound = stack.getSubNbt(this.DISPLAY_KEY);
+		return nbtCompound != null && nbtCompound.contains(this.COLOR_KEY, NbtElement.NUMBER_TYPE) ? nbtCompound.getInt(this.COLOR_KEY) : this.DEFAULT_COLOR;
 	}
 
 	public void setColor(ItemStack stack, int color) {
-		stack.getOrCreateSubNbt(DISPLAY_KEY).putInt(COLOR_KEY, color);
+		stack.getOrCreateSubNbt(this.DISPLAY_KEY).putInt(this.COLOR_KEY, color);
 	}
 
 	public void removeColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-		if (nbtCompound != null && nbtCompound.contains(COLOR_KEY)) {
-			nbtCompound.remove(COLOR_KEY);
+		NbtCompound nbtCompound = stack.getSubNbt(this.DISPLAY_KEY);
+		if (nbtCompound != null && nbtCompound.contains(this.COLOR_KEY)) {
+			nbtCompound.remove(this.COLOR_KEY);
 		}
 
 	}

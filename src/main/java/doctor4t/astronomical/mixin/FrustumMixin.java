@@ -27,7 +27,7 @@ public class FrustumMixin implements AstraFrustum {
 //		x += (float) this.x;
 //		y += (float) this.y;
 //		z += (float) this.z;
-		return astra$isPositionVisible(x, y, z);
+		return this.astra$isPositionVisible(x, y, z);
 	}
 
 	@Override

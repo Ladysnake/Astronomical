@@ -34,9 +34,10 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	VFXBuilders.WorldVFXBuilder builder;
 
 	public AstralDisplayBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
+        this.builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
 	}
 
+	@Override
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
@@ -51,7 +52,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
 			matrixStack.translate(0.5f, 0.5f, 0.5f);
 
-			builder.setColor(new Color(0xFFD88F))
+            this.builder.setColor(new Color(0xFFD88F))
 				.setAlpha(1f)
 				.renderBeam(
 					vertexConsumerProvider.getBuffer(ASTRAL_DISPLAY_LINK),
@@ -79,7 +80,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
 
-					builder.setColor(new Color(color))
+                    this.builder.setColor(new Color(color))
 						.setAlpha(1f)
 						.renderSphere(
 							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/2.png"))),
@@ -113,7 +114,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 			matrixStack.push();
 			matrixStack.translate(.5f, .5f, .5f);
-			builder.setColor(new Color(0xFFFFFF))
+            this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
 					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
@@ -129,7 +130,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			matrixStack.translate(.5f, .5f, .5f);
 			matrixStack.scale(20f, 20f, 20f);
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time * .1f));
-			builder.setColor(new Color(0xFFFFFF))
+            this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
 					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/stars.png"))),
@@ -139,7 +140,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					50);
 
 			matrixStack.scale(1.01f, 1.01f, 1.01f);
-			builder.setColor(new Color(0xFFFFFF))
+            this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
 					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
