@@ -168,4 +168,9 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 //		*/
 		}
 	}
+
+	@Override
+	public int getRenderDistance() {
+		return (MinecraftClient.getInstance().options.getEffectiveViewDistance()+1)*16;
+	}
 }
