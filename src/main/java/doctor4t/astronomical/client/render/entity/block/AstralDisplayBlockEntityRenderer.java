@@ -1,5 +1,6 @@
 package doctor4t.astronomical.client.render.entity.block;
 
+import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.setup.LodestoneParticles;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
@@ -55,7 +56,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
             this.builder.setColor(new Color(0xFFD88F))
 				.setAlpha(1f)
 				.renderBeam(
-					vertexConsumerProvider.getBuffer(ASTRAL_DISPLAY_LINK),
+					RenderHandler.LATE_DELAYED_RENDER.getBuffer(ASTRAL_DISPLAY_LINK),
 					matrixStack,
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
 					Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos()),
@@ -65,7 +66,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
 				ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
 				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
-					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
+					int color1 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1");
+					int color2 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
 					float value = time;
 					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
 					float distance = astralDisplayBlockEntity.getParentPos().getManhattanDistance(astralDisplayBlockEntity.getPos());
@@ -80,14 +82,33 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
 
-                    this.builder.setColor(new Color(color))
+					this.builder.setColor(new Color(color1))
 						.setAlpha(1f)
 						.renderSphere(
-							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/2.png"))),
+							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
 							matrixStack,
 							1,
 							20,
 							20);
+
+                    this.builder.setColor(new Color(color1))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/planet_1.png"))),
+							matrixStack,
+							1,
+							20,
+							20);
+
+					this.builder.setColor(new Color(color2))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/planet_2.png"))),
+							matrixStack,
+							1,
+							20,
+							20);
+
 					matrixStack.pop();
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
 
@@ -117,7 +138,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
             this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
-					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
 					matrixStack,
 					1,
 					20,
@@ -133,7 +154,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
             this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
-					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/stars.png"))),
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/stars.png"))),
 					matrixStack,
 					-1,
 					50,
@@ -143,7 +164,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
             this.builder.setColor(new Color(0xFFFFFF))
 				.setAlpha(1f)
 				.renderSphere(
-					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.ADDITIVE_TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
+					vertexConsumerProvider.getBuffer(AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"))),
 					matrixStack,
 					-1,
 					50,
