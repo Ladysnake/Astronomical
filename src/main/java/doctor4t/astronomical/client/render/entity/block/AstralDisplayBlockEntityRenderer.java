@@ -25,7 +25,7 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.random.RandomGenerator;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity> implements BlockEntityRenderer<T> {
 	public static final RenderLayer ASTRAL_DISPLAY_LINK = LodestoneRenderLayers.ADDITIVE_TEXTURE.apply(new Identifier(Astronomical.MOD_ID, "textures/vfx/astral_display_link.png"));

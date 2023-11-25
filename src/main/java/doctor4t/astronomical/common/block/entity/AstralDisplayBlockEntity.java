@@ -1,6 +1,7 @@
 package doctor4t.astronomical.common.block.entity;
 
 import doctor4t.astronomical.common.init.ModBlockEntities;
+import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +24,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public static final int SIZE = 9;
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
 	private BlockPos parentPos;
+	public double yLevel = 0.5;
+	public double rotSpeed = 0.5;
+	public double spin = 0.5;
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
@@ -97,6 +100,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 		}
 		this.inventory.clear();
 		this.inventory.readNbtList(nbt.getList("inventory", 10));
+		this.yLevel = nbt.getDouble("yLevel");
+		this.rotSpeed = nbt.getDouble("rotSpeed");
+		this.spin = nbt.getDouble("spin");
 	}
 
 	@Override
@@ -106,11 +112,20 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 			nbt.put("parentPos", NbtHelper.fromBlockPos(this.getParentPos()));
 		}
 		nbt.put("inventory", this.inventory.toNbtList());
+		nbt.putDouble("yLevel", this.yLevel);
+		nbt.putDouble("rotSpeed", this.rotSpeed);
+		nbt.putDouble("spin", this.spin);
 	}
 
 	@Override
 	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-		return new Generic3x3ContainerScreenHandler(syncId, playerInventory, this);
+		var handler = new AstralDisplayScreenHandler(syncId, playerInventory, this);
+		handler.entity = this;
+		handler.pos = this.pos;
+		handler.yLevel = this.yLevel;
+		handler.rotSpeed = this.rotSpeed;
+		handler.spin = this.spin;
+		return handler;
 	}
 
 	@Override

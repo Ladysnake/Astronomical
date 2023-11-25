@@ -1,9 +1,9 @@
 package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.item.NanoGiverItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
-import doctor4t.astronomical.common.item.NanoGiverItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

@@ -1,6 +1,5 @@
 package doctor4t.astronomical.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.sammy.lodestone.systems.rendering.particle.SimpleParticleEffect;
 import com.sammy.lodestone.systems.rendering.particle.world.FrameSetParticle;

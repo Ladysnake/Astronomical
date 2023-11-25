@@ -3,14 +3,16 @@ package doctor4t.astronomical.client;
 import doctor4t.astronomical.client.render.entity.StarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.init.ModEntities;
 import doctor4t.astronomical.common.init.ModParticles;
+import doctor4t.astronomical.common.screen.AstralDisplayScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
@@ -34,5 +36,6 @@ public class AstronomicalClient implements ClientModInitializer {
 		// block special layers
 //		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.LOCKER, ModBlocks.CLOSED_LOCKER, ModBlocks.WALKWAY, ModBlocks.WALKWAY_STAIRS, ModBlocks.ABYSSTEEL_CHAIN, ModBlocks.ANGLERWEED, ModBlocks.ANGLERWEED_PLANT, ModBlocks.LURKING_LAMP, ModBlocks.OCTANT);
 
+		HandledScreens.register(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, AstralDisplayScreen::new);
 	}
 }
