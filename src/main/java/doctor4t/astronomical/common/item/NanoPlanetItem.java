@@ -2,11 +2,8 @@ package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import static net.minecraft.text.Style.EMPTY;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;

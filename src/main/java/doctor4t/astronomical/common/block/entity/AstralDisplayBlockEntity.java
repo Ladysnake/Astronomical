@@ -24,6 +24,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public static final int SIZE = 9;
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
 	private BlockPos parentPos;
+	// yLevel, rotSpeed and spin are all values between 0 and 1, scale accordingly
 	public double yLevel = 0.5;
 	public double rotSpeed = 0.5;
 	public double spin = 0.5;
@@ -119,13 +120,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-		var handler = new AstralDisplayScreenHandler(syncId, playerInventory, this);
-		handler.entity = this;
-		handler.pos = this.pos;
-		handler.yLevel = this.yLevel;
-		handler.rotSpeed = this.rotSpeed;
-		handler.spin = this.spin;
-		return handler;
+        return new AstralDisplayScreenHandler(syncId, playerInventory, this);
 	}
 
 	@Override

@@ -9,15 +9,10 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
 public class AstralDisplayScreenHandler extends ScreenHandler {
-	public final Inventory inventory;
-	public BlockPos pos;
-	public double yLevel;
-	public double rotSpeed;
-	public double spin;
+	public Inventory inventory;
 	public AstralDisplayBlockEntity entity;
 
 	public AstralDisplayScreenHandler(int syncId, PlayerInventory playerInventory) {
@@ -28,6 +23,9 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 		super(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, syncId);
 		this.inventory = inventory;
 		this.inventory.onOpen(playerInventory.player);
+		if (this.inventory instanceof AstralDisplayBlockEntity blockEntity) {
+			this.entity = blockEntity;
+		}
 		for (var i = 0; i < 5; i++) {
 			this.addSlot(new Slot(inventory, i, 44 + i * 18, 17));
 		}
