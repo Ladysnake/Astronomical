@@ -1,11 +1,9 @@
 package doctor4t.astronomical.cca.world;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import doctor4t.astronomical.client.AstraClientUtil;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.Star;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
