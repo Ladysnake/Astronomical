@@ -28,17 +28,33 @@ public class Astronomical implements ModInitializer {
 		ModSoundEvents.initialize();
 		ModParticles.initialize();
 
-		ServerPlayNetworking.registerGlobalReceiver(id("astral_display"), (server, player, handler, buf, responseSender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(id("y_level"), (server, player, handler, buf, responseSender) -> {
 			var yLevel = buf.readDouble();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
+					astralDisplayScreenHandler.entity().yLevel = yLevel;
+					astralDisplayScreenHandler.entity().markDirty();
+				}
+			});
+		});
+		ServerPlayNetworking.registerGlobalReceiver(id("rot_speed"), (server, player, handler, buf, responseSender) -> {
 			var rotSpeed = buf.readDouble();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
+					astralDisplayScreenHandler.entity().rotSpeed = rotSpeed;
+					astralDisplayScreenHandler.entity().markDirty();
+				}
+			});
+		});
+		ServerPlayNetworking.registerGlobalReceiver(id("spin"), (server, player, handler, buf, responseSender) -> {
 			var spin = buf.readDouble();
 			server.execute(() -> {
 				var screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
-					astralDisplayScreenHandler.entity.yLevel = yLevel;
-					astralDisplayScreenHandler.entity.rotSpeed = rotSpeed;
-					astralDisplayScreenHandler.entity.spin = spin;
-					astralDisplayScreenHandler.entity.markDirty();
+					astralDisplayScreenHandler.entity().spin = spin;
+					astralDisplayScreenHandler.entity().markDirty();
 				}
 			});
 		});

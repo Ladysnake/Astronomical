@@ -1,6 +1,8 @@
 package doctor4t.astronomical.common.block;
 
+import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -13,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -27,6 +30,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
 
 public class AstralDisplayBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = Properties.FACING;
@@ -112,10 +116,15 @@ public class AstralDisplayBlock extends BlockWithEntity {
 			return ActionResult.SUCCESS;
 		} else {
 			var blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof AstralDisplayBlockEntity) {
-				player.openHandledScreen((AstralDisplayBlockEntity)blockEntity);
+			if (blockEntity instanceof AstralDisplayBlockEntity astralDisplayBlockEntity) {
+				player.openHandledScreen(astralDisplayBlockEntity);
+				var buf = PacketByteBufs.create();
+				buf.writeBlockPos(pos);
+				buf.writeDouble(astralDisplayBlockEntity.yLevel);
+				buf.writeDouble(astralDisplayBlockEntity.rotSpeed);
+				buf.writeDouble(astralDisplayBlockEntity.spin);
+				ServerPlayNetworking.send((ServerPlayerEntity) player, Astronomical.id("astral_display"), buf);
 			}
-
 			return ActionResult.CONSUME;
 		}
 	}

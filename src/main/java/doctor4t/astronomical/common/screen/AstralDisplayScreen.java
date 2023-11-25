@@ -2,7 +2,7 @@ package doctor4t.astronomical.common.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import doctor4t.astronomical.common.Astronomical;
-import doctor4t.astronomical.common.util.DoubleHolder;
+import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -11,36 +11,24 @@ import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
+
+import java.util.function.Consumer;
 
 public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandler> {
 	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astraldisplay.png");
 	private static final Text YLEVEL_TEXT = Text.translatable("screen.astronomical.astraldisplay.ylevel");
 	private static final Text ROTSPEED_TEXT = Text.translatable("screen.astronomical.astraldisplay.rotspeed");
 	private static final Text SPIN_TEXT = Text.translatable("screen.astronomical.astraldisplay.spin");
-	public final DoubleHolder yLevel = new DoubleHolder(0.5);
-	public final DoubleHolder rotSpeed = new DoubleHolder(0.5);
-	public final DoubleHolder spin = new DoubleHolder(0.5);
+	private AstralSlider yLevelSlider;
+	private AstralSlider rotSpeedSlider;
+	private AstralSlider spinSlider;
 
 	public AstralDisplayScreen(AstralDisplayScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
-	}
-
-	private void updateSliders() {
-		ClientPlayNetworking.send(Astronomical.id("astral_display"), this.sliderBuf());
-	}
-
-	private @NotNull PacketByteBuf sliderBuf() {
-		var buf = PacketByteBufs.create();
-		buf.writeDouble(this.yLevel.get());
-		buf.writeDouble(this.rotSpeed.get());
-		buf.writeDouble(this.spin.get());
-		return buf;
 	}
 
 	@Override
@@ -50,31 +38,50 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		this.backgroundWidth = 176;
 		this.backgroundHeight = 166;
 		this.playerInventoryTitleY = this.backgroundHeight - 94;
-		this.yLevel.silentSet(this.handler.yLevel);
-		var yLevelSlider = new AstralSlider(this, this.x + 10, this.y + 47, 46, 6, this.yLevel);
-		this.addDrawableChild(yLevelSlider);
-		this.rotSpeed.silentSet(this.handler.rotSpeed);
-		var rotSpeedSlider = new AstralSlider(this, this.x + 65, this.y + 47, 46, 6, this.rotSpeed);
-		this.addDrawableChild(rotSpeedSlider);
-		this.spin.silentSet(this.handler.spin);
-		var spinSlider = new AstralSlider(this, this.x + 120, this.y + 47, 46, 6, this.spin);
-		this.addDrawableChild(spinSlider);
+		if (!(this.handler.entity() instanceof AstralDisplayBlockEntity)) {
+			return;
+		}
+		this.addSliders();
+	}
+
+	public void addSliders() {
+		if (this.handler.entity() == null) return;
+		if (this.yLevelSlider == null) {
+			this.yLevelSlider = new AstralSlider(this, this.x + 10, this.y + 47, 46, 6, this.handler.entity().yLevel, (d) -> this.syncSlider("y_level", d));
+			this.addDrawableChild(this.yLevelSlider);
+		}
+		if (this.rotSpeedSlider == null) {
+			this.rotSpeedSlider = new AstralSlider(this, this.x + 65, this.y + 47, 46, 6, this.handler.entity().rotSpeed, (d) -> this.syncSlider("rot_speed", d));
+			this.addDrawableChild(this.rotSpeedSlider);
+		}
+		if (this.spinSlider == null) {
+			this.spinSlider = new AstralSlider(this, this.x + 120, this.y + 47, 46, 6, this.handler.entity().spin, (d) -> this.syncSlider("spin", d));
+			this.addDrawableChild(this.spinSlider);
+		}
+	}
+
+	private void syncSlider(String id, double value) {
+		var buf = PacketByteBufs.create();
+		buf.writeDouble(value);
+		ClientPlayNetworking.send(Astronomical.id(id), buf);
 	}
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		var x = (this.width - this.backgroundWidth) / 2;
+		var y = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.textRenderer.draw(matrices, YLEVEL_TEXT, x + 10 + 26 - this.textRenderer.getWidth(YLEVEL_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+		this.textRenderer.draw(matrices, ROTSPEED_TEXT, x + 65 + 26 - this.textRenderer.getWidth(ROTSPEED_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+		this.textRenderer.draw(matrices, SPIN_TEXT, x + 120 + 26 - this.textRenderer.getWidth(SPIN_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		super.drawForeground(matrices, mouseX, mouseY);
-		this.textRenderer.draw(matrices, YLEVEL_TEXT, 10 + 26 - this.textRenderer.getWidth(YLEVEL_TEXT) / 2f, (float)this.titleY + 31, 0x404040);
-		this.textRenderer.draw(matrices, ROTSPEED_TEXT, 65 + 26 - this.textRenderer.getWidth(ROTSPEED_TEXT) / 2f, (float)this.titleY + 31, 0x404040);
-		this.textRenderer.draw(matrices, SPIN_TEXT, 120 + 26 - this.textRenderer.getWidth(SPIN_TEXT) / 2f, (float)this.titleY + 31, 0x404040);
 	}
 
 	@Override
@@ -87,15 +94,13 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 	@Environment(EnvType.CLIENT)
 	private static final class AstralSlider extends SliderWidget {
-		private final AstralDisplayScreen screen;
-		private final DoubleHolder heldValue;
 		private final int backgroundHeight;
+		private final Consumer<Double> syncConsumer;
 
-		private AstralSlider(AstralDisplayScreen screen, int x, int y, int width, int height, @NotNull DoubleHolder heldValue) {
-			super(x, y, width, 20, Text.empty(), heldValue.get());
-			this.screen = screen;
+		private AstralSlider(AstralDisplayScreen screen, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer) {
+			super(x, y, width, 20, Text.empty(), value);
 			this.backgroundHeight = height;
-			this.heldValue = heldValue;
+			this.syncConsumer = syncConsumer;
 		}
 
 		@Override
@@ -103,13 +108,12 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 		@Override
 		protected void applyValue() {
-			this.heldValue.set(this.value);
+			this.syncConsumer.accept(this.value);
 		}
 
 		@Override
-		public void onRelease(double mouseX, double mouseY) {
-            this.screen.updateSliders();
-			super.onRelease(mouseX, mouseY);
+		public boolean mouseReleased(double mouseX, double mouseY, int button) {
+			return super.mouseReleased(mouseX, mouseY, button);
 		}
 
 		@Override
