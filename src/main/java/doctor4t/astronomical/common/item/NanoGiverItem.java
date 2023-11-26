@@ -9,7 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class NanoGiverItem extends Item {
 	public NanoGiverItem(Settings settings) {

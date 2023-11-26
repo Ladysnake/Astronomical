@@ -1,15 +1,18 @@
 package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.item.MarshmallowStickItem;
 import doctor4t.astronomical.common.item.NanoGiverItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 import xyz.amymialee.mialeemisc.itemgroup.MialeeItemGroup;
 
 import java.util.LinkedHashMap;
@@ -21,6 +24,9 @@ public interface ModItems {
 	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 	Item NANO_GIVER = createItem("nano_giver", new NanoGiverItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
+
+	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build()).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(6).group(ASTRONOMICAL_ITEM_GROUP)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));
@@ -36,8 +42,16 @@ public interface ModItems {
 		DefaultedList<ItemStack> stacks = DefaultedList.of();
 		ITEMS.keySet().forEach(item -> stacks.add(new ItemStack(item)));
 		ASTRONOMICAL_ITEM_GROUP.setItems((itemStacks, itemGroup) -> {
-			for (Item item : ITEMS.keySet()) {
+			for (var item : ITEMS.keySet()) {
 				if (item == Items.AIR) continue;
+				if (item == MARSHMALLOW_STICK) {
+					for (var marshmallow : MarshmallowStickItem.CookState.values()) {
+						var stack = item.getDefaultStack();
+						stack.getOrCreateNbt().putInt("RoastTicks", marshmallow.cookTime);
+						itemStacks.add(stack);
+					}
+					continue;
+				}
 				itemStacks.add(item.getDefaultStack());
 			}
 		});

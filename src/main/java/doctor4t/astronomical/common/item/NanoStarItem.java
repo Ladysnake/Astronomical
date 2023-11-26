@@ -4,13 +4,12 @@ import doctor4t.astronomical.common.Astronomical;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import static net.minecraft.text.Style.EMPTY;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-
-import static net.minecraft.text.Style.EMPTY;
 
 public class NanoStarItem extends Item {
 	public NanoStarItem(Settings settings) {
