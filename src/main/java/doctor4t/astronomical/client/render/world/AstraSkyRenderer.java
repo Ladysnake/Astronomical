@@ -8,9 +8,11 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormats;
 import com.sammy.lodestone.helpers.RenderHelper;
 import com.sammy.lodestone.setup.LodestoneShaders;
+import com.sammy.lodestone.systems.rendering.particle.Easing;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.Star;
+import doctor4t.astronomical.common.util.ColourRamp;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -24,9 +26,10 @@ import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.awt.Color;
+import java.util.function.Function;
 
 public class AstraSkyRenderer {
-	private static final Color yeah = new Color(255, 107, 160, 200);
+	private static final ColourRamp starColour = new ColourRamp(new Color(205, 20, 200), new Color(205, 255, 255), Easing.SINE_IN);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
@@ -56,7 +59,7 @@ public class AstraSkyRenderer {
 		RenderSystem.disableTexture();
 		matrices.pop();
 	}
-	public void redrawStars() {
+	public static void redrawStars() {
 		shouldTankPerformanceForAFewFrames = true;
 	}
 	public static void renderToStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
@@ -76,7 +79,7 @@ public class AstraSkyRenderer {
 		for(CelestialObject c : world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects()) {
 			Vec3d vector = c.getDirectionVector();
 
-			VertexData p = createVertexData(vector, up, c.getSize(), 100, yeah);
+			VertexData p = createVertexData(vector, up, c.getSize()+0.2f*c.getHeat(), 100, starColour.ease(c.getHeat()));
 //			if(shouldRender(((AstraFrustum)frustum), p, rotation))
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 		}
