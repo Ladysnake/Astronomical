@@ -36,7 +36,8 @@
 	"mixin": "astronomical.mixins.json",
 	"access_widener": "astronomical.accesswidener",
 	"cardinal-components": [
-		"astronomical:sky"
+		"astronomical:sky",
+		"astronomical:starfall"
 	]
 
 }

@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class Star implements CelestialObject {
+	private static final Identifier ID = Astronomical.id("star");
 	public static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
 	protected Vec3d directionalVector;
 	private float size, heat;
@@ -16,6 +17,16 @@ public class Star implements CelestialObject {
 		this.directionalVector = vec;
 		this.size = size;
 		this.heat = heat;
+	}
+
+	@Override
+	public boolean canInteract() {
+		return false;
+	}
+
+	@Override
+	public Identifier getId() {
+		return ID;
 	}
 
 	@Override
@@ -52,9 +63,9 @@ public class Star implements CelestialObject {
 	}
 
 	private Vec2d compressDirectionalVector() {
-		return new Vec2d(Math.asin(-directionalVector.y), Math.atan2(directionalVector.x, directionalVector.z));
+		return new Vec2d(Math.asin(directionalVector.y), Math.atan2(directionalVector.z, directionalVector.x));
 	}
-	private Vec3d decompressDirectionalVector(double pitch, double yaw) {
+	public static Vec3d decompressDirectionalVector(double pitch, double yaw) {
 		return new Vec3d(
 			Math.sin(yaw)*Math.cos(pitch),
 			Math.sin(pitch),

@@ -43,34 +43,16 @@ public class WorldRendererMixin {
 	@Nullable
 	private VertexBuffer starsBuffer;
 
-	@Shadow
-	@Nullable
-	private Frustum capturedFrustum;
-
-	@Shadow
-	private Frustum frustum;
-
-	@Shadow
-	@Final
-	private Vector3d capturedFrustumPosition;
 
 	@Shadow
 	@Final
 	private BufferBuilderStorage bufferBuilders;
 
 	@Inject(at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", shift = At.Shift.AFTER), method = "renderSky", cancellable = true)
-	private void renderPFSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera preStep, boolean bl, Runnable runnable, CallbackInfo ci) {
+	private void astra$renderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera preStep, boolean bl, Runnable runnable, CallbackInfo ci) {
 		if (this.world.getRegistryKey().equals(World.OVERWORLD)) {
-			boolean bl2 = this.capturedFrustum != null;
-			Frustum frustum;
-			if (bl2) {
-				frustum = this.capturedFrustum;
-				frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
-			} else {
-				frustum = this.frustum;
-			}
 			RenderSystem.depthMask(false);
-			AstraSkyRenderer.renderSky(matrices, this.bufferBuilders.getEntityVertexConsumers(), projectionMatrix, frustum, tickDelta, runnable, this.world, this.client);
+			AstraSkyRenderer.renderSky(matrices, this.bufferBuilders.getEntityVertexConsumers(), projectionMatrix, tickDelta, runnable, this.world, this.client);
 			runnable.run();
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
