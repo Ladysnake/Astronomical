@@ -127,7 +127,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
 
-					double x2 =parentPos.getX() +.5+Math.sin(value * speedModifier) * distance;
+					double x2 = parentPos.getX() +.5 + Math.sin(value * speedModifier) * distance;
 					double y2 = parentPos.getY() + .5;
 					double z2 = parentPos.getZ() + .5 + Math.cos(value * speedModifier) * distance;
 
