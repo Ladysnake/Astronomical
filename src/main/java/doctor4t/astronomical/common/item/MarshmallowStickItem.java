@@ -18,11 +18,13 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
@@ -38,20 +40,35 @@ public class MarshmallowStickItem extends Item {
 	@Override
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 		if (entity instanceof PlayerEntity player) {
-			if (selected && player.astronomical$isHoldingAttack()) {
-				var blocks = BlockCastFinder.castRayForGridPoints(player.getPos(), player.getRotationVector(), 2, 6);
-				var heated = false;
+			var main = player.getMainHandStack().getItem() == this;
+			var off = player.getOffHandStack().getItem() == this;
+			if (!main && !off) return;
+			if (player.astronomical$isHoldingAttack()) {
+				var blocks = BlockCastFinder.castRayForGridPoints(player.getPos(), player.getRotationVector(), 2, 4);
+				var headDistance = -1f;
 				for (var block : blocks) {
 					var state = world.getBlockState(block);
 					if (state.isIn(Astronomical.HEAT_SOURCES)) {
-						heated = true;
+						if (state.getProperties().contains(Properties.LIT) && !state.get(Properties.LIT)) {
+							continue;
+						}
+						headDistance = (float) player.getPos().distanceTo(Vec3d.ofCenter(block));
 						break;
 					}
 				}
-				if (heated) {
-					var nbt = stack.getOrCreateNbt();
-					var ticks = nbt.getInt("RoastTicks");
-					if (ticks < CookState.BURNT.cookTime + 3 * 20) nbt.putInt("RoastTicks", ticks + 1);
+				if (headDistance >= 0) {
+					var stacks = new ItemStack[2];
+					if (main) stacks[0] = player.getMainHandStack();
+					if (off) stacks[1] = player.getOffHandStack();
+					for (var heldStack : stacks) {
+						if (heldStack == null) continue;
+						var nbt = heldStack.getOrCreateNbt();
+						var ticks = nbt.getFloat("RoastTicks");
+						if (ticks < CookState.BURNT.cookTime + 3 * 20) {
+							var growth = Math.max(0, (4f - headDistance) / 4f);
+							nbt.putFloat("RoastTicks", ticks + growth);
+						}
+					}
 				}
 			}
 		}
@@ -148,10 +165,10 @@ public class MarshmallowStickItem extends Item {
 		}
 
 		public static CookState getCookState(@NotNull ItemStack stack) {
-			return getCookState(stack.getOrCreateNbt().getInt("RoastTicks"));
+			return getCookState(stack.getOrCreateNbt().getFloat("RoastTicks"));
 		}
 
-		public static CookState getCookState(int roastTicks) {
+		public static CookState getCookState(float roastTicks) {
 			if (roastTicks < SLIGHTLY_COOKED.cookTime) {
 				return RAW;
 			} else if (roastTicks < COOKED.cookTime) {
@@ -165,22 +182,13 @@ public class MarshmallowStickItem extends Item {
 			}
 		}
 
-		public CookState previous() {
-			return switch (this) {
-				case RAW, SLIGHTLY_COOKED -> RAW;
-				case COOKED -> SLIGHTLY_COOKED;
-				case PERFECT -> COOKED;
-				case BURNT -> PERFECT;
-			};
-		}
-
 		public CookState next() {
 			return switch (this) {
 				case RAW -> SLIGHTLY_COOKED;
 				case SLIGHTLY_COOKED -> COOKED;
 				case COOKED -> PERFECT;
 				case PERFECT, BURNT -> BURNT;
-            };
+			};
 		}
 	}
 }
