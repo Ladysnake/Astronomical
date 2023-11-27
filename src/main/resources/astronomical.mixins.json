@@ -4,14 +4,15 @@
   "package": "doctor4t.astronomical.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "VertexConsumerMixin"
+    "SpyglassItemMixin"
   ],
   "client": [
     "FrustumMixin",
     "AstralDisplayRendererEnforcerMixin",
+    "VertexConsumerMixin",
     "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  }
 }

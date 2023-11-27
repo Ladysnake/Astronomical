@@ -8,31 +8,35 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormats;
 import com.sammy.lodestone.helpers.RenderHelper;
 import com.sammy.lodestone.setup.LodestoneShaders;
+import com.sammy.lodestone.systems.rendering.particle.Easing;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.common.structure.CelestialObject;
+import doctor4t.astronomical.common.structure.InteractableStar;
 import doctor4t.astronomical.common.structure.Star;
+import doctor4t.astronomical.common.util.ColourRamp;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.awt.Color;
+import java.util.List;
+import java.util.function.Function;
 
 public class AstraSkyRenderer {
-	private static final Color yeah = new Color(255, 107, 160, 200);
+	private static final ColourRamp starColour = new ColourRamp(new Color(205, 20, 200), new Color(205, 255, 255), Easing.SINE_IN);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
+	private static VertexBuffer interactableStars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
-	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
+	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
 		if(stars == null || shouldTankPerformanceForAFewFrames) {
-			renderToStarBuffer(matrices, provider, projectionMatrix, frustum, tickDelta, runnable, world, client);
+			List<CelestialObject> c = world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects();
+			renderToStarBuffer(matrices, provider, projectionMatrix, tickDelta, runnable, world, client, c);
+			renderToInteractableStarBuffer(matrices, provider, projectionMatrix, tickDelta, runnable, world, client, c);
 			shouldTankPerformanceForAFewFrames = false;
 		}
 		Quaternion rotation = Vec3f.POSITIVE_Z.getDegreesQuaternion(world.getSkyAngle(1) * 360.0F);
@@ -52,14 +56,21 @@ public class AstraSkyRenderer {
 		stars.setShader(matrices.peek().getModel(), projectionMatrix, LodestoneShaders.ADDITIVE_TEXTURE.getInstance().get());
 		VertexBuffer.unbind();
 
+		if(interactableStars != null) {
+			RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
+			interactableStars.bind();
+			interactableStars.setShader(matrices.peek().getModel(), projectionMatrix, LodestoneShaders.ADDITIVE_TEXTURE.getInstance().get());
+			VertexBuffer.unbind();
+		}
+
 		RenderSystem.disableBlend();
 		RenderSystem.disableTexture();
 		matrices.pop();
 	}
-	public void redrawStars() {
+	public static void redrawStars() {
 		shouldTankPerformanceForAFewFrames = true;
 	}
-	public static void renderToStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, Frustum frustum, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client) {
+	public static void renderToStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client, List<CelestialObject> objects) {
 		Vec3d up = UP;
 
 		Tessellator tessellator = Tessellator.getInstance();
@@ -73,10 +84,10 @@ public class AstraSkyRenderer {
 		}
 		stars = new VertexBuffer();
 
-		for(CelestialObject c : world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects()) {
+		for(CelestialObject c : objects.stream().filter(p -> !p.canInteract()).toList()) {
 			Vec3d vector = c.getDirectionVector();
 
-			VertexData p = createVertexData(vector, up, c.getSize(), 100, yeah);
+			VertexData p = createVertexData(vector, up, c.getSize()+0.5f*c.getHeat(), 100, starColour.ease(c.getHeat()));
 //			if(shouldRender(((AstraFrustum)frustum), p, rotation))
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 		}
@@ -84,21 +95,35 @@ public class AstraSkyRenderer {
 		stars.upload(bufferBuilder.end());
 		VertexBuffer.unbind();
 	}
+	public static void renderToInteractableStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, Runnable runnable, ClientWorld world, MinecraftClient client, List<CelestialObject> objects) {
+		Vec3d up = UP;
+
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		RenderSystem.setShader(LodestoneShaders.ADDITIVE_TEXTURE.getInstance());
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+		Matrix4f matrix4f = matrices.peek().getModel();
+
+		if(interactableStars != null) {
+			interactableStars.close();
+		}
+		interactableStars  = new VertexBuffer();
+
+		for(CelestialObject c : objects.stream().filter(CelestialObject::canInteract).toList()) {
+			Vec3d vector = c.getDirectionVector();
+
+			VertexData p = createVertexData(vector, up, c.getSize()+0.4f*c.getHeat(), 100, starColour.ease(c.getHeat()));
+//			if(shouldRender(((AstraFrustum)frustum), p, rotation))
+			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
+		}
+		interactableStars.bind();
+		interactableStars.upload(bufferBuilder.end());
+		VertexBuffer.unbind();
+	}
 	private static void apply(TriConsumer<Vec3f, Color, Vec2f> gungy, VertexData data) {
 		for(int i = 0; i < 4; i++) {
 			gungy.accept(data.vertices()[i], data.color(), data.uv()[i]);
 		}
-	}
-
-	private static boolean shouldRender(AstraFrustum a, VertexData vecs, Quaternion q) {
-		for(Vec3f vec : vecs.vertices()) {
-			Vec3f newVec = new Vec3f(vec.getX(), vec.getY(), vec.getZ());
-            newVec.rotate(q);
-			if(a.astra$isVisible(newVec.getX(), newVec.getY(), newVec.getZ())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static VertexData createVertexData(Vec3d dir, Vec3d up, float size, float distance, Color c) {
@@ -144,29 +169,5 @@ public class AstraSkyRenderer {
 		return x*x + y*y + z*z;
 	}
 
-	public static Vec3d rotateViaQuat(Vec3d rot, Quaternion quat) {
-		float x = (float) rot.x;
-		float y = (float) rot.y;
-		float z = (float) rot.z;
 
-		float ux = quat.getX();
-		float uy = quat.getY();
-		float uz = quat.getZ();
-
-		float scalar = quat.getW();
-
-		float cx = -y*uz+(z*uy);
-		float cy = -z*ux+(x*uz);
-		float cz = -x*uy+(y*ux);
-
-		double s1 = 2.0f * (ux*x + uy*y + uz*z);
-		double s2 = scalar*scalar - (ux*ux + uy*uy + uz*uz);
-		double s3 = 2.0f * scalar;
-
-		double vpx = s1 * ux + s2 * x + s3 * cx;
-		double vpy = s1 * uy + s2 * y + s3 * cy;
-		double vpz = s1 * uz + s2 * z + s3 * cz;
-
-		return new Vec3d(vpx, vpy, vpz);
-	}
 }
