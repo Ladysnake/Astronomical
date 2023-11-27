@@ -1,0 +1,10 @@
+{
+  "itemGroup.astronomical.astronomical": "Astronomical",
+  "item.astronomical.nano_planet": "Nano-Planet",
+  "item.astronomical.nano_star": "Nano-Star",
+  "item.astronomical.nano_cosmos": "Nano-Cosmos",
+  "item.astronomical.astral_bundle_planet": "Nano-Planet Bundle",
+  "item.astronomical.astral_bundle_star": "Nano-Star Bundle",
+  "item.astronomical.astral_bundle_cosmos": "Nano-Cosmos Bundle",
+  "block.astronomical.astral_display": "Astral Display"
+}

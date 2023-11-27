@@ -1,5 +1,6 @@
 package doctor4t.astronomical.common.init;
 
+import com.terraformersmc.modmenu.util.mod.Mod;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.AstralBundleItem;
@@ -37,11 +38,9 @@ public interface ModItems {
 	}
 
 	static void initItemGroups() {
-		DefaultedList<ItemStack> stacks = DefaultedList.of();
-		ITEMS.keySet().forEach(item -> stacks.add(new ItemStack(item)));
 		ASTRONOMICAL_ITEM_GROUP.setItems((itemStacks, itemGroup) -> {
 			for (Item item : ITEMS.keySet()) {
-				if (item == Items.AIR) continue;
+				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP)) continue;
 				itemStacks.add(item.getDefaultStack());
 			}
 		});
