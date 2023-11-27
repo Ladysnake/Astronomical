@@ -14,6 +14,7 @@
     "HeldItemRendererMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
+    "PlayerEntityRendererMixin",
     "RebuildTaskMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
