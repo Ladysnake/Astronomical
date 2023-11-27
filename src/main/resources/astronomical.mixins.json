@@ -8,6 +8,7 @@
   ],
   "client": [
     "FrustumMixin",
+    "AstralDisplayRendererEnforcerMixin",
     "WorldRendererMixin"
   ],
   "injectors": {
