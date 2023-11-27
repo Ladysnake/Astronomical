@@ -7,7 +7,6 @@
     "SpyglassItemMixin"
   ],
   "client": [
-    "FrustumMixin",
     "AstralDisplayRendererEnforcerMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
