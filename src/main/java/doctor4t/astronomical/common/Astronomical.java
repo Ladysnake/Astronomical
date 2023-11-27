@@ -14,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
@@ -136,7 +137,11 @@ public class Astronomical implements ModInitializer {
 	}
 
 	public static int getRandomStarTemperature(RandomGenerator randomGenerator) {
-		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.keySet());
+		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
 		return temperatures.get(randomGenerator.nextInt(temperatures.size()));
+	}
+	public static int getRandomStarTemperature(float delta) {
+		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
+		return temperatures.get(MathHelper.ceil(delta * temperatures.size()) - 1);
 	}
 }
