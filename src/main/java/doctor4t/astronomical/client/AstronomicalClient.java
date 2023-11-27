@@ -6,19 +6,21 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.init.ModEntities;
+import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
+import doctor4t.astronomical.common.item.MarshmallowStickItem;
 import doctor4t.astronomical.common.screen.AstralDisplayScreen;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 
 public class AstronomicalClient implements ClientModInitializer {
-
 	//https://www.youtube.com/watch?v=phWWx4NRhpE
 	@Override
 	public void onInitializeClient(ModContainer mod) {
@@ -58,5 +60,7 @@ public class AstronomicalClient implements ClientModInitializer {
 				}
 			});
 		});
+
+		ModelPredicateProviderRegistry.register(ModItems.MARSHMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 	}
 }

@@ -4,9 +4,17 @@
   "package": "doctor4t.astronomical.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "SpyglassItemMixin"
+    "ItemStackMixin",
+    "LivingEntityMixin",
+    "PlayerEntityMixin",
+    "SpyglassItemMixin",
+    "StatusEffectUtilMixin"
   ],
   "client": [
+    "HeldItemRendererMixin",
+    "InGameHudMixin",
+    "MinecraftClientMixin",
+    "PlayerEntityRendererMixin",
     "AstralDisplayRendererEnforcerMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"

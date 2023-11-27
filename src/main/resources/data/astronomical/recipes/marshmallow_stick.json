@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "X": {
+      "item": "astronomical:marshmallow"
+    }
+  },
+  "pattern": [
+    " X",
+    "# "
+  ],
+  "result": {
+    "item": "astronomical:marshmallow_stick"
+  },
+  "show_notification": true
+}

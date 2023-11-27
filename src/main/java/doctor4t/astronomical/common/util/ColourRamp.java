@@ -3,7 +3,7 @@ package doctor4t.astronomical.common.util;
 import com.sammy.lodestone.systems.rendering.particle.Easing;
 import net.minecraft.util.math.MathHelper;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class ColourRamp {
 	private final Color start, end;

@@ -15,16 +15,18 @@ import doctor4t.astronomical.common.structure.InteractableStar;
 import doctor4t.astronomical.common.structure.Star;
 import doctor4t.astronomical.common.util.ColourRamp;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.function.Function;
 
 public class AstraSkyRenderer {
 	private static final ColourRamp starColour = new ColourRamp(new Color(205, 20, 200), new Color(205, 255, 255), Easing.SINE_IN);

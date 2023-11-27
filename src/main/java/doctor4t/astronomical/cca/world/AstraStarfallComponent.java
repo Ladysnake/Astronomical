@@ -2,9 +2,7 @@ package doctor4t.astronomical.cca.world;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.Starfall;
-import doctor4t.astronomical.common.util.Vec2d;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.Vec3d;

@@ -1,6 +1,6 @@
 package doctor4t.astronomical.common;
 
-import carpet.script.language.Sys;
+import doctor4t.astronomical.common.effects.StargazingStatusEffect;
 import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModEntities;
@@ -8,12 +8,17 @@ import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.init.ModSoundEvents;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import net.minecraft.block.Block;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
@@ -21,7 +26,6 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class Astronomical implements ModInitializer {
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
@@ -41,8 +45,10 @@ public class Astronomical implements ModInitializer {
 	}
 
 	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
+    public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
 
-	@Override
+    @Override
 	public void onInitialize(ModContainer mod) {
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
@@ -81,9 +87,13 @@ public class Astronomical implements ModInitializer {
 				}
 			});
 		});
+		ServerPlayNetworking.registerGlobalReceiver(id("holding"), (server, player, handler, buf, responseSender) -> {
+			var holding = buf.readBoolean();
+			server.execute(() -> player.astronomical$setHoldingAttack(holding));
+		});
 	}
 
-	public static Vec3d rotateViaQuat(Vec3d rot, Quaternion quat) {
+	public static @NotNull Vec3d rotateViaQuat(@NotNull Vec3d rot, @NotNull Quaternion quat) {
 		float x = (float) rot.x;
 		float y = (float) rot.y;
 		float z = (float) rot.z;
@@ -108,12 +118,13 @@ public class Astronomical implements ModInitializer {
 
 		return new Vec3d(vpx, vpy, vpz);
 	}
-	public static Quaternion invert(Quaternion in) {
+
+	public static @NotNull Quaternion invert(@NotNull Quaternion in) {
 		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
 		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
 	}
 
-	public static Identifier id(String path) {
+	public static @NotNull Identifier id(String path) {
 		return new Identifier(MOD_ID, path);
 	}
 

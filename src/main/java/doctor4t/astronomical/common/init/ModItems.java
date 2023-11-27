@@ -2,16 +2,19 @@ package doctor4t.astronomical.common.init;
 
 import com.terraformersmc.modmenu.util.mod.Mod;
 import doctor4t.astronomical.common.Astronomical;
-import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.AstralBundleItem;
+import doctor4t.astronomical.common.item.MarshmallowStickItem;
+import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 import xyz.amymialee.mialeemisc.itemgroup.MialeeItemGroup;
 
 import java.util.LinkedHashMap;
@@ -26,6 +29,9 @@ public interface ModItems {
 	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings()));
 	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings()));
 	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings()));
+
+	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));

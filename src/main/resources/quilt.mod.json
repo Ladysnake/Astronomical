@@ -16,7 +16,8 @@
 		"entrypoints": {
 			"init": "doctor4t.astronomical.common.Astronomical",
 			"client_init": "doctor4t.astronomical.client.AstronomicalClient",
-			"cardinal-components-world": "doctor4t.astronomical.cca.AstraWorldComponentInit"
+			"cardinal-components-entity": "doctor4t.astronomical.cca.AstraCardinalComponents",
+			"cardinal-components-world": "doctor4t.astronomical.cca.AstraCardinalComponents"
 		},
 		"depends": [
 			{
@@ -37,7 +38,12 @@
 	"access_widener": "astronomical.accesswidener",
 	"cardinal-components": [
 		"astronomical:sky",
-		"astronomical:starfall"
-	]
-
+		"astronomical:starfall",
+		"astronomical:holding"
+	],
+	"quilt_loom": {
+		"injected_interfaces": {
+			"net/minecraft/class_1657": ["doctor4t/astronomical/common/util/PlayerAttackHeld"]
+		}
+	}
 }
