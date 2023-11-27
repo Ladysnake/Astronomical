@@ -16,11 +16,10 @@ public class AstralDisplayRendererEnforcerMixin {
 	@Inject(method = "addBlockEntity", at = @At("HEAD"), cancellable = true)
 	private <E extends BlockEntity> void astronomical$forceAstralDisplayRendering(ChunkBuilder.BuiltChunk.RebuildTask.C_iinezlaz c_iinezlaz, @NotNull E blockEntity, @NotNull CallbackInfo ci) {
 		if (blockEntity instanceof AstralDisplayBlockEntity) {
-			BlockEntityRenderer<E> blockEntityRenderer = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
+			var blockEntityRenderer = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
 			if (blockEntityRenderer != null) {
 				c_iinezlaz.field_39079.add(blockEntity);
 			}
-
 			ci.cancel();
 		}
 	}
