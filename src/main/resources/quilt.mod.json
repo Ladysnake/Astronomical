@@ -38,6 +38,7 @@
 	"access_widener": "astronomical.accesswidener",
 	"cardinal-components": [
 		"astronomical:sky",
+		"astronomical:starfall",
 		"astronomical:holding"
 	],
 	"quilt_loom": {

@@ -6,18 +6,18 @@
   "mixins": [
     "ItemStackMixin",
     "LivingEntityMixin",
-    "MinecraftClientMixin",
     "PlayerEntityMixin",
-    "VertexConsumerMixin"
+    "SpyglassItemMixin"
   ],
   "client": [
     "AbstractInventoryScreenMixin",
-    "FrustumMixin",
     "HeldItemRendererMixin",
     "InGameHudMixin",
+    "MinecraftClientMixin",
+    "VertexConsumerMixin",
     "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  }
 }

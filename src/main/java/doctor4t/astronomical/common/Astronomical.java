@@ -14,13 +14,17 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 public class Astronomical implements ModInitializer {
+	public static final Vec3d UP = new Vec3d(0, 1, 0);
 	public static final String MOD_ID = "astronomical";
 
 	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
@@ -70,6 +74,37 @@ public class Astronomical implements ModInitializer {
 			var holding = buf.readBoolean();
 			server.execute(() -> player.astronomical$setHoldingAttack(holding));
 		});
+	}
+
+	public static @NotNull Vec3d rotateViaQuat(@NotNull Vec3d rot, @NotNull Quaternion quat) {
+		float x = (float) rot.x;
+		float y = (float) rot.y;
+		float z = (float) rot.z;
+
+		float ux = quat.getX();
+		float uy = quat.getY();
+		float uz = quat.getZ();
+
+		float scalar = quat.getW();
+
+		float cx = -y*uz+(z*uy);
+		float cy = -z*ux+(x*uz);
+		float cz = -x*uy+(y*ux);
+
+		double s1 = 2.0f * (ux*x + uy*y + uz*z);
+		double s2 = scalar*scalar - (ux*ux + uy*uy + uz*uz);
+		double s3 = 2.0f * scalar;
+
+		double vpx = s1 * ux + s2 * x + s3 * cx;
+		double vpy = s1 * uy + s2 * y + s3 * cy;
+		double vpz = s1 * uz + s2 * z + s3 * cz;
+
+		return new Vec3d(vpx, vpy, vpz);
+	}
+
+	public static @NotNull Quaternion invert(@NotNull Quaternion in) {
+		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
+		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
 	}
 
 	public static @NotNull Identifier id(String path) {
