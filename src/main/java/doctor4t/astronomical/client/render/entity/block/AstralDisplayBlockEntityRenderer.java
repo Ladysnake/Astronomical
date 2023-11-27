@@ -9,6 +9,7 @@ import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -68,54 +69,31 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
 					Vec3d.ofCenter(parentPos),
 					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
-		} else {
-
-			// TEST COSMOS RENDER
-//			matrixStack.push();
-//			matrixStack.translate(.5f, .5f, .5f);
-//			matrixStack.scale(50f, 50f, 50f);
-//			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time * .01f));
-//			this.builder.setColor(new Color(0xFFFFFF))
-//				.setAlpha(1f)
-//				.renderSphere(
-//					vertexConsumerProvider.getBuffer(STARS),
-//					matrixStack,
-//					-1,
-//					50,
-//					50);
-//			matrixStack.scale(1.01f, 1.01f, 1.01f);
-//			this.builder.setColor(new Color(0xFFFFFF))
-//				.setAlpha(1f)
-//				.renderSphere(
-//					vertexConsumerProvider.getBuffer(WHITE),
-//					matrixStack,
-//					-1,
-//					50,
-//					50);
-//			matrixStack.pop();
 		}
 
 		float value = time;
 		float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
 		float selfRotation = -time * (distance / 100f);
-		float speedModifier = 0.0001f * distance;
+		float speedModifier = 0.001f * distance;
 
 		for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
 			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
-			if (!stackToDisplay.isEmpty()) {
+			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
 				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+
+				matrixStack.push();
+
+				matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
+					-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
+					-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
+				matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
+
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+				matrixStack.scale(scale, scale, scale);
 
 				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
 					int color1 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1");
 					int color2 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
-
-					matrixStack.push();
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
-					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-					matrixStack.scale(scale, scale, scale);
 
 					this.builder.setColor(new Color(color1))
 						.setAlpha(1f)
@@ -134,20 +112,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							1,
 							20,
 							20);
-
-					matrixStack.pop();
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
 					int color = Astronomical.getStarColorForTemperature(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("temperature"));
-
-					matrixStack.push();
-
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
-					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
-
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-					matrixStack.scale(scale, scale, scale);
 
 					this.builder.setColor(new Color(color).darker())
 						.setAlpha(1f)
@@ -173,7 +139,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							case 5 -> matrixStack.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(time / speedDiv));
 						}
 						this.builder.setColor(new Color(color))
-							.setAlpha(.2f)
+							.setAlpha(.25f)
 							.renderSphere(
 								RenderHandler.LATE_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
 								matrixStack,
@@ -182,9 +148,28 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 								20);
 						matrixStack.pop();
 					}
+				} else if (stackToDisplay.isOf(ModItems.NANO_COSMOS)) {
 
-					matrixStack.pop();
+					this.builder.setColor(new Color(0xFFFFFF))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(STARS),
+							matrixStack,
+							-1,
+							50,
+							50);
+					matrixStack.scale(1.01f, 1.01f, 1.01f);
+					this.builder.setColor(new Color(0xFFFFFF))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(WHITE),
+							matrixStack,
+							-1,
+							50,
+							50);
 				}
+
+				matrixStack.pop();
 			}
 		}
 	}

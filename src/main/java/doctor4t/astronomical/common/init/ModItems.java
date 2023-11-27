@@ -1,6 +1,7 @@
 package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoGiverItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
@@ -18,9 +19,10 @@ import java.util.Map;
 public interface ModItems {
 	Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
 	MialeeItemGroup ASTRONOMICAL_ITEM_GROUP = MialeeItemGroup.create(Astronomical.id("astronomical"));
+	Item NANO_GIVER = createItem("nano_giver", new NanoGiverItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_GIVER = createItem("nano_giver", new NanoGiverItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
+	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));
