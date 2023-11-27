@@ -1,4 +1,4 @@
-package doctor4t.astronomical.cca.world;
+package doctor4t.astronomical.cca.entity;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import doctor4t.astronomical.cca.AstraCardinalComponents;

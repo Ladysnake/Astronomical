@@ -26,7 +26,7 @@ import java.util.List;
  *
  **/
 public class AstraSkyComponent implements AutoSyncedComponent {
-	private static Identifier def = Astronomical.id("star");
+	private static final Identifier def = Astronomical.id("star");
 	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
 	private final RandomGenerator random;
 	private final World obj;

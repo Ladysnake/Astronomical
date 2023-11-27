@@ -21,8 +21,7 @@ public class MinecraftClientMixin {
 	@Shadow @Final public GameOptions options;
 	@Shadow @Nullable public ClientPlayerEntity player;
 
-	@Unique
-	private boolean astronomical$holding = false;
+	@Unique private boolean astronomical$holding = false;
 
 	@WrapOperation(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;handleBlockBreaking(Z)V"))
 	private void astronomical$holding(MinecraftClient instance, boolean bl, Operation<Void> original) {

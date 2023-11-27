@@ -23,30 +23,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
-	@Shadow
-	@Nullable
-	private ClientWorld world;
-
-	@Shadow
-	@Final
-	private MinecraftClient client;
-
-	@Shadow
-	@Nullable
-	private VertexBuffer lightSkyBuffer;
-
-	@Shadow
-	@Nullable
-	private VertexBuffer darkSkyBuffer;
-
-	@Shadow
-	@Nullable
-	private VertexBuffer starsBuffer;
-
-
-	@Shadow
-	@Final
-	private BufferBuilderStorage bufferBuilders;
+	@Shadow @Nullable private ClientWorld world;
+	@Shadow @Final private MinecraftClient client;
+	@Shadow @Nullable private VertexBuffer lightSkyBuffer;
+	@Shadow @Nullable private VertexBuffer darkSkyBuffer;
+	@Shadow @Nullable private VertexBuffer starsBuffer;
+	@Shadow @Final private BufferBuilderStorage bufferBuilders;
 
 	@Inject(at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", shift = At.Shift.AFTER), method = "renderSky", cancellable = true)
 	private void astra$renderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera preStep, boolean bl, Runnable runnable, CallbackInfo ci) {
