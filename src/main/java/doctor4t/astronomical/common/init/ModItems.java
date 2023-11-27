@@ -2,7 +2,7 @@ package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.item.NanoCosmosItem;
-import doctor4t.astronomical.common.item.NanoGiverItem;
+import doctor4t.astronomical.common.item.AstralBundleItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
 import net.minecraft.item.Item;
@@ -19,10 +19,12 @@ import java.util.Map;
 public interface ModItems {
 	Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
 	MialeeItemGroup ASTRONOMICAL_ITEM_GROUP = MialeeItemGroup.create(Astronomical.id("astronomical"));
-	Item NANO_GIVER = createItem("nano_giver", new NanoGiverItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
+	Item ASTRAL_BUNDLE_PLANET = createItem("astral_bundle_planet", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.PLANET));
+	Item ASTRAL_BUNDLE_STAR = createItem("astral_bundle_star", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.STAR));
+	Item ASTRAL_BUNDLE_COSMOS = createItem("astral_bundle_cosmos", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.COSMOS));
+	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings()));
+	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings()));
+	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings()));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));
@@ -43,6 +45,6 @@ public interface ModItems {
 				itemStacks.add(item.getDefaultStack());
 			}
 		});
-		ASTRONOMICAL_ITEM_GROUP.setIcon(Items.NETHER_STAR.asItem().getDefaultStack());
+		ASTRONOMICAL_ITEM_GROUP.setIcon(ASTRAL_BUNDLE_PLANET.asItem().getDefaultStack());
 	}
 }
