@@ -11,6 +11,7 @@
     "VertexConsumerMixin"
   ],
   "client": [
+    "AbstractInventoryScreenMixin",
     "FrustumMixin",
     "HeldItemRendererMixin",
     "InGameHudMixin",

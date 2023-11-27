@@ -71,7 +71,7 @@ public class MarshmallowStickItem extends Item {
 		}
 		if (state == CookState.BURNT) {
 			user.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 4 * 20, 0, true, false, true));
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4 * 20, 0, true, false, true));
+			user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 2 * 20, 0, true, false, true));
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		} else {
 			if (state.givesEffect) {
