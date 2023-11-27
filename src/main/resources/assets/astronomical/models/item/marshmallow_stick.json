@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "minecraft:item/wooden_shovel"
+    "layer0": "astronomical:item/marshmallow_stick"
   },
   "overrides": [
     {

@@ -19,7 +19,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
 	@Shadow private int scaledWidth;
 	@Shadow private int scaledHeight;
 
-	@Inject(method = "renderCrosshair", at = @At("TAIL"))
+	@Inject(method = "renderCrosshair", at = @At("HEAD"))
 	private void astronomical$renderCrosshair(MatrixStack matrices, CallbackInfo ci) {
 		var gameOptions = this.client.options;
 		if (!gameOptions.getPerspective().isFirstPerson() || this.client.interactionManager == null || this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
@@ -29,11 +29,18 @@ public abstract class InGameHudMixin extends DrawableHelper {
 		if (player == null || !(player.getMainHandStack().getItem() instanceof MarshmallowStickItem)) {
 			return;
 		}
-
 		if (player.astronomical$isHoldingAttack()) {
-			var j = this.scaledHeight / 2 - 7 + 16;
-			var k = this.scaledWidth / 2 - 8;
-			this.drawTexture(matrices, k, j + 20, 36, 94, 16, 4);
+			var width = MarshmallowStickItem.CookState.values()[MarshmallowStickItem.CookState.values().length - 1].cookTime / 10 + 6;
+			var x = this.scaledWidth / 2 - width / 2;
+			var y = this.scaledHeight / 2 + 9;
+			this.fillGradient(matrices, x - 2, y, x + width, y + 6, 0xFF000000, 0xFF000000);
+			for (var i = MarshmallowStickItem.CookState.values().length - 1; i >= 0; i--) {
+				var state = MarshmallowStickItem.CookState.values()[i];
+				var stateWidth = state == MarshmallowStickItem.CookState.BURNT ? state.cookTime / 10 + 6 : state.next().cookTime / 10;
+				this.fillGradient(matrices, x, y, x + stateWidth, y + 4, state.color, state.color);
+			}
+			var progress = player.getMainHandStack().getOrCreateNbt().getInt("RoastTicks") / 10;
+			this.fillGradient(matrices, x, y + 2, x + progress, y + 4, 0x99000000, 0x99000000);
 		}
 	}
 }

@@ -26,7 +26,6 @@ import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.awt.Color;
-import java.util.function.Function;
 
 public class AstraSkyRenderer {
 	private static final ColourRamp starColour = new ColourRamp(new Color(205, 20, 200), new Color(205, 255, 255), Easing.SINE_IN);

@@ -1,7 +1,6 @@
 package doctor4t.astronomical.common.structure;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public interface CelestialObject {

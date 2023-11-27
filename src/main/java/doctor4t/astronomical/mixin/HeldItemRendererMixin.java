@@ -40,7 +40,12 @@ public abstract class HeldItemRendererMixin {
 		var marsh = item.getItem() instanceof MarshmallowStickItem;
 		var holding = player.astronomical$isHoldingAttack();
 		var both = marsh && holding;
+		if (both) {
+			matrices.push();
+			matrices.scale(-1.0f, 1.0f, 1.0f);
+		}
 		original.call(instance, player, tickDelta, pitch, hand, both ? this.astronomical$swingRoasting(tickDelta) : swingProgress, item, marsh ? holding ? this.astronomical$equipRoasting(tickDelta) : 0.0f : equipProgress, matrices, vertexConsumers, light);
+		if (both) matrices.pop();
 	}
 
 	@Unique

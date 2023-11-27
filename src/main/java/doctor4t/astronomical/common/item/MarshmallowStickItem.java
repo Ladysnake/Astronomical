@@ -2,7 +2,7 @@ package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModItems;
-import doctor4t.astronomical.mixin.ItemStackMixin;
+import doctor4t.astronomical.common.util.BlockCastFinder;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -25,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
+import xyz.amymialee.mialeemisc.util.MialeeText;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,11 +39,20 @@ public class MarshmallowStickItem extends Item {
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 		if (entity instanceof PlayerEntity player) {
 			if (selected && player.astronomical$isHoldingAttack()) {
-				
-
-
-				var nbt = stack.getOrCreateNbt();
-				nbt.putInt("RoastTicks", nbt.getInt("RoastTicks") + 1);
+				var blocks = BlockCastFinder.castRayForGridPoints(player.getPos(), player.getRotationVector(), 2, 6);
+				var heated = false;
+				for (var block : blocks) {
+					var state = world.getBlockState(block);
+					if (state.isIn(Astronomical.HEAT_SOURCES)) {
+						heated = true;
+						break;
+					}
+				}
+				if (heated) {
+					var nbt = stack.getOrCreateNbt();
+					var ticks = nbt.getInt("RoastTicks");
+					if (ticks < CookState.BURNT.cookTime + 3 * 20) nbt.putInt("RoastTicks", ticks + 1);
+				}
 			}
 		}
 	}
@@ -59,8 +70,8 @@ public class MarshmallowStickItem extends Item {
 			Criteria.CONSUME_ITEM.trigger(player, stack);
 		}
 		if (state == CookState.BURNT) {
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 8, 0, true, false, true));
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 0, true, false, true));
+			user.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 4 * 20, 0, true, false, true));
+			user.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4 * 20, 0, true, false, true));
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		} else {
 			if (state.givesEffect) {
@@ -98,6 +109,21 @@ public class MarshmallowStickItem extends Item {
 	}
 
 	@Override
+	public String getTranslationKey(ItemStack stack) {
+		return super.getTranslationKey(stack) + "." + CookState.getCookState(stack).name().toLowerCase();
+	}
+
+	@Override
+	public Text getName() {
+		return super.getName();
+	}
+
+	@Override
+	public Text getName(ItemStack stack) {
+		return MialeeText.withColor(super.getName(stack), CookState.getCookState(stack).color);
+	}
+
+	@Override
 	public UseAction getUseAction(ItemStack stack) {
 		return UseAction.EAT;
 	}
@@ -108,20 +134,22 @@ public class MarshmallowStickItem extends Item {
 	}
 
 	public enum CookState {
-		RAW(0, -1),
-		SLIGHTLY_COOKED(2 * 20, 0),
-		COOKED(10 * 20, 1),
-		PERFECT(16 * 20, 2),
-		BURNT(17 * 20, -1);
+		RAW(0, -1, 0xFF2EFF27),
+		SLIGHTLY_COOKED(2 * 20, 0, 0xFFFBFF2D),
+		COOKED(10 * 20, 1, 0xFFFAB127),
+		PERFECT(16 * 20, 2, 0xFFF92922),
+		BURNT(17 * 20, -1, 0xFF5B8FE2);
 
 		public final int cookTime;
 		public final boolean givesEffect;
 		public final int effectAmplifier;
+		public final int color;
 
-		CookState(int cookTime, int effectAmplifier) {
+		CookState(int cookTime, int effectAmplifier, int color) {
 			this.cookTime = cookTime;
 			this.givesEffect = effectAmplifier >= 0;
 			this.effectAmplifier = effectAmplifier;
+			this.color = color;
 		}
 
 		public static CookState getCookState(@NotNull ItemStack stack) {
@@ -140,6 +168,24 @@ public class MarshmallowStickItem extends Item {
 			} else {
 				return BURNT;
 			}
+		}
+
+		public CookState previous() {
+			return switch (this) {
+				case RAW, SLIGHTLY_COOKED -> RAW;
+				case COOKED -> SLIGHTLY_COOKED;
+				case PERFECT -> COOKED;
+				case BURNT -> PERFECT;
+			};
+		}
+
+		public CookState next() {
+			return switch (this) {
+				case RAW -> SLIGHTLY_COOKED;
+				case SLIGHTLY_COOKED -> COOKED;
+				case COOKED -> PERFECT;
+				case PERFECT, BURNT -> BURNT;
+            };
 		}
 	}
 }

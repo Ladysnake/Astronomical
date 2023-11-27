@@ -2,7 +2,6 @@ package doctor4t.astronomical.common.structure;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.util.Vec2d;
-import net.minecraft.client.util.math.Vector2f;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;

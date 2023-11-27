@@ -1,7 +1,6 @@
 package doctor4t.astronomical.cca.world;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.Starfall;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
