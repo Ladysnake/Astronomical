@@ -6,12 +6,11 @@
       "item": "minecraft:stick"
     },
     {
-      "item": "minecraft:marshmallow"
+      "item": "astronomical:marshmallow"
     }
   ],
   "result": {
-    "count": 4,
-    "item": "astronomical:marshmallow"
+    "item": "astronomical:marshmallow_stick"
   },
   "show_notification": true
 }
