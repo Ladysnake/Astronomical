@@ -15,7 +15,7 @@
     "InGameHudMixin",
     "MinecraftClientMixin",
     "PlayerEntityRendererMixin",
-    "RebuildTaskMixin",
+    "AstralDisplayRendererEnforcerMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
   ],

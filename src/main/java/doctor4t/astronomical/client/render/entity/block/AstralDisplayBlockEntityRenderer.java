@@ -9,6 +9,7 @@ import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -68,28 +69,31 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
 					Vec3d.ofCenter(parentPos),
 					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
-
 		}
 
-			// render test orbiting planet
-			for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
-				ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
+		float value = time;
+		float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
+		float selfRotation = -time * (distance / 100f);
+		float speedModifier = 0.001f * distance;
+
+		for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
+			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
+			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
+				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+
+				matrixStack.push();
+
+				matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
+					-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
+					-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
+				matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
+
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+				matrixStack.scale(scale, scale, scale);
+
 				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
 					int color1 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1");
 					int color2 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
-					float value = time;
-					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-					float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
-					float selfRotation = -time * (distance / 10f);
-					float speedModifier = 0.001f * distance;
-
-					matrixStack.push();
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
-					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-					matrixStack.scale(scale, scale, scale);
 
 					this.builder.setColor(new Color(color1))
 						.setAlpha(1f)
@@ -108,31 +112,10 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							1,
 							20,
 							20);
-
-					matrixStack.pop();
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
-					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
-					float value = time;
-					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-					float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
-					float selfRotation = -time * (distance / 10f);
-					float speedModifier = 0.001f * distance;
+					int color = Astronomical.getStarColorForTemperature(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("temperature"));
 
-					matrixStack.push();
-
-					matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
-						-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
-						-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
-					matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
-
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-					matrixStack.scale(scale, scale, scale);
-
-					double x2 = parentPos.getX() +.5 + Math.sin(value * speedModifier) * distance;
-					double y2 = parentPos.getY() + .5;
-					double z2 = parentPos.getZ() + .5 + Math.cos(value * speedModifier) * distance;
-
-					this.builder.setColor(new Color(color))
+					this.builder.setColor(new Color(color).darker())
 						.setAlpha(1f)
 						.renderSphere(
 							vertexConsumerProvider.getBuffer(WHITE),
@@ -141,70 +124,55 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							20,
 							20);
 
-					for (int layer = 0; layer <5; layer++) {
+					for (int layer = 1; layer < 6; layer++) {
+						float speedDiv = 5f;
+						float scaleDiv = 50f;
+
 						matrixStack.push();
-						matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time / (1000f * i)));
+						matrixStack.scale(1f + layer / scaleDiv, 1f + layer / scaleDiv, 1f + layer / scaleDiv);
+						switch (layer % 6) {
+							case 0 -> matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(time / speedDiv));
+							case 1 -> matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time / speedDiv));
+							case 2 -> matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(time / speedDiv));
+							case 3 -> matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(time / speedDiv));
+							case 4 -> matrixStack.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(time / speedDiv));
+							case 5 -> matrixStack.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(time / speedDiv));
+						}
 						this.builder.setColor(new Color(color))
-							.setAlpha(0.2f)
+							.setAlpha(.25f)
 							.renderSphere(
-								vertexConsumerProvider.getBuffer(PLANET_1_ADDITIVE),
+								RenderHandler.LATE_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
 								matrixStack,
 								1,
 								20,
 								20);
 						matrixStack.pop();
 					}
+				} else if (stackToDisplay.isOf(ModItems.NANO_COSMOS)) {
 
-					for (int layer = 1; layer < 10; layer++) {
-						matrixStack.scale(1.02f,1.02f,1.02f);
-						this.builder.setColor(new Color(color))
-							.setAlpha(.11f)
-							.renderSphere(
-								RenderHandler.LATE_DELAYED_RENDER.getBuffer(WHITE_ADDITIVE),
-								matrixStack,
-								1,
-								20,
-								20);
-					}
-
-//					ParticleBuilders.create(LodestoneParticles.WISP_PARTICLE)
-//						.setScale(scale * (1.1f + random.nextFloat()/10f))
-//						.setAlpha(1f)
-//						.setSpin((float) random.nextGaussian() / 100f)
-//						.enableNoClip()
-//						.setLifetime(1)
-//						.setColor(new Color(color),new Color(color))
-//						.spawn(astralDisplayBlockEntity.getWorld(), x2, y2, z2);
-
-					matrixStack.pop();
+					this.builder.setColor(new Color(0xFFFFFF))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(STARS),
+							matrixStack,
+							-1,
+							50,
+							50);
+					matrixStack.scale(1.01f, 1.01f, 1.01f);
+					this.builder.setColor(new Color(0xFFFFFF))
+						.setAlpha(1f)
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(WHITE),
+							matrixStack,
+							-1,
+							50,
+							50);
 				}
+
+				matrixStack.pop();
 			}
 		}
-
-//		// TEST STARFIELD RENDER
-//			matrixStack.push();
-//			matrixStack.translate(.5f, .5f, .5f);
-//			matrixStack.scale(20f, 20f, 20f);
-//			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time * .1f));
-//            this.builder.setColor(new Color(0xFFFFFF))
-//				.setAlpha(1f)
-//				.renderSphere(
-//					vertexConsumerProvider.getBuffer(STARS),
-//					matrixStack,
-//					-1,
-//					50,
-//					50);
-//
-//			matrixStack.scale(1.01f, 1.01f, 1.01f);
-//            this.builder.setColor(new Color(0xFFFFFF))
-//				.setAlpha(1f)
-//				.renderSphere(
-//					vertexConsumerProvider.getBuffer(WHITE),
-//					matrixStack,
-//					-1,
-//					50,
-//					50);
-//			matrixStack.pop();
+	}
 
 	@Override
 	public int getRenderDistance() {

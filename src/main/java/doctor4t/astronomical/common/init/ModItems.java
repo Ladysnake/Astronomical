@@ -1,8 +1,9 @@
 package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.item.AstralBundleItem;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
-import doctor4t.astronomical.common.item.NanoGiverItem;
+import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoStarItem;
 import net.minecraft.item.FoodComponent;
@@ -21,9 +22,12 @@ import java.util.Map;
 public interface ModItems {
 	Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
 	MialeeItemGroup ASTRONOMICAL_ITEM_GROUP = MialeeItemGroup.create(Astronomical.id("astronomical"));
-	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
-	Item NANO_GIVER = createItem("nano_giver", new NanoGiverItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
+	Item ASTRAL_BUNDLE_PLANET = createItem("astral_bundle_planet", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.PLANET));
+	Item ASTRAL_BUNDLE_STAR = createItem("astral_bundle_star", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.STAR));
+	Item ASTRAL_BUNDLE_COSMOS = createItem("astral_bundle_cosmos", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.COSMOS));
+	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings()));
+	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings()));
+	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings()));
 
 	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
 	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
@@ -55,6 +59,6 @@ public interface ModItems {
 				itemStacks.add(item.getDefaultStack());
 			}
 		});
-		ASTRONOMICAL_ITEM_GROUP.setIcon(Items.NETHER_STAR.asItem().getDefaultStack());
+		ASTRONOMICAL_ITEM_GROUP.setIcon(ASTRAL_BUNDLE_PLANET.asItem().getDefaultStack());
 	}
 }
