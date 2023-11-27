@@ -132,7 +132,7 @@ public class MarshmallowStickItem extends Item {
 		RAW(0, -1, 0xFF2EFF27),
 		SLIGHTLY_COOKED(2 * 20, 0, 0xFFFBFF2D),
 		COOKED(10 * 20, 1, 0xFFFAB127),
-		PERFECT(16 * 20, 2, 0xFFF92922),
+		PERFECT(16 * 20 + 10, 2, 0xFFF92922),
 		BURNT(17 * 20, -1, 0xFF5B8FE2);
 
 		public final int cookTime;
