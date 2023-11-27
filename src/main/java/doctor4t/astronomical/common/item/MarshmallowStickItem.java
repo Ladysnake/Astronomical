@@ -114,11 +114,6 @@ public class MarshmallowStickItem extends Item {
 	}
 
 	@Override
-	public Text getName() {
-		return super.getName();
-	}
-
-	@Override
 	public Text getName(ItemStack stack) {
 		return MialeeText.withColor(super.getName(stack), CookState.getCookState(stack).color);
 	}
