@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class NanoPlanetItem extends Item {
+public class NanoPlanetItem extends NanoAstralObjectItem {
 	public NanoPlanetItem(Settings settings) {
 		super(settings);
 	}

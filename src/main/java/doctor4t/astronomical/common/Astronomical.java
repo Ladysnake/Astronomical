@@ -1,5 +1,6 @@
 package doctor4t.astronomical.common;
 
+import carpet.script.language.Sys;
 import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModEntities;
@@ -11,14 +12,33 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.util.registry.Registry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
 public class Astronomical implements ModInitializer {
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
 	public static final String MOD_ID = "astronomical";
+	private static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();
+	static {
+		STAR_TEMPERATURE_COLORS.put(10000, 0x1F8CFF);
+		STAR_TEMPERATURE_COLORS.put(9000, 0x65B5FF);
+		STAR_TEMPERATURE_COLORS.put(8000, 0xA6C2FF);
+		STAR_TEMPERATURE_COLORS.put(7000, 0xE2E2FF);
+		STAR_TEMPERATURE_COLORS.put(6000, 0xFFE0CC);
+		STAR_TEMPERATURE_COLORS.put(5000, 0xFFDB87);
+		STAR_TEMPERATURE_COLORS.put(4000, 0xFFD82C);
+		STAR_TEMPERATURE_COLORS.put(3000, 0xFFB900);
+		STAR_TEMPERATURE_COLORS.put(2000, 0xFF7800);
+		STAR_TEMPERATURE_COLORS.put(1000, 0xFF0000);
+	}
 
 	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 
@@ -95,5 +115,17 @@ public class Astronomical implements ModInitializer {
 
 	public static Identifier id(String path) {
 		return new Identifier(MOD_ID, path);
+	}
+
+	public static int getStarColorForTemperature(int temperature) {
+		if (STAR_TEMPERATURE_COLORS.containsKey(temperature)) {
+			return STAR_TEMPERATURE_COLORS.get(temperature);
+		}
+		return 0;
+	}
+
+	public static int getRandomStarTemperature(RandomGenerator randomGenerator) {
+		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.keySet());
+		return temperatures.get(randomGenerator.nextInt(temperatures.size()));
 	}
 }

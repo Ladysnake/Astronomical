@@ -70,29 +70,29 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
 		} else {
 
-			// TEST STARFIELD RENDER
-			matrixStack.push();
-			matrixStack.translate(.5f, .5f, .5f);
-			matrixStack.scale(50f, 50f, 50f);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time * .01f));
-			this.builder.setColor(new Color(0xFFFFFF))
-				.setAlpha(1f)
-				.renderSphere(
-					vertexConsumerProvider.getBuffer(STARS),
-					matrixStack,
-					-1,
-					50,
-					50);
-			matrixStack.scale(1.01f, 1.01f, 1.01f);
-			this.builder.setColor(new Color(0xFFFFFF))
-				.setAlpha(1f)
-				.renderSphere(
-					vertexConsumerProvider.getBuffer(WHITE),
-					matrixStack,
-					-1,
-					50,
-					50);
-			matrixStack.pop();
+			// TEST COSMOS RENDER
+//			matrixStack.push();
+//			matrixStack.translate(.5f, .5f, .5f);
+//			matrixStack.scale(50f, 50f, 50f);
+//			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time * .01f));
+//			this.builder.setColor(new Color(0xFFFFFF))
+//				.setAlpha(1f)
+//				.renderSphere(
+//					vertexConsumerProvider.getBuffer(STARS),
+//					matrixStack,
+//					-1,
+//					50,
+//					50);
+//			matrixStack.scale(1.01f, 1.01f, 1.01f);
+//			this.builder.setColor(new Color(0xFFFFFF))
+//				.setAlpha(1f)
+//				.renderSphere(
+//					vertexConsumerProvider.getBuffer(WHITE),
+//					matrixStack,
+//					-1,
+//					50,
+//					50);
+//			matrixStack.pop();
 		}
 
 		float value = time;
@@ -137,7 +137,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 					matrixStack.pop();
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
-					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
+					int color = Astronomical.getStarColorForTemperature(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("temperature"));
 
 					matrixStack.push();
 
@@ -149,7 +149,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 					matrixStack.scale(scale, scale, scale);
 
-					this.builder.setColor(new Color(color))
+					this.builder.setColor(new Color(color).darker())
 						.setAlpha(1f)
 						.renderSphere(
 							vertexConsumerProvider.getBuffer(WHITE),
@@ -173,9 +173,9 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							case 5 -> matrixStack.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(time / speedDiv));
 						}
 						this.builder.setColor(new Color(color))
-							.setAlpha(.5f)
+							.setAlpha(.2f)
 							.renderSphere(
-								RenderHandler.EARLY_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
+								RenderHandler.LATE_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
 								matrixStack,
 								1,
 								20,

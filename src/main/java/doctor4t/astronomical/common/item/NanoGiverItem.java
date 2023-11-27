@@ -26,7 +26,9 @@ public class NanoGiverItem extends Item {
 			retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(10));
 		} else {
 			retItemStack = new ItemStack(ModItems.NANO_STAR);
-			retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", new Color(user.getRandom().nextFloat(), user.getRandom().nextFloat(), user.getRandom().nextFloat()).getRGB());
+			int temp = Astronomical.getRandomStarTemperature(user.getRandom());
+			System.out.println(temp);
+			retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("temperature", temp);
 			retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(10));
 		}
 		user.giveItemStack(retItemStack);
