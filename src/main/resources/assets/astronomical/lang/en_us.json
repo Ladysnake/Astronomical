@@ -1,5 +1,11 @@
 {
   "itemGroup.astronomical.astronomical": "Astronomical",
+  "item.astronomical.nano_planet": "Nano-Planet",
+  "item.astronomical.nano_star": "Nano-Star",
+  "item.astronomical.nano_cosmos": "Nano-Cosmos",
+  "item.astronomical.astral_bundle_planet": "Nano-Planet Bundle",
+  "item.astronomical.astral_bundle_star": "Nano-Star Bundle",
+  "item.astronomical.astral_bundle_cosmos": "Nano-Cosmos Bundle",
   "item.astronomical.marshmallow": "Marshmallow",
   "item.astronomical.marshmallow_stick": "Marshmallow on a Stick",
   "item.astronomical.marshmallow_stick.raw": "Marshmallow on a Stick",
@@ -7,6 +13,7 @@
   "item.astronomical.marshmallow_stick.cooked": "Roasted Marshmallow",
   "item.astronomical.marshmallow_stick.perfect": "Perfectly Roasted Marshmallow",
   "item.astronomical.marshmallow_stick.burnt": "Burnt Marshmallow",
+  "block.astronomical.astral_display": "Astral Display",
   "effect.astronomical.stargazing": "Stargazing",
   "effect.astronomical.stargazing.time": "Until Sunrise"
 }

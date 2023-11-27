@@ -58,12 +58,15 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 			heavenlySpheres.add(star);
 		});
 		if(heavenlySpheres.isEmpty()) {
-			for (int i = 0; i < 2000; i++) {
-				this.heavenlySpheres.add(new Star(this.generateDirectionalVector(), 0.7f + 0.5f * this.random.nextFloat(), this.random.nextFloat()));
-			}
-			for (int i = 0; i < 10; i++) {
-				this.heavenlySpheres.add(new InteractableStar(this.generateDirectionalVector(), 2f + 0.6f * this.random.nextFloat(), 0.9f + 0.1f * this.random.nextFloat()));
-			}
+//			for (int i = 0; i < 2000; i++) {
+//				this.heavenlySpheres.add(new Star(this.generateDirectionalVector(), 0.7f + 0.5f * this.random.nextFloat(), this.random.nextFloat()));
+//			}
+			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 0, 0), 3f, 1));
+			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 0, 1).normalize(), 3f, 1));
+			this.heavenlySpheres.add(new InteractableStar(new Vec3d(0, 1, 1).normalize(), 3f, 1));
+			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 1, 0).normalize(), 3f, 1));
+			this.heavenlySpheres.add(new InteractableStar(new Vec3d(0, 0, 1), 3f, 1));
+
 		}
 		if(obj != null && obj.isClient())
 			RenderSystem.recordRenderCall(AstraSkyRenderer::redrawStars);

@@ -4,6 +4,7 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.util.Vec2d;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class Star implements CelestialObject {
@@ -48,7 +49,7 @@ public class Star implements CelestialObject {
 	public void readNbt(NbtCompound nbt) {
 		size = nbt.getFloat("s");
 		heat = nbt.getFloat("h");
-		this.directionalVector = decompressDirectionalVector(nbt.getDouble("p"), nbt.getDouble("y"));
+		this.directionalVector = new Vec3d(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
 	}
 
 
@@ -56,9 +57,9 @@ public class Star implements CelestialObject {
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putFloat("s", size);
 		nbt.putFloat("h", heat);
-		Vec2d d = compressDirectionalVector();
-		nbt.putDouble("p", d.x());
-		nbt.putDouble("y", d.y());
+		nbt.putDouble("x", directionalVector.x);
+		nbt.putDouble("y", directionalVector.y);
+		nbt.putDouble("z", directionalVector.z);
 	}
 
 	private Vec2d compressDirectionalVector() {

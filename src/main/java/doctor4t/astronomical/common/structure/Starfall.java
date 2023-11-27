@@ -12,7 +12,7 @@ public class Starfall {
 	public int progress = 0;
 
 	public Starfall(NbtCompound n) {
-		this.startDirection = Star.decompressDirectionalVector(n.getDouble("pitch"), n.getDouble("yaw"));
+		this.startDirection = new Vec3d(n.getDouble("x"), n.getDouble("y"), n.getDouble("z"));
 		this.endPos = new Vec3d(n.getDouble("tgtX"), n.getDouble("tgtY"), n.getDouble("tgtZ"));
 		this.progress = n.getInt("prog");
 	}
@@ -25,9 +25,9 @@ public class Starfall {
 		nbt.putDouble("tgtX", endPos.x);
 		nbt.putDouble("tgtY", endPos.y);
 		nbt.putDouble("tgtZ", endPos.z);
-		Vec2d rot = compressDirectionalVector(startDirection);
-		nbt.putDouble("pitch", rot.x());
-		nbt.putDouble("yaw", rot.y());
+		nbt.putDouble("x", startDirection.x);
+		nbt.putDouble("y", startDirection.y);
+		nbt.putDouble("z", startDirection.z);
 	}
 
 
@@ -38,7 +38,7 @@ public class Starfall {
 
 	public void tick(World w) {
 		progress++;
-		if(progress >= 400) {
+		if(progress >= 10) {
 			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, w);
 			l.setPosition(endPos);
 			l.setCosmetic(true);
