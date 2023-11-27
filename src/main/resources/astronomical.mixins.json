@@ -7,13 +7,14 @@
     "ItemStackMixin",
     "LivingEntityMixin",
     "PlayerEntityMixin",
-    "SpyglassItemMixin"
+    "SpyglassItemMixin",
+    "StatusEffectUtilMixin"
   ],
   "client": [
-    "AbstractInventoryScreenMixin",
     "HeldItemRendererMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
+    "RebuildTaskMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
   ],

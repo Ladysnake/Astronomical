@@ -14,3 +14,5 @@ accessible field net/minecraft/util/math/Matrix4f a20 F
 accessible field net/minecraft/util/math/Matrix4f a21 F
 accessible field net/minecraft/util/math/Matrix4f a22 F
 accessible field net/minecraft/util/math/Matrix4f a23 F
+accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask
+accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask$C_iinezlaz
