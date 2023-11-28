@@ -65,7 +65,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 		// if connected child, render object orbiting around parent
 		if (astralDisplayBlockEntity.getParentPos() != null
 			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
-			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
+			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity) {
 
 			parentPos = Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos());
 			orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);

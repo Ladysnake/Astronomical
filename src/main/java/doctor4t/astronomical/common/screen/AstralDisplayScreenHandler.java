@@ -27,15 +27,15 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 			this.entity = blockEntity;
 		}
 		for (var i = 0; i < 5; i++) {
-			this.addSlot(new Slot(inventory, i, 44 + i * 18, 17));
+			this.addSlot(new Slot(inventory, i, 44 + i * 18, 8));
 		}
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 93 + i * 18));
 			}
 		}
 		for (var i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 151));
 		}
 	}
 
