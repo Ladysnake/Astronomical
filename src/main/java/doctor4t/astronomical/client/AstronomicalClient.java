@@ -16,12 +16,18 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 
+import java.util.HashMap;
+
 public class AstronomicalClient implements ClientModInitializer {
 	//https://www.youtube.com/watch?v=phWWx4NRhpE
+	public static final HashMap<BlockPos, Vec3d> ORBITING_POSITIONS = new HashMap<>();
+
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		// init model layers

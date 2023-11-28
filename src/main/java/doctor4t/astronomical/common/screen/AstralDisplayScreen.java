@@ -19,7 +19,8 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.util.function.Consumer;
 
 public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandler> {
-	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astraldisplay.png");
+	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astral_display.png");
+	public static final Identifier ASTRAL_WIDGETS_TEXTURE = new Identifier("textures/gui/astral_widgets.png");
 	private static final Text YLEVEL_TEXT = Text.translatable("screen.astronomical.astraldisplay.ylevel");
 	private static final Text ROTSPEED_TEXT = Text.translatable("screen.astronomical.astraldisplay.rotspeed");
 	private static final Text SPIN_TEXT = Text.translatable("screen.astronomical.astraldisplay.spin");
@@ -35,9 +36,10 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	protected void init() {
 		super.init();
 		this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
+		this.titleY -= 9;
 		this.backgroundWidth = 176;
-		this.backgroundHeight = 166;
-		this.playerInventoryTitleY = this.backgroundHeight - 94;
+		this.backgroundHeight = 184;
+		this.playerInventoryTitleY = this.backgroundHeight - 102;
 		if (!(this.handler.entity() instanceof AstralDisplayBlockEntity)) {
 			return;
 		}
@@ -47,16 +49,12 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	public void addSliders() {
 		if (this.handler.entity() == null) return;
 		if (this.yLevelSlider == null) {
-			this.yLevelSlider = new AstralSlider(this, this.x + 10, this.y + 47, 46, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider("y_level", d));
+			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider("y_level", d));
 			this.addDrawableChild(this.yLevelSlider);
 		}
 		if (this.rotSpeedSlider == null) {
-			this.rotSpeedSlider = new AstralSlider(this, this.x + 65, this.y + 47, 46, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider("rot_speed", d));
+			this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider("rot_speed", d));
 			this.addDrawableChild(this.rotSpeedSlider);
-		}
-		if (this.spinSlider == null) {
-			this.spinSlider = new AstralSlider(this, this.x + 120, this.y + 47, 46, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider("spin", d));
-			this.addDrawableChild(this.spinSlider);
 		}
 	}
 
@@ -73,9 +71,9 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		var x = (this.width - this.backgroundWidth) / 2;
 		var y = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.textRenderer.draw(matrices, YLEVEL_TEXT, x + 10 + 26 - this.textRenderer.getWidth(YLEVEL_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
-		this.textRenderer.draw(matrices, ROTSPEED_TEXT, x + 65 + 26 - this.textRenderer.getWidth(ROTSPEED_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
-		this.textRenderer.draw(matrices, SPIN_TEXT, x + 120 + 26 - this.textRenderer.getWidth(SPIN_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+//		this.textRenderer.draw(matrices, YLEVEL_TEXT, x + 10 + 26 - this.textRenderer.getWidth(YLEVEL_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+//		this.textRenderer.draw(matrices, ROTSPEED_TEXT, x + 65 + 26 - this.textRenderer.getWidth(ROTSPEED_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
+//		this.textRenderer.draw(matrices, SPIN_TEXT, x + 120 + 26 - this.textRenderer.getWidth(SPIN_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
@@ -113,6 +111,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 		@Override
 		public boolean mouseReleased(double mouseX, double mouseY, int button) {
+			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 			return super.mouseReleased(mouseX, mouseY, button);
 		}
 
@@ -120,7 +119,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			var minecraftClient = MinecraftClient.getInstance();
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 			var i = this.getYImage(this.isHoveredOrFocused());
 			RenderSystem.enableBlend();

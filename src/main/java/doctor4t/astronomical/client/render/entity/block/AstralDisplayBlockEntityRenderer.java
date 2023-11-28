@@ -3,9 +3,9 @@ package doctor4t.astronomical.client.render.entity.block;
 import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
-import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
@@ -19,22 +19,21 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.random.RandomGenerator;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity> implements BlockEntityRenderer<T> {
 	public static final RenderLayer ASTRAL_DISPLAY_LINK = LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(new Identifier(Astronomical.MOD_ID, "textures/vfx/astral_display_link.png"));
-	public static final RenderLayer WHITE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"));
-	public static final RenderLayer WHITE_ADDITIVE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/white.png"));
-	public static final RenderLayer PLANET_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/planet_1.png"));
-	public static final RenderLayer PLANET_1_ADDITIVE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/planet_1.png"));
-	public static final RenderLayer STARS = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/skybox/stars.png"));
+	public static final RenderLayer WHITE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/white.png"));
+	public static final RenderLayer WHITE_ADDITIVE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/white.png"));
+	public static final RenderLayer PLANET_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/planet_1.png"));
+	public static final RenderLayer PLANET_1_ADDITIVE = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/planet_1.png"));
+	public static final RenderLayer STARS = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/stars.png"));
 
 	@Unique
 	VFXBuilders.WorldVFXBuilder builder;
@@ -47,19 +46,29 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
+		float tickDelta = MinecraftClient.getInstance().isPaused() ? 0f : MinecraftClient.getInstance().getTickDelta();
 
 //		VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
-		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
+		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + tickDelta);
 		matrixStack.translate(0.5f, 0.5f, 0.5f);
 
-		BlockPos parentPos = astralDisplayBlockEntity.getPos();
+		float value = time;
+		double distance = 0;
+		float selfRotation = (float) (-time * (distance / 100f));
+		float speedModifier = 0;
+
+		Vec3d bePos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
+		Vec3d parentPos;
+		Vec3d orbitCenter;
+		Vec3d astralPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
+
 		// if connected child, render object orbiting around parent
 		if (astralDisplayBlockEntity.getParentPos() != null
 			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
-			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)
-			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
+			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity) {
 
-			parentPos = astralDisplayBlockEntity.getParentPos();
+			parentPos = Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos());
+			orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
 
 			this.builder.setColor(new Color(0xFFD88F))
 				.setAlpha(1f)
@@ -67,26 +76,26 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					RenderHandler.LATE_DELAYED_RENDER.getBuffer(ASTRAL_DISPLAY_LINK),
 					matrixStack,
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-					Vec3d.ofCenter(parentPos),
+					parentPos,
 					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
-		}
 
-		float value = time;
-		float distance = parentPos.getManhattanDistance(astralDisplayBlockEntity.getPos());
-		float selfRotation = -time * (distance / 100f);
-		float speedModifier = 0.001f * distance;
+			// update orbit position hashmap
+			distance = parentPos.distanceTo(bePos);
+			speedModifier = (float) (0.001f * distance);
+
+			astralPos = new Vec3d(orbitCenter.getX() + (Math.sin(value * speedModifier) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos(value * speedModifier) * distance));
+		}
+		AstronomicalClient.ORBITING_POSITIONS.put(astralDisplayBlockEntity.getPos(), astralPos);
 
 		for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
 			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
 			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
 				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+				int CIRCLE_PRECISION = MathHelper.clamp((int) scale * 2, 15, 50);
 
 				matrixStack.push();
 
-				matrixStack.translate(-(astralDisplayBlockEntity.getPos().getX() - parentPos.getX()),
-					-(astralDisplayBlockEntity.getPos().getY() - parentPos.getY()),
-					-(astralDisplayBlockEntity.getPos().getZ() - parentPos.getZ()));
-				matrixStack.translate(Math.sin(value * speedModifier) * distance, 0, Math.cos(value * speedModifier) * distance);
+				matrixStack.translate(astralPos.x - bePos.getX(), astralPos.y - bePos.getY(), astralPos.z - bePos.getZ());
 
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
 				matrixStack.scale(scale, scale, scale);
@@ -101,8 +110,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 
 					this.builder.setColor(new Color(color2))
 						.setAlpha(1f)
@@ -110,8 +119,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(PLANET_1),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
 					int color = Astronomical.getStarColorForTemperature(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("temperature"));
 
@@ -121,8 +130,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 
 					for (int layer = 1; layer < 6; layer++) {
 						float speedDiv = 5f;
@@ -144,20 +153,19 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 								RenderHandler.LATE_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
 								matrixStack,
 								1,
-								20,
-								20);
+								CIRCLE_PRECISION,
+								CIRCLE_PRECISION);
 						matrixStack.pop();
 					}
 				} else if (stackToDisplay.isOf(ModItems.NANO_COSMOS)) {
-
 					this.builder.setColor(new Color(0xFFFFFF))
 						.setAlpha(1f)
 						.renderSphere(
 							vertexConsumerProvider.getBuffer(STARS),
 							matrixStack,
 							-1,
-							50,
-							50);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 					matrixStack.scale(1.01f, 1.01f, 1.01f);
 					this.builder.setColor(new Color(0xFFFFFF))
 						.setAlpha(1f)
@@ -165,8 +173,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							-1,
-							50,
-							50);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 				}
 
 				matrixStack.pop();

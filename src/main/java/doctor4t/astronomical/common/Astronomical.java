@@ -39,9 +39,9 @@ public class Astronomical implements ModInitializer {
 		STAR_TEMPERATURE_COLORS.put(7000, 0xE2E2FF);
 		STAR_TEMPERATURE_COLORS.put(6000, 0xFFE0CC);
 		STAR_TEMPERATURE_COLORS.put(5000, 0xFFDB87);
-		STAR_TEMPERATURE_COLORS.put(4000, 0xFFD82C);
-		STAR_TEMPERATURE_COLORS.put(3000, 0xFFB900);
-		STAR_TEMPERATURE_COLORS.put(2000, 0xFF7800);
+		STAR_TEMPERATURE_COLORS.put(4000, 0xFFBE1C);
+		STAR_TEMPERATURE_COLORS.put(3000, 0xFF8800);
+		STAR_TEMPERATURE_COLORS.put(2000, 0xFF5500);
 		STAR_TEMPERATURE_COLORS.put(1000, 0xFF0000);
 	}
 
@@ -137,7 +137,7 @@ public class Astronomical implements ModInitializer {
 	}
 
 	public static int getRandomStarTemperature(RandomGenerator randomGenerator) {
-		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
+		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.keySet());
 		return temperatures.get(randomGenerator.nextInt(temperatures.size()));
 	}
 	public static int getRandomStarTemperature(float delta) {
