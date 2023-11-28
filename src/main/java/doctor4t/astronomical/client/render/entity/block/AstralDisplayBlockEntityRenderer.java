@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.random.RandomGenerator;
@@ -45,8 +46,6 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 	@Override
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		int CIRCLE_PRECISION = 20;
-
 		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
 
@@ -93,6 +92,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
 			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
 				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+				int CIRCLE_PRECISION = MathHelper.clamp((int) scale*2, 15,50);
 
 				matrixStack.push();
 
