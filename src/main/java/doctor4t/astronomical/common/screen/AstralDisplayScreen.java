@@ -48,13 +48,17 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 	public void addSliders() {
 		if (this.handler.entity() == null) return;
-		if (this.yLevelSlider == null) {
-			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider("y_level", d));
-			this.addDrawableChild(this.yLevelSlider);
-		}
+//		if (this.yLevelSlider == null) {
+//			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel, (d) -> this.syncSlider("y_level", d));
+//			this.addDrawableChild(this.yLevelSlider);
+//		}
 		if (this.rotSpeedSlider == null) {
-			this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider("rot_speed", d));
+			this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider("rot_speed", d));
 			this.addDrawableChild(this.rotSpeedSlider);
+		}
+		if (this.spinSlider == null) {
+			this.spinSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider("spin", d));
+			this.addDrawableChild(this.spinSlider);
 		}
 	}
 

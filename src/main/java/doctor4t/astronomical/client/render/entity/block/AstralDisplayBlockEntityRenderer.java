@@ -6,6 +6,7 @@ import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
@@ -53,9 +54,10 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 		matrixStack.translate(0.5f, 0.5f, 0.5f);
 
 		float value = time;
-		double distance = 0;
-		float selfRotation = (float) (-time * (distance / 100f));
-		float speedModifier = 0;
+
+		double distance;
+		float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()));
+		double speedModifier;
 
 		Vec3d bePos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
 		Vec3d parentPos;
@@ -81,9 +83,16 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 			// update orbit position hashmap
 			distance = parentPos.distanceTo(bePos);
-			speedModifier = (float) (0.001f * distance);
+			speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue();
 
-			astralPos = new Vec3d(orbitCenter.getX() + (Math.sin(value * speedModifier) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos(value * speedModifier) * distance));
+			float offset = switch (blockState.get(AstralDisplayBlock.FACING)) {
+				case NORTH -> 0.0F;
+				case SOUTH -> (float) Math.PI;
+				case WEST -> (float) Math.PI / 2f;
+				case EAST -> (float) -Math.PI / 2f;
+				default -> 0.0F;
+			};
+			astralPos = new Vec3d(orbitCenter.getX() + (Math.sin((value * speedModifier)+offset) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos((value * speedModifier)+offset) * distance));
 		}
 		AstronomicalClient.ORBITING_POSITIONS.put(astralDisplayBlockEntity.getPos(), astralPos);
 
