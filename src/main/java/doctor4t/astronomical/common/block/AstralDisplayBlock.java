@@ -2,6 +2,7 @@ package doctor4t.astronomical.common.block;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
+import doctor4t.astronomical.common.init.ModBlocks;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -19,11 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -89,9 +86,19 @@ public class AstralDisplayBlock extends BlockWithEntity {
 		if (state.get(FACING).getAxis().isHorizontal()) {
 			var astralDisplay = world.getBlockEntity(pos);
 			for (var i = 1; i <= 20; i++) {
-				var parentAstralDisplay = world.getBlockEntity(pos.offset(state.get(FACING), i));
-				if (astralDisplay instanceof AstralDisplayBlockEntity astralDisplayBlockEntity && parentAstralDisplay instanceof AstralDisplayBlockEntity parentAstralDisplayBlockEntity) {
-					astralDisplayBlockEntity.setParentPos(parentAstralDisplayBlockEntity.getParentPos() != null ? parentAstralDisplayBlockEntity.getParentPos() : pos.offset(state.get(FACING), i));
+				var foundAstralDisplay = world.getBlockEntity(pos.offset(state.get(FACING), i));
+				// if astral display found
+				if (astralDisplay instanceof AstralDisplayBlockEntity astralDisplayBlockEntity
+					&& foundAstralDisplay instanceof AstralDisplayBlockEntity foundAstralDisplayBE
+					&& world.getBlockState(pos.offset(state.get(FACING), i)).isOf(ModBlocks.ASTRAL_DISPLAY)) {
+					Direction direction = world.getBlockState(pos.offset(state.get(FACING), i)).get(FACING);
+
+					// if same orientation, set to parent
+					if (direction == state.get(FACING)){
+						astralDisplayBlockEntity.setParentPos(foundAstralDisplayBE.getParentPos());
+					} else { // if different horizontal orientation set to display found
+						astralDisplayBlockEntity.setParentPos(pos.offset(state.get(FACING), i));
+					}
 					return;
 				}
 			}
@@ -103,7 +110,7 @@ public class AstralDisplayBlock extends BlockWithEntity {
 		if (!state.isOf(newState.getBlock())) {
 			var blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
-				ItemScatterer.spawn(world, pos, (Inventory)blockEntity);
+				ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
 				world.updateComparators(pos, this);
 			}
 			super.onStateReplaced(state, world, pos, newState, moved);
