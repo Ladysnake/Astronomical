@@ -137,7 +137,7 @@ public class Astronomical implements ModInitializer {
 	}
 
 	public static int getRandomStarTemperature(RandomGenerator randomGenerator) {
-		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
+		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.keySet());
 		return temperatures.get(randomGenerator.nextInt(temperatures.size()));
 	}
 	public static int getRandomStarTemperature(float delta) {

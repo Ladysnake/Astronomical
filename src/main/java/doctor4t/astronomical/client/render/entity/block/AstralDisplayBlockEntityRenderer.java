@@ -45,6 +45,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 	@Override
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+		int CIRCLE_PRECISION = 20;
+
 		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
 
@@ -81,7 +83,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 			// update orbit position hashmap
 			distance = parentPos.distanceTo(bePos);
-			speedModifier = (float) (0.0001f * distance);
+			speedModifier = (float) (0.001f * distance);
 
 			astralPos = new Vec3d(orbitCenter.getX() + (Math.sin(value * speedModifier) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos(value * speedModifier) * distance));
 		}
@@ -109,8 +111,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 
 					this.builder.setColor(new Color(color2))
 						.setAlpha(1f)
@@ -118,8 +120,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(PLANET_1),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 				} else if (stackToDisplay.isOf(ModItems.NANO_STAR)) {
 					int color = Astronomical.getStarColorForTemperature(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("temperature"));
 
@@ -129,8 +131,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							1,
-							20,
-							20);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 
 					for (int layer = 1; layer < 6; layer++) {
 						float speedDiv = 5f;
@@ -152,8 +154,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 								RenderHandler.LATE_DELAYED_RENDER.getBuffer(PLANET_1_ADDITIVE),
 								matrixStack,
 								1,
-								20,
-								20);
+								CIRCLE_PRECISION,
+								CIRCLE_PRECISION);
 						matrixStack.pop();
 					}
 				} else if (stackToDisplay.isOf(ModItems.NANO_COSMOS)) {
@@ -163,8 +165,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(STARS),
 							matrixStack,
 							-1,
-							50,
-							50);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 					matrixStack.scale(1.01f, 1.01f, 1.01f);
 					this.builder.setColor(new Color(0xFFFFFF))
 						.setAlpha(1f)
@@ -172,8 +174,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							vertexConsumerProvider.getBuffer(WHITE),
 							matrixStack,
 							-1,
-							50,
-							50);
+							CIRCLE_PRECISION,
+							CIRCLE_PRECISION);
 				}
 
 				matrixStack.pop();
