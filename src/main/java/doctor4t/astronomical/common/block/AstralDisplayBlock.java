@@ -120,9 +120,9 @@ public class AstralDisplayBlock extends BlockWithEntity {
 				player.openHandledScreen(astralDisplayBlockEntity);
 				var buf = PacketByteBufs.create();
 				buf.writeBlockPos(pos);
-				buf.writeDouble(astralDisplayBlockEntity.yLevel);
-				buf.writeDouble(astralDisplayBlockEntity.rotSpeed);
-				buf.writeDouble(astralDisplayBlockEntity.spin);
+				buf.writeDouble(astralDisplayBlockEntity.yLevel.getValue());
+				buf.writeDouble(astralDisplayBlockEntity.rotSpeed.getValue());
+				buf.writeDouble(astralDisplayBlockEntity.spin.getValue());
 				ServerPlayNetworking.send((ServerPlayerEntity) player, Astronomical.id("astral_display"), buf);
 			}
 			return ActionResult.CONSUME;

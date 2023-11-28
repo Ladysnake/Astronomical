@@ -50,9 +50,9 @@ public class AstronomicalClient implements ClientModInitializer {
 				if (player != null && world != null && world.getBlockEntity(pos) instanceof AstralDisplayBlockEntity display) {
 					if (player.currentScreenHandler instanceof AstralDisplayScreenHandler handler) {
 						handler.entity = display;
-						display.yLevel = yLevel;
-						display.rotSpeed = rotSpeed;
-						display.spin = spin;
+						display.yLevel.setValue(yLevel);
+						display.rotSpeed.setValue(rotSpeed);
+						display.spin.setValue(spin);
 						if (minecraftClient.currentScreen instanceof AstralDisplayScreen screen) {
 							screen.addSliders();
 						}

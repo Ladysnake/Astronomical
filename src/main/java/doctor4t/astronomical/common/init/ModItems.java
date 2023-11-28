@@ -1,6 +1,5 @@
 package doctor4t.astronomical.common.init;
 
-import com.terraformersmc.modmenu.util.mod.Mod;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.item.AstralBundleItem;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
@@ -12,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 import xyz.amymialee.mialeemisc.itemgroup.MialeeItemGroup;
@@ -45,8 +43,16 @@ public interface ModItems {
 
 	static void initItemGroups() {
 		ASTRONOMICAL_ITEM_GROUP.setItems((itemStacks, itemGroup) -> {
-			for (Item item : ITEMS.keySet()) {
+			for (var item : ITEMS.keySet()) {
 				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP)) continue;
+				if (item == MARSHMALLOW_STICK) {
+					for (var state : MarshmallowStickItem.CookState.values()) {
+						var stack = new ItemStack(item, 1);
+						stack.getOrCreateNbt().putFloat("RoastTicks", state.cookTime);
+						itemStacks.add(stack);
+					}
+					continue;
+				}
 				itemStacks.add(item.getDefaultStack());
 			}
 		});

@@ -2,6 +2,7 @@ package doctor4t.astronomical.common.block.entity;
 
 import doctor4t.astronomical.common.init.ModBlockEntities;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import doctor4t.astronomical.common.util.ScaledDouble;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -25,9 +26,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
 	private BlockPos parentPos;
 	// yLevel, rotSpeed and spin are all values between 0 and 1, scale accordingly
-	public double yLevel = 0.5;
-	public double rotSpeed = 0.5;
-	public double spin = 0.5;
+	public ScaledDouble yLevel = new ScaledDouble(0.5, 0, 1);
+	public ScaledDouble rotSpeed = new ScaledDouble(0.5, 0, 1);
+	public ScaledDouble spin = new ScaledDouble(0.5, 0, 1);
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
@@ -101,9 +102,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 		}
 		this.inventory.clear();
 		this.inventory.readNbtList(nbt.getList("inventory", 10));
-		this.yLevel = nbt.getDouble("yLevel");
-		this.rotSpeed = nbt.getDouble("rotSpeed");
-		this.spin = nbt.getDouble("spin");
+		this.yLevel.setValue(nbt.getDouble("yLevel"));
+		this.rotSpeed.setValue(nbt.getDouble("rotSpeed"));
+		this.spin.setValue(nbt.getDouble("spin"));
 	}
 
 	@Override
@@ -113,9 +114,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 			nbt.put("parentPos", NbtHelper.fromBlockPos(this.getParentPos()));
 		}
 		nbt.put("inventory", this.inventory.toNbtList());
-		nbt.putDouble("yLevel", this.yLevel);
-		nbt.putDouble("rotSpeed", this.rotSpeed);
-		nbt.putDouble("spin", this.spin);
+		nbt.putDouble("yLevel", this.yLevel.getValue());
+		nbt.putDouble("rotSpeed", this.rotSpeed.getValue());
+		nbt.putDouble("spin", this.spin.getValue());
 	}
 
 	@Override

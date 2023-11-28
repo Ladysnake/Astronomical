@@ -5,6 +5,7 @@ import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.util.BlockCastFinder;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -28,8 +29,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.amymialee.mialeemisc.util.MialeeText;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MarshmallowStickItem extends Item {
@@ -126,13 +129,9 @@ public class MarshmallowStickItem extends Item {
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack) {
-		return super.getTranslationKey(stack) + "." + CookState.getCookState(stack).name().toLowerCase();
-	}
-
-	@Override
-	public Text getName(ItemStack stack) {
-		return MialeeText.withColor(super.getName(stack), CookState.getCookState(stack).color);
+	public void appendTooltip(ItemStack stack, @Nullable World world, @NotNull List<Text> tooltip, TooltipContext context) {
+		tooltip.add(MialeeText.withColor(Text.translatable(this.getTranslationKey(stack) + "." + CookState.getCookState(stack).name().toLowerCase()), CookState.getCookState(stack).color));
+		super.appendTooltip(stack, world, tooltip, context);
 	}
 
 	@Override
