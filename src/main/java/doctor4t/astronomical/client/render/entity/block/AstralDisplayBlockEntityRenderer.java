@@ -18,9 +18,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
@@ -48,9 +46,10 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RandomGenerator random = astralDisplayBlockEntity.getWorld().random;
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
+		float tickDelta = MinecraftClient.getInstance().isPaused() ? 0f : MinecraftClient.getInstance().getTickDelta();
 
 //		VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
-		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
+		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + tickDelta);
 		matrixStack.translate(0.5f, 0.5f, 0.5f);
 
 		float value = time;
@@ -92,7 +91,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
 			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
 				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-				int CIRCLE_PRECISION = MathHelper.clamp((int) scale*2, 15,50);
+				int CIRCLE_PRECISION = MathHelper.clamp((int) scale * 2, 15, 50);
 
 				matrixStack.push();
 
