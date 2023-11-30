@@ -38,7 +38,7 @@ public class Starfall {
 
 	public void tick(World w) {
 		progress++;
-		if(progress >= 10) {
+		if(progress >= 70 && !w.isClient) {
 			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, w);
 			l.setPosition(endPos);
 			l.setCosmetic(true);

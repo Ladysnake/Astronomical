@@ -27,10 +27,10 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vec3f[] positions, float width, float height) {
 		Matrix4f last = stack.peek().getModel();
 
-        this.supplier.placeVertex(vertexConsumer, last, positions[0].getX(), positions[0].getY(), positions[0].getZ(), this.u0, this.v1);
-        this.supplier.placeVertex(vertexConsumer, last, positions[1].getX(), positions[1].getY(), positions[1].getZ(), this.u1, this.v1);
-        this.supplier.placeVertex(vertexConsumer, last, positions[2].getX(), positions[2].getY(), positions[2].getZ(), this.u1, this.v0);
-        this.supplier.placeVertex(vertexConsumer, last, positions[3].getX(), positions[3].getY(), positions[3].getZ(), this.u0, this.v0);
+        this.supplier.placeVertex(vertexConsumer, last, positions[0].getX()+xOffset, positions[0].getY()+yOffset, positions[0].getZ()+zOffset, this.u0, this.v1);
+        this.supplier.placeVertex(vertexConsumer, last, positions[1].getX()+xOffset, positions[1].getY()+yOffset, positions[1].getZ()+zOffset, this.u1, this.v1);
+        this.supplier.placeVertex(vertexConsumer, last, positions[2].getX()+xOffset, positions[2].getY()+yOffset, positions[2].getZ()+zOffset, this.u1, this.v0);
+        this.supplier.placeVertex(vertexConsumer, last, positions[3].getX()+xOffset, positions[3].getY()+yOffset, positions[3].getZ()+zOffset, this.u0, this.v0);
 
 		return this;
 	}

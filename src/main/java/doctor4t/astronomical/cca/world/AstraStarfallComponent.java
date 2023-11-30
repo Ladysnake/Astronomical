@@ -1,7 +1,9 @@
 package doctor4t.astronomical.cca.world;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.common.structure.Starfall;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -11,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickingComponent {
+public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private final List<Starfall> starfalls = new LinkedList<>();
 	private final World obj;
 	public AstraStarfallComponent(World object) {
@@ -27,8 +29,14 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 			starfalls.add(s);
 		});
 	}
+
+	public List<Starfall> getStarfalls() {
+		return starfalls;
+	}
+
 	public void addFall(Vec3d rot, Vec3d target) {
 		starfalls.add(new Starfall(rot, target));
+		AstraCardinalComponents.FALL.sync(obj);
 	}
 
 	@Override
@@ -46,6 +54,12 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 	@Override
 	public void serverTick() {
 		starfalls.forEach(s -> s.tick(obj));
-		starfalls.removeIf(s -> s.progress >= 10);
+		starfalls.removeIf(s -> s.progress >= 70);
+		AstraCardinalComponents.FALL.sync(obj);
+	}
+
+	@Override
+	public void clientTick() {
+		starfalls.forEach(s -> s.tick(obj));
 	}
 }
