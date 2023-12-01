@@ -50,7 +50,7 @@ public class SpyglassItemMixin {
 				if (h > 0.998) {
 					if(!bl) {
 						Vec3d pos = user.getPos().add(world.random.nextGaussian()*16, 0, world.random.nextGaussian()*16);
-						world.getComponent(AstraCardinalComponents.FALL).addFall(rotatedVec, new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
+						world.getComponent(AstraCardinalComponents.FALL).addFall(rotatedVec, new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
 						supernovad = obj;
 						break;
 					}
