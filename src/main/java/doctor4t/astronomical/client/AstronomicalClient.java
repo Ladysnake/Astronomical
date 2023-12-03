@@ -1,6 +1,5 @@
 package doctor4t.astronomical.client;
 
-import doctor4t.astronomical.client.render.entity.StarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
@@ -35,7 +34,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 		// entity renderers registration
 		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
-		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
+//		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
 
 		// particle renderers registration
 		ModParticles.registerFactories();

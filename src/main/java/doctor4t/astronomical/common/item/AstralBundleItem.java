@@ -5,7 +5,6 @@ import doctor4t.astronomical.common.init.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -36,6 +35,8 @@ public class AstralBundleItem extends Item {
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", new Color(user.getRandom().nextFloat(), user.getRandom().nextFloat(), user.getRandom().nextFloat()).getRGB());
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", new Color(user.getRandom().nextFloat(), user.getRandom().nextFloat(), user.getRandom().nextFloat()).getRGB());
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(10));
+				String texture = NanoPlanetItem.PlanetTexture.getRandom().name();
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
 			}
 			case STAR -> {
 				retItemStack = new ItemStack(ModItems.NANO_STAR);

@@ -11,11 +11,12 @@
     "StatusEffectUtilMixin"
   ],
   "client": [
+    "AstralDisplayRendererEnforcerMixin",
     "HeldItemRendererMixin",
     "InGameHudMixin",
+    "LoadAstronomicalShadersGameRendererMixin",
     "MinecraftClientMixin",
     "PlayerEntityRendererMixin",
-    "AstralDisplayRendererEnforcerMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
   ],
