@@ -21,14 +21,14 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		Color planetColor1 = new Color(stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1"));
-		Color planetColor2 = new Color(stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2"));
-		String planetTexture = stack.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture");
-		int planetSize = stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size");
+		Color color1 = new Color(stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1"));
+		Color color2 = new Color(stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2"));
+		String texture = stack.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture");
+		int size = stack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size");
 
-		tooltip.add(Text.literal("Base: " + String.format("#%02X%02X%02X", planetColor1.getRed(), planetColor1.getGreen(), planetColor1.getBlue())).setStyle(EMPTY.withColor(planetColor1.getRGB())));
-		tooltip.add(Text.literal("PlanetTexture: " + planetTexture + " " + String.format("#%02X%02X%02X", planetColor2.getRed(), planetColor2.getGreen(), planetColor2.getBlue())).setStyle(EMPTY.withColor(planetColor2.getRGB())));
-		tooltip.add(Text.literal("Size: " + planetSize).setStyle(EMPTY));
+		tooltip.add(Text.literal("Texture: " + texture));
+		tooltip.add(Text.literal("Colors: ").append(Text.literal(String.format("#%02X%02X%02X", color1.getRed(), color1.getGreen(), color1.getBlue())).setStyle(EMPTY.withColor(color1.getRGB()))).append(Text.literal(" " + String.format("#%02X%02X%02X", color2.getRed(), color2.getGreen(), color2.getBlue())).setStyle(EMPTY.withColor(color2.getRGB()))));
+		tooltip.add(Text.literal("Size: " + size).setStyle(EMPTY));
 
 		super.appendTooltip(stack, world, tooltip, context);
 	}
@@ -66,7 +66,7 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 		private static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 
-		public static PlanetTexture getRandom()  {
+		public static PlanetTexture getRandom() {
 			return VALUES.get(RANDOM.nextInt(SIZE));
 		}
 	}

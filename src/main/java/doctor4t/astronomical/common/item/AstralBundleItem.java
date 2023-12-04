@@ -16,7 +16,7 @@ public class AstralBundleItem extends Item {
 	public Type type;
 
 	public enum Type {
-		PLANET, STAR, COSMOS
+		PLANET, STAR, COSMOS, RING
 	}
 
 	public AstralBundleItem(Settings settings, Type type) {
@@ -47,6 +47,13 @@ public class AstralBundleItem extends Item {
 			case COSMOS -> {
 				retItemStack = new ItemStack(ModItems.NANO_COSMOS);
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(100));
+			}
+			case RING -> {
+				retItemStack = new ItemStack(ModItems.NANO_RING);
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(20));
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", new Color(user.getRandom().nextFloat(), user.getRandom().nextFloat(), user.getRandom().nextFloat()).getRGB());
+				String texture = NanoRingItem.RingTexture.getRandom().name();
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
 			}
 		}
 
