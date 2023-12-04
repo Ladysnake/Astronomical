@@ -35,16 +35,16 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 
 
 	public enum PlanetTexture {
-		ACID(Astronomical.id("textures/astral_object/acid.png")),
-		CLOUDS(Astronomical.id("textures/astral_object/clouds.png")),
-		CRATERS(Astronomical.id("textures/astral_object/craters.png")),
-		HOME(Astronomical.id("textures/astral_object/home.png")),
-		ICE(Astronomical.id("textures/astral_object/ice.png")),
-		ROCK(Astronomical.id("textures/astral_object/rock.png")),
-		RUST(Astronomical.id("textures/astral_object/rust.png")),
-		STRIPES(Astronomical.id("textures/astral_object/stripes.png")),
-		SULFUR(Astronomical.id("textures/astral_object/sulfur.png")),
-		SWIRL(Astronomical.id("textures/astral_object/swirl.png"));
+		ACID(Astronomical.id("textures/astral_object/planet/acid.png")),
+		ATMOSPHERE(Astronomical.id("textures/astral_object/planet/atmosphere.png")),
+		CLOUDS(Astronomical.id("textures/astral_object/planet/clouds.png")),
+		CRATERS(Astronomical.id("textures/astral_object/planet/craters.png")),
+		HAZE(Astronomical.id("textures/astral_object/planet/haze.png")),
+		HOME(Astronomical.id("textures/astral_object/planet/home.png")),
+		ICE(Astronomical.id("textures/astral_object/planet/ice.png")),
+		ROCK(Astronomical.id("textures/astral_object/planet/rock.png")),
+		STRIPES(Astronomical.id("textures/astral_object/planet/stripes.png")),
+		SWIRL(Astronomical.id("textures/astral_object/planet/swirl.png"));
 
 
 		public final Identifier texture;
