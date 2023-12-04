@@ -2,6 +2,8 @@ package doctor4t.astronomical.cca.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.client.render.world.AstraSkyRenderer;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.AstraCelestialObjects;
@@ -11,6 +13,7 @@ import doctor4t.astronomical.common.structure.Star;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
@@ -25,9 +28,10 @@ import java.util.List;
  * thanks
  *
  **/
-public class AstraSkyComponent implements AutoSyncedComponent {
+public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent {
 	private static final Identifier def = Astronomical.id("star");
 	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
+	private static final int maximumStars = 10;
 	private final RandomGenerator random;
 	private final World obj;
 	public AstraSkyComponent(World object) {
@@ -57,17 +61,6 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 			star.readNbt(n);
 			heavenlySpheres.add(star);
 		});
-		if(heavenlySpheres.isEmpty()) {
-//			for (int i = 0; i < 2000; i++) {
-//				this.heavenlySpheres.add(new Star(this.generateDirectionalVector(), 0.7f + 0.5f * this.random.nextFloat(), this.random.nextFloat()));
-//			}
-			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 0, 0), 3f, 1));
-			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 0, 1).normalize(), 3f, 1));
-			this.heavenlySpheres.add(new InteractableStar(new Vec3d(0, 1, 1).normalize(), 3f, 1));
-			this.heavenlySpheres.add(new InteractableStar(new Vec3d(1, 1, 0).normalize(), 3f, 1));
-			this.heavenlySpheres.add(new InteractableStar(new Vec3d(0, 0, 1), 3f, 1));
-
-		}
 		if(obj != null && obj.isClient())
 			RenderSystem.recordRenderCall(AstraSkyRenderer::redrawStars);
 	}
@@ -96,5 +89,24 @@ public class AstraSkyComponent implements AutoSyncedComponent {
 		});
 		tag.put("spherical", list);
 
+	}
+
+	@Override
+	public void serverTick() {
+		if(obj.getTime() % 4000 == 0 && obj.random.nextFloat() > 0.4f) {
+			regenerate();
+		}
+	}
+
+	public void regenerate() {
+		if(heavenlySpheres.size() < maximumStars) {
+			this.heavenlySpheres.add(generateStar());
+			AstraCardinalComponents.SKY.sync(obj);
+		}
+	}
+
+	private CelestialObject generateStar() {
+		Vec3d rot = generateDirectionalVector();
+		return new InteractableStar(rot.normalize(), 3f, 1);
 	}
 }
