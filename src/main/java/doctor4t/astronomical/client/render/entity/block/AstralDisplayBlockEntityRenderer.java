@@ -212,7 +212,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					this.builder.setColor(new Color(color))
 						.setAlpha(1f)
 						.renderQuad(
-							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(renderLayer),
+							vertexConsumerProvider.getBuffer(renderLayer),
 							matrixStack,
 							1
 						);
@@ -222,7 +222,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					this.builder.setColor(new Color(color))
 						.setAlpha(1f)
 						.renderQuad(
-							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(renderLayer),
+							vertexConsumerProvider.getBuffer(renderLayer),
 							matrixStack,
 							1
 						);
