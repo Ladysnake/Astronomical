@@ -47,6 +47,8 @@ public class AstralBundleItem extends Item {
 			case COSMOS -> {
 				retItemStack = new ItemStack(ModItems.NANO_COSMOS);
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1 + user.getRandom().nextInt(100));
+				String texture = NanoCosmosItem.CosmosTexture.getRandom().name();
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
 			}
 			case RING -> {
 				retItemStack = new ItemStack(ModItems.NANO_RING);

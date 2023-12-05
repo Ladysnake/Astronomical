@@ -2,6 +2,7 @@ package doctor4t.astronomical.client.render.entity.block;
 
 import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
+import com.sammy.lodestone.setup.LodestoneShaders;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import com.terraformersmc.modmenu.util.mod.Mod;
 import doctor4t.astronomical.client.AstronomicalClient;
@@ -12,6 +13,7 @@ import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.item.NanoAstralObjectItem;
+import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoRingItem;
 import net.minecraft.block.BlockState;
@@ -40,11 +42,6 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	public static final RenderLayer STAR_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_1.png"));
 	public static final RenderLayer STAR_2 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_2.png"));
 	public static final RenderLayer STAR_3 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_3.png"));
-
-	// cosmos layers
-	public static final RenderLayer BLACK = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/cosmos/black.png"));
-	public static final RenderLayer STARS = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/cosmos/stars.png"));
-	public static final RenderLayer STARS_FAR = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/cosmos/stars_far.png"));
 
 	@Unique
 	VFXBuilders.WorldVFXBuilder builder;
@@ -122,7 +119,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 				if (stackToDisplay.isOf(ModItems.NANO_PLANET)) {
 					int color1 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1");
 					int color2 = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
-					RenderLayer planetRenderLayer = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.applyAndCache(NanoPlanetItem.PlanetTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
+					RenderLayer renderLayer = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.applyAndCache(NanoPlanetItem.PlanetTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
 
 					this.builder.setColor(new Color(color1))
 						.setAlpha(1f)
@@ -136,7 +133,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					this.builder.setColor(new Color(color2))
 						.setAlpha(1f)
 						.renderSphere(
-							vertexConsumerProvider.getBuffer(planetRenderLayer),
+							vertexConsumerProvider.getBuffer(renderLayer),
 							matrixStack,
 							1,
 							CIRCLE_PRECISION,
@@ -196,34 +193,28 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 						matrixStack.pop();
 					}
 				} else if (stackToDisplay.isOf(ModItems.NANO_COSMOS)) {
+					RenderLayer renderLayer = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.applyAndCache(NanoCosmosItem.CosmosTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
+
 					this.builder.setColor(new Color(0xFFFFFF))
 						.setAlpha(1f)
 						.renderSphere(
-							vertexConsumerProvider.getBuffer(BLACK),
-							matrixStack,
-							-1,
-							CIRCLE_PRECISION,
-							CIRCLE_PRECISION);
-					this.builder.setColor(new Color(0xFFFFFF))
-						.setAlpha(1f)
-						.renderSphere(
-							vertexConsumerProvider.getBuffer(STARS),
+							vertexConsumerProvider.getBuffer(renderLayer),
 							matrixStack,
 							-1,
 							CIRCLE_PRECISION,
 							CIRCLE_PRECISION);
 				} else if (stackToDisplay.isOf(ModItems.NANO_RING)) {
 					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
-					RenderLayer ringRenderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
+					RenderLayer renderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
 
 					matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
 
 					this.builder.setColor(new Color(color))
 						.setAlpha(1f)
 						.renderQuad(
-							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(ringRenderLayer),
+							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(renderLayer),
 							matrixStack,
-							-1
+							1
 						);
 
 					matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180f));
@@ -231,9 +222,9 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					this.builder.setColor(new Color(color))
 						.setAlpha(1f)
 						.renderQuad(
-							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(ringRenderLayer),
+							RenderHandler.EARLY_DELAYED_RENDER.getBuffer(renderLayer),
 							matrixStack,
-							-1
+							1
 						);
 				}
 
