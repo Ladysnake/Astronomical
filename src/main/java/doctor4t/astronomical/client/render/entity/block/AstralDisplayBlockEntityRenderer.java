@@ -214,7 +214,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 							CIRCLE_PRECISION);
 				} else if (stackToDisplay.isOf(ModItems.NANO_RING)) {
 					int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
-					RenderLayer ringRenderLayer = LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
+					RenderLayer ringRenderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
 
 					matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
 

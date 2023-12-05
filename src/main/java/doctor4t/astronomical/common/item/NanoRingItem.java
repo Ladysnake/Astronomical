@@ -34,7 +34,11 @@ public class NanoRingItem extends NanoAstralObjectItem {
 	}
 
 	public enum RingTexture {
-		PARTICLES(Astronomical.id("textures/astral_object/ring/particles.png"));
+		PARTICLES(Astronomical.id("textures/astral_object/ring/particles.png")),
+		ASTEROIDS(Astronomical.id("textures/astral_object/ring/asteroids.png")),
+		ORGANIC(Astronomical.id("textures/astral_object/ring/organic.png")),
+		HALO(Astronomical.id("textures/astral_object/ring/halo.png")),
+		DUST(Astronomical.id("textures/astral_object/ring/dust.png"));
 
 
 		public final Identifier texture;
