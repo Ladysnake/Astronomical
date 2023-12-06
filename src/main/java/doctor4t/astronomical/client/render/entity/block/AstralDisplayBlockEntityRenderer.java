@@ -41,79 +41,80 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	@Override
 	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
-		float tickDelta = MinecraftClient.getInstance().isPaused() ? 0f : MinecraftClient.getInstance().getTickDelta();
 
-//		VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
-		float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + tickDelta);
-		matrixStack.translate(0.5f, 0.5f, 0.5f);
+		if (blockState.isOf(ModBlocks.ASTRAL_DISPLAY) && blockState.get(AstralDisplayBlock.POWERED)) {
+			float tickDelta = MinecraftClient.getInstance().isPaused() ? 0f : MinecraftClient.getInstance().getTickDelta();
 
-		double distance;
-		float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()));
-		double speedModifier;
+			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + tickDelta);
+			matrixStack.translate(0.5f, 0.5f, 0.5f);
 
-		Vec3d bePos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
-		Vec3d parentPos;
-		Vec3d orbitCenter;
-		Vec3d astralPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
+			double distance;
+			float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()));
+			double speedModifier;
 
-		// if connected child, render object orbiting around parent
-		if (astralDisplayBlockEntity.getParentPos() != null
-			&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
-			&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity) {
+			Vec3d bePos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
+			Vec3d parentPos;
+			Vec3d orbitCenter;
+			Vec3d astralPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
 
-			parentPos = Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos());
-			orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
+			// if connected child, render object orbiting around parent
+			if (astralDisplayBlockEntity.getParentPos() != null
+				&& astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getParentPos()).isOf(ModBlocks.ASTRAL_DISPLAY)
+				&& astralDisplayBlockEntity.getWorld().getBlockEntity(astralDisplayBlockEntity.getParentPos()) instanceof AstralDisplayBlockEntity) {
 
-			// astral link connecting displays
-			this.builder.setColor(new Color(0x5FEBEB))
-				.setAlpha(0.5f)
-				.renderBeam(
-					RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
-					matrixStack,
-					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-					parentPos,
-					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 15f));
+				parentPos = Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos());
+				orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
 
-			this.builder.setColor(new Color(0xFFFFFF))
-				.setAlpha(0.4f)
-				.renderBeam(
-					RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
-					matrixStack,
-					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-					parentPos,
-					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 30f));
+				// astral link connecting displays
+				this.builder.setColor(new Color(0x5FEBEB))
+					.setAlpha(0.5f)
+					.renderBeam(
+						RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
+						matrixStack,
+						Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
+						parentPos,
+						(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 15f));
 
-			// update orbit position hashmap
-			distance = parentPos.distanceTo(bePos);
-			speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue();
+				this.builder.setColor(new Color(0xFFFFFF))
+					.setAlpha(0.4f)
+					.renderBeam(
+						RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
+						matrixStack,
+						Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
+						parentPos,
+						(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 30f));
 
-			float offset = switch (blockState.get(AstralDisplayBlock.FACING)) {
-				case NORTH -> 0.0F;
-				case SOUTH -> (float) Math.PI;
-				case WEST -> (float) Math.PI / 2f;
-				case EAST -> (float) -Math.PI / 2f;
-				default -> 0.0F;
-			};
-			astralPos = new Vec3d(orbitCenter.getX() + (Math.sin((time * speedModifier) + offset) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos((time * speedModifier) + offset) * distance));
-		}
-		AstronomicalClient.ORBITING_POSITIONS.put(astralDisplayBlockEntity.getPos(), astralPos);
+				// update orbit position hashmap
+				distance = parentPos.distanceTo(bePos);
+				speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue();
 
-		for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
-			ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
-			if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
-				float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
-				int circlePrecision = MathHelper.clamp((int) scale * 2, 15, 50);
+				float offset = switch (blockState.get(AstralDisplayBlock.FACING)) {
+					case SOUTH -> (float) Math.PI;
+					case WEST -> (float) Math.PI / 2f;
+					case EAST -> (float) -Math.PI / 2f;
+					default -> 0.0F;
+				};
+				astralPos = new Vec3d(orbitCenter.getX() + (Math.sin((time * speedModifier) + offset) * distance), orbitCenter.getY(), orbitCenter.getZ() + (Math.cos((time * speedModifier) + offset) * distance));
+			}
+			AstronomicalClient.ORBITING_POSITIONS.put(astralDisplayBlockEntity.getPos(), astralPos);
 
-				matrixStack.push();
+			for (int slot = 0; slot < AstralDisplayBlockEntity.SIZE; slot++) {
+				ItemStack stackToDisplay = astralDisplayBlockEntity.getStack(slot);
+				if (stackToDisplay.getItem() instanceof NanoAstralObjectItem) {
+					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
+					int circlePrecision = MathHelper.clamp((int) scale * 2, 15, 50);
 
-				matrixStack.translate(astralPos.x - bePos.getX(), astralPos.y - bePos.getY(), astralPos.z - bePos.getZ());
+					matrixStack.push();
 
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-				matrixStack.scale(scale, scale, scale);
+					matrixStack.translate(astralPos.x - bePos.getX(), astralPos.y - bePos.getY(), astralPos.z - bePos.getZ());
 
-				AstronomicalClient.renderAstralObject(matrixStack, vertexConsumerProvider, this.builder, stackToDisplay, circlePrecision, time, true);
+					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+					matrixStack.scale(scale, scale, scale);
 
-				matrixStack.pop();
+					AstronomicalClient.renderAstralObject(matrixStack, vertexConsumerProvider, this.builder, stackToDisplay, circlePrecision, time, true);
+
+					matrixStack.pop();
+				}
 			}
 		}
 	}
