@@ -25,7 +25,7 @@ import java.util.List;
 public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private static final Identifier def = Astronomical.id("star");
 	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
-	private static final int maximumStars = 10;
+	private static final int maximumStars = 5;
 	private final RandomGenerator random;
 	private final World obj;
 	public AstraSkyComponent(World object) {
@@ -87,7 +87,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 
 	@Override
 	public void serverTick() {
-		if(obj.getTime() % 40 == 0 && obj.random.nextFloat() > 0.4f) {
+		if(obj.getTime() % 400 == 0 && obj.random.nextFloat() > 0.4f) {
 			regenerate();
 		}
 		interactStarTick();

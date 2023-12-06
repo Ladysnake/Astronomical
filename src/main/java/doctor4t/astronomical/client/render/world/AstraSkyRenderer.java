@@ -93,31 +93,32 @@ public class AstraSkyRenderer {
 					Vec3d one = playerPos.add(s.startDirection.multiply(100f));
 					Vec3d two = s.endPos;
 					float delta = (s.progress + tickDelta - 100) / 70f;
+					float alpha = 0.6f*(1-delta)+delta;
 					one = one.lerp(two, delta);
 					VertexData d = createVertexData(one.subtract(playerPos), UP, 10, Color.WHITE);
 					builder
 						.setColor(d.color()[0])
-						.setAlpha(1)
+						.setAlpha(alpha)
 						.renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, d.vertices(), 1);
 				} else {
-					Vec3d directionalVector = s.startDirection.multiply(30f + MathHelper.clamp(5f / (s.progress + tickDelta - 160), 0, 5));
+					Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - 160), 0, 30));
 					Vec3d pos = s.endPos;
 
 					Vec3d diff = pos.subtract(playerPos);
 
-					VertexData d = createFadeoutVertexData(diff, directionalVector, 2f, 1.6f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
+					VertexData d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
 
 					((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 					diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
 
-					d = createFadeoutVertexData(diff, directionalVector, 2f, 1.6f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f + 0.1f);
+					d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f)*1.2f);
 
 					((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 					diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
 
-					d = createFadeoutVertexData(diff, directionalVector, 2f, 1.6f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f + 0.6f);
+					d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f)*0.9f);
 
 					((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
