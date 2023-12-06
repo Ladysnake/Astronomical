@@ -7,6 +7,7 @@ import doctor4t.astronomical.cca.world.AstraSkyComponent;
 import doctor4t.astronomical.client.render.world.AstraSkyRenderer;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.structure.CelestialObject;
+import doctor4t.astronomical.common.structure.InteractableStar;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
@@ -57,7 +58,7 @@ public class SpyglassItemMixin {
 				}
 			}
 			if(supernovad != null) {
-				c.getCelestialObjects().remove(supernovad);
+				((InteractableStar) supernovad).subjectForTermination = true;
 				AstraCardinalComponents.SKY.sync(world);
 			}
 		}
