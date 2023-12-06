@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -38,7 +39,8 @@ public class NanoRingItem extends NanoAstralObjectItem {
 		ASTEROIDS(Astronomical.id("textures/astral_object/ring/asteroids.png")),
 		ORGANIC(Astronomical.id("textures/astral_object/ring/organic.png")),
 		HALO(Astronomical.id("textures/astral_object/ring/halo.png")),
-		DUST(Astronomical.id("textures/astral_object/ring/dust.png"));
+		DUST(Astronomical.id("textures/astral_object/ring/dust.png")),
+		EYE_OF_THE_UNIVERSE(Astronomical.id("textures/astral_object/ring/eye_of_the_universe.png"));
 
 
 		public final Identifier texture;
@@ -56,7 +58,7 @@ public class NanoRingItem extends NanoAstralObjectItem {
 			return PARTICLES;
 		}
 
-		private static final List<RingTexture> VALUES = List.of(values());
+		private static final List<RingTexture> VALUES = Arrays.stream(values()).filter(ringTexture -> ringTexture != EYE_OF_THE_UNIVERSE).toList();
 		private static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 

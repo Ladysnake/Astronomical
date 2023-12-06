@@ -177,8 +177,11 @@ public class AstronomicalClient implements ClientModInitializer {
 					sphereDetail);
 		} else if (stackToDisplay.isOf(ModItems.NANO_RING)) {
 			int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
-			RenderLayer renderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture")).texture);
+			NanoRingItem.RingTexture ringTexture = NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture"));
+			RenderLayer renderLayer = (ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? LodestoneRenderLayers.ADDITIVE_TEXTURE : LodestoneRenderLayers.TRANSPARENT_TEXTURE).applyAndCache(ringTexture.texture);
+			float scale =(ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? 2f : 1f);
 
+			matrixStack.scale(scale, scale,scale);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
 
 			builder.setColor(new Color(color))
