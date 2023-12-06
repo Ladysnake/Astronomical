@@ -1,29 +1,25 @@
 {
   "variants": {
+    "facing=up": {
+      "model": "astronomical:block/astral_display_vertical"
+    },
     "facing=down": {
-      "model": "astronomical:block/astral_display",
+      "model": "astronomical:block/astral_display_vertical",
       "x": 180
     },
     "facing=east": {
-      "model": "astronomical:block/astral_display",
-      "x": 90,
+      "model": "astronomical:block/astral_display_horizontal",
       "y": 90
     },
     "facing=north": {
-      "model": "astronomical:block/astral_display",
-      "x": 90
+      "model": "astronomical:block/astral_display_horizontal"
     },
     "facing=south": {
-      "model": "astronomical:block/astral_display",
-      "x": 90,
+      "model": "astronomical:block/astral_display_horizontal",
       "y": 180
     },
-    "facing=up": {
-      "model": "astronomical:block/astral_display"
-    },
     "facing=west": {
-      "model": "astronomical:block/astral_display",
-      "x": 90,
+      "model": "astronomical:block/astral_display_horizontal",
       "y": 270
     }
   }

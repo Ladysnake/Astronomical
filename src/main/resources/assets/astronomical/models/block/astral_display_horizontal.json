@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "astronomical:block/astral_display_side_arrow",
+    "east": "astronomical:block/astral_display_side_receptor",
+    "north": "astronomical:block/astral_display_top_off",
+    "south": "astronomical:block/astral_display_bottom_receptor",
+    "up": "astronomical:block/astral_display_side_arrow",
+    "west": "astronomical:block/astral_display_side_receptor",
+    "particle": "astronomical:block/astral_display_top_off"
+  }
+}

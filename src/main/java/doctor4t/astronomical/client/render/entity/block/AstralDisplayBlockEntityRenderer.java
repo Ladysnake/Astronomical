@@ -65,14 +65,23 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
 
 			// astral link connecting displays
-			this.builder.setColor(new Color(0xFFD88F))
-				.setAlpha(1f)
+			this.builder.setColor(new Color(0x5FEBEB))
+				.setAlpha(0.5f)
 				.renderBeam(
-					RenderHandler.LATE_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
+					RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
 					matrixStack,
 					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
 					parentPos,
-					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 10f));
+					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 15f));
+
+			this.builder.setColor(new Color(0xFFFFFF))
+				.setAlpha(0.4f)
+				.renderBeam(
+					RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
+					matrixStack,
+					Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
+					parentPos,
+					(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 30f));
 
 			// update orbit position hashmap
 			distance = parentPos.distanceTo(bePos);
