@@ -2,6 +2,7 @@ package doctor4t.astronomical.cca.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.client.render.world.AstraSkyRenderer;
@@ -21,17 +22,10 @@ import net.minecraft.world.World;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * <p>
- * NEVER SYNC THIS
- * </p>
- * thanks
- *
- **/
-public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent {
+public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private static final Identifier def = Astronomical.id("star");
 	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
-	private static final int maximumStars = 10;
+	private static final int maximumStars = 5;
 	private final RandomGenerator random;
 	private final World obj;
 	public AstraSkyComponent(World object) {
@@ -49,7 +43,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 
 	private long getWorldSeed(World w) {
 		//not sure how to do this so
-		return 666L;
+		return 666L + obj.getTime() % 1000 >> 7;
 	}
 	@Override
 	public void readFromNbt(NbtCompound tag) {
@@ -93,8 +87,20 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 
 	@Override
 	public void serverTick() {
-		if(obj.getTime() % 4000 == 0 && obj.random.nextFloat() > 0.4f) {
+		if(obj.getTime() % 400 == 0 && obj.random.nextFloat() > 0.4f) {
 			regenerate();
+		}
+		interactStarTick();
+		boolean[] beel = new boolean[1];
+		heavenlySpheres.removeIf(b -> {
+			boolean bl =  b instanceof InteractableStar s && s.countDownThreeTwoOne <= 0;
+			if(bl) {
+				beel[0] = true;
+			}
+			return bl;
+		});
+		if(beel[0]) {
+			AstraCardinalComponents.SKY.sync(obj);
 		}
 	}
 
@@ -106,7 +112,23 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 	}
 
 	private CelestialObject generateStar() {
+		Vec3d up = new Vec3d(0, -1, 0);
 		Vec3d rot = generateDirectionalVector();
+		while(rot.dotProduct(up) < 0) {
+			rot = generateDirectionalVector();
+		}
 		return new InteractableStar(rot.normalize(), 3f, 1);
+	}
+
+	@Override
+	public void clientTick() {
+		interactStarTick();
+	}
+	private void interactStarTick() {
+		for(CelestialObject c : heavenlySpheres) {
+			if(c instanceof InteractableStar s && s.subjectForTermination) {
+				s.countDownThreeTwoOne--;
+			}
+		}
 	}
 }
