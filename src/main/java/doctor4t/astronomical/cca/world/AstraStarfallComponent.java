@@ -54,6 +54,7 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 	@Override
 	public void serverTick() {
 		starfalls.forEach(s -> s.tick(obj));
+		//TODO remove this once you have a replacement for the starfall render code
 		//starfalls.removeIf(s -> s.progress >= 70);
 		AstraCardinalComponents.FALL.sync(obj);
 	}
