@@ -12,6 +12,7 @@
   ],
   "client": [
     "AstralDisplayRendererEnforcerMixin",
+    "AstralObjectItemRendererMixin",
     "HeldItemRendererMixin",
     "InGameHudMixin",
     "LoadAstronomicalShadersGameRendererMixin",
