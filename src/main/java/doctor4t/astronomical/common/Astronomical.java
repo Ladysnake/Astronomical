@@ -8,6 +8,7 @@ import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.init.ModSoundEvents;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
@@ -46,6 +47,7 @@ public class Astronomical implements ModInitializer {
 	}
 
 	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
 	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
     public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
 

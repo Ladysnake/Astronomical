@@ -17,3 +17,4 @@ accessible field net/minecraft/util/math/Matrix4f a22 F
 accessible field net/minecraft/util/math/Matrix4f a23 F
 accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask
 accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask$C_iinezlaz
+accessible method net/minecraft/client/gui/widget/SliderWidget setValue (D)V

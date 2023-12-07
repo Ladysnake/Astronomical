@@ -1,10 +1,17 @@
 package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +40,12 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 		super.appendTooltip(stack, world, tooltip, context);
 	}
 
+	@Override
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		user.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new PlanetColorScreenHandler(syncId, playerInventory), Text.literal("test")));
+
+		return super.use(world, user, hand);
+	}
 
 	public enum PlanetTexture {
 		ACID(Astronomical.id("textures/astral_object/planet/acid.png")),
