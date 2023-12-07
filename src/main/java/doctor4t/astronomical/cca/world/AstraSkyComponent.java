@@ -95,7 +95,8 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		heavenlySpheres.removeIf(b -> {
 			boolean bl =  b instanceof InteractableStar s && s.countDownThreeTwoOne <= 0;
 			if(bl) {
-				((InteractableStar) b).crossFire.accept(obj);
+				if(((InteractableStar) b).crossFire != null)
+					((InteractableStar) b).crossFire.accept(obj);
 				beel[0] = true;
 			}
 			return bl;
