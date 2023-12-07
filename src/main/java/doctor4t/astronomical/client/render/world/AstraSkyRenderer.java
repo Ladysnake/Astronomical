@@ -1,11 +1,7 @@
 package doctor4t.astronomical.client.render.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tessellator;
-import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormats;
+import com.mojang.blaze3d.vertex.*;
 import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.helpers.RenderHelper;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
@@ -33,7 +29,6 @@ public class AstraSkyRenderer {
 	public static final Identifier SHIMMER = Astronomical.id("textures/vfx/shimmer.png");
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
-	private static VertexBuffer distortedHeavens = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
 	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, ClientWorld world, MinecraftClient client) {
 		//matrices = new MatrixStack();
@@ -41,7 +36,6 @@ public class AstraSkyRenderer {
 			List<CelestialObject> c = world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects();
 			MatrixStack temp = new MatrixStack();
 			renderToStarBuffer(temp, provider, projectionMatrix, tickDelta, world, client, c);
-			renderToInteractableStarBuffer(temp, provider, projectionMatrix, tickDelta, world, client, c);
 			shouldTankPerformanceForAFewFrames = false;
 		}
 		Quaternion rotation = Vec3f.POSITIVE_Z.getDegreesQuaternion(world.getSkyAngle(tickDelta) * 360.0F);
@@ -61,15 +55,21 @@ public class AstraSkyRenderer {
 		stars.setShader(matrices.peek().getModel(), projectionMatrix, LodestoneShaders.ADDITIVE_TEXTURE.getInstance().get());
 		VertexBuffer.unbind();
 
-		if(distortedHeavens != null) {
-			List<CelestialObject> c = world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects();
-			MatrixStack temp = new MatrixStack();
-			renderToInteractableStarBuffer(temp, provider, projectionMatrix, tickDelta, world, client, c);
-			RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
-			distortedHeavens.bind();
-			distortedHeavens.setShader(matrices.peek().getModel(), projectionMatrix, LodestoneShaders.ADDITIVE_TEXTURE.getInstance().get());
-			VertexBuffer.unbind();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		RenderSystem.setShader(LodestoneShaders.ADDITIVE_TEXTURE.getInstance());
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+		RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
+		Matrix4f matrix4f = matrices.peek().getModel();
+
+		for(CelestialObject c : world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects().stream().filter(CelestialObject::canInteract).toList()) {
+			Vec3d vector = c.getDirectionVector();
+
+			VertexData p = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat(), 95, Color.WHITE);
+//			if(shouldRender(((AstraFrustum)frustum), p, rotation))
+			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 		}
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 
 		RenderSystem.disableBlend();
 		RenderSystem.disableTexture();
@@ -88,11 +88,10 @@ public class AstraSkyRenderer {
 		VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 		Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
 		for(Starfall s : c.getStarfalls()) {
-			if(s.progress >= 90) {
-				if (s.progress < 161) {
+				if (s.progress < 71) {
 					Vec3d one = playerPos.add(s.startDirection.multiply(100f));
 					Vec3d two = s.endPos;
-					float delta = (s.progress + tickDelta - 100) / 70f;
+					float delta = (s.progress + tickDelta) / 70f;
 					float alpha = 0.6f*(1-delta)+delta;
 					one = one.lerp(two, delta);
 					VertexData d = createVertexData(one.subtract(playerPos), UP, 10, Color.WHITE);
@@ -101,7 +100,7 @@ public class AstraSkyRenderer {
 						.setAlpha(alpha)
 						.renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, d.vertices(), 1);
 				} else {
-					Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - 160), 0, 30));
+					Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - 70), 0, 30));
 					Vec3d pos = s.endPos;
 
 					Vec3d diff = pos.subtract(playerPos);
@@ -123,7 +122,6 @@ public class AstraSkyRenderer {
 					((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 				}
-			}
 		}
 		matrices.pop();
 	}
@@ -149,29 +147,6 @@ public class AstraSkyRenderer {
 		}
 		stars.bind();
 		stars.upload(bufferBuilder.end());
-		VertexBuffer.unbind();
-	}
-	public static void renderToInteractableStarBuffer(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, ClientWorld world, MinecraftClient client, List<CelestialObject> objects) {
-        Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		RenderSystem.setShader(LodestoneShaders.ADDITIVE_TEXTURE.getInstance());
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-		Matrix4f matrix4f = matrices.peek().getModel();
-
-		if(distortedHeavens != null) {
-			distortedHeavens.close();
-		}
-		distortedHeavens = new VertexBuffer();
-
-		for(CelestialObject c : objects.stream().filter(CelestialObject::canInteract).toList()) {
-			Vec3d vector = c.getDirectionVector();
-
-			VertexData p = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat(), 95, Color.WHITE);
-//			if(shouldRender(((AstraFrustum)frustum), p, rotation))
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
-		}
-		distortedHeavens.bind();
-		distortedHeavens.upload(bufferBuilder.end());
 		VertexBuffer.unbind();
 	}
 	private static void apply(TriConsumer<Vec3f, Color, Vec2f> gungy, VertexData data) {

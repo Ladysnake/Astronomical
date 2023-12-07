@@ -63,8 +63,9 @@ public abstract class SpyglassItemMixin extends Item {
 				if (h > 0.99995 && rotatedVec.dotProduct(new Vec3d(0, 1, 0)) > 0) {
 					if(!bl) {
 						Vec3d pos = user.getPos().add(world.random.nextGaussian()*64, 0, world.random.nextGaussian()*64);
-						Quaternion rotationTwo = Vec3f.POSITIVE_Z.getDegreesQuaternion(astra$getSkyAngle(world.getLunarTime() + 90) * 360.0F);
-						world.getComponent(AstraCardinalComponents.FALL).addFall(rotateViaQuat(obj.getDirectionVector(), rotationTwo).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
+						((InteractableStar) obj).crossFire = (k) -> {
+							world.getComponent(AstraCardinalComponents.FALL).addFall(rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
+						};
 						supernovad = obj;
 						break;
 					}

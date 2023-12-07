@@ -1,10 +1,15 @@
 package doctor4t.astronomical.common.screen;
 
+import com.mojang.blaze3d.lighting.DiffuseLighting;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sammy.lodestone.handlers.RenderHandler;
+import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,12 +17,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
@@ -37,11 +49,11 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 	private SliderWidget blue2Slider;
 	private int color1;
 	private int color2;
+	private ItemStack retItemStack;
 
 	public PlanetColorScreen(PlanetColorScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
 	}
-
 	@Override
 	protected void init() {
 		super.init();
@@ -51,6 +63,7 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		this.backgroundHeight = 184;
 		this.playerInventoryTitleY = this.backgroundHeight - 102;
 		this.addSliders();
+		retItemStack = new ItemStack(ModItems.NANO_PLANET);
 	}
 
 	public void addSliders() {
@@ -134,39 +147,55 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		var x = (this.width - this.backgroundWidth) / 2;
 		var y = (this.height - this.backgroundHeight) / 2;
 		matrices.push();
-		matrices.translate(0f,0f,-450f);
-		this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		//matrices.translate(0f,0f,-450f);
+		drawTexture(matrices, x, y, -400, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 		matrices.pop();
 
-		AstraWorldVFXBuilder builder = new AstraWorldVFXBuilder();
-		RenderLayer renderLayer = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.applyAndCache(NanoPlanetItem.PlanetTexture.HOME.texture);
-		VertexConsumerProvider.Immediate vertexConsumerProvider = RenderHandler.LATE_DELAYED_RENDER;
-		int sphereDetail = 20;
+		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", color1);
+		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", color2);
+		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 2);
+		String texture = NanoPlanetItem.PlanetTexture.CRATERS.name();
+		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+		renderStar(retItemStack, x+this.backgroundWidth/2-8, y+this.backgroundHeight/2-8);
+	}
 
-		matrices.push();
-		matrices.scale(.01f,.01f,.01f);
-		matrices.translate(0,0,-6);
+	VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 
-		builder.setColor(new Color(color1))
-			.setAlpha(1f)
-			.renderSphere(
-				vertexConsumerProvider.getBuffer(AstronomicalClient.SOLID_BALL),
-				matrices,
-				1,
-				sphereDetail,
-				sphereDetail);
+	protected void renderStar(ItemStack stack, int x, int y) {
+		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.push();
+		matrixStack.translate((double)x, (double)y, (double)(100.0F + 200f));
+		matrixStack.translate(8.0, 8.0, 0.0);
+		matrixStack.scale(1.0F, -1.0F, 1.0F);
+		matrixStack.scale(32.0F, 32.0F, 32.0F);
+		RenderSystem.applyModelViewMatrix();
+		MatrixStack matrices = new MatrixStack();
+		VertexConsumerProvider.Immediate vertexConsumerProvider = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 
-		builder.setColor(new Color(color2))
-			.setAlpha(1f)
-			.renderSphere(
-				vertexConsumerProvider.getBuffer(renderLayer),
-				matrices,
-				1,
-				sphereDetail,
-				sphereDetail);
+		if (stack.getItem() instanceof NanoAstralObjectItem) {
+			matrices.push();
 
-		matrices.pop();
+			float scale = .25f;
+			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
+
+			matrices.scale(1f, 1, 0.1f);
+			matrices.scale(scale, scale, scale);
+
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
+			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 5, time, false);
+			matrices.pop();
+		}
+		vertexConsumerProvider.draw();
+		RenderSystem.enableDepthTest();
+
+		matrixStack.pop();
+		RenderSystem.applyModelViewMatrix();
 	}
 
 	@Override

@@ -38,12 +38,12 @@ public class Starfall {
 
 	public void tick(World w) {
 		progress++;
-		if(progress >= 160 && !w.isClient) {
+		if(progress == 70 && !w.isClient) {
 			//TODO spawn stuff here
-//			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, w);
-//			l.setPosition(endPos);
-//			l.setCosmetic(true);
-//			w.spawnEntity(l);
+			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, w);
+			l.setPosition(endPos);
+			l.setCosmetic(true);
+			w.spawnEntity(l);
 		}
 	}
 }
