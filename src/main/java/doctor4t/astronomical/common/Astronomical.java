@@ -66,6 +66,10 @@ public class Astronomical implements ModInitializer {
 				var screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().yLevel.setValue(yLevel);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
 					astralDisplayScreenHandler.entity().markDirty();
 				}
 			});
@@ -76,6 +80,10 @@ public class Astronomical implements ModInitializer {
 				var screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().rotSpeed.setValue(rotSpeed);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
 					astralDisplayScreenHandler.entity().markDirty();
 				}
 			});
@@ -86,6 +94,10 @@ public class Astronomical implements ModInitializer {
 				var screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().spin.setValue(spin);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
 					astralDisplayScreenHandler.entity().markDirty();
 				}
 			});
