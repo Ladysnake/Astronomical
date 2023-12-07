@@ -68,7 +68,7 @@ public class MarshmallowStickItem extends Item {
 						var nbt = heldStack.getOrCreateNbt();
 						var ticks = nbt.getFloat("RoastTicks");
 						if (ticks < CookState.BURNT.cookTime + 3 * 20) {
-							var growth = Math.max(0, (4f - headDistance) / 4f);
+							var growth = Math.max(0, (4f - headDistance) / 10f);
 							nbt.putFloat("RoastTicks", ticks + growth);
 						}
 					}
