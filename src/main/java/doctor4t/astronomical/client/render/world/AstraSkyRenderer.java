@@ -21,6 +21,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.apache.logging.log4j.util.TriConsumer;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.List;
@@ -30,6 +31,8 @@ public class AstraSkyRenderer {
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
+	private static final Color GATE_ONE = new Color(255, 25, 255, 255);
+	private static final Color GATE_TWO = new Color(255, 255, 25, 255);
 	public static void renderSky(MatrixStack matrices, VertexConsumerProvider provider, Matrix4f projectionMatrix, float tickDelta, ClientWorld world, MinecraftClient client) {
 		//matrices = new MatrixStack();
 		if(stars == null || shouldTankPerformanceForAFewFrames) {
@@ -61,13 +64,21 @@ public class AstraSkyRenderer {
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
 		Matrix4f matrix4f = matrices.peek().getModel();
+		int ran = 0;
 
 		for(CelestialObject c : world.getComponent(AstraCardinalComponents.SKY).getCelestialObjects().stream().filter(CelestialObject::canInteract).toList()) {
 			Vec3d vector = c.getDirectionVector();
+			float rot1 = (world.getTimeOfDay()+ran+tickDelta)/143f;
+			float rot2 = (world.getTimeOfDay()+ran+tickDelta)/110f;
+			float rot3 = (world.getTimeOfDay()+ran+tickDelta+20)/118f;
 
-			VertexData p = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat(), 95, Color.WHITE);
-//			if(shouldRender(((AstraFrustum)frustum), p, rotation))
+			VertexData p3 = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat()+0.1f*MathHelper.sin(rot2), 95, rot3, GATE_ONE);
+			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p3);
+			VertexData p = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat()+0.2f*MathHelper.sin(rot3), 95, rot1, GATE_TWO);
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
+			VertexData p2 = createVertexData(vector, UP, c.getSize()+0.4f*c.getHeat()+0.1f*MathHelper.sin(rot1), 95, rot2, Color.WHITE);
+			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p2);
+			ran += 200;
 		}
 		BufferRenderer.drawWithShader(bufferBuilder.end());
 
@@ -187,6 +198,67 @@ public class AstraSkyRenderer {
 		z *= distance;
 
 		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z),  new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
+	}
+	private static VertexData createVertexData(Vec3d dir, Vec3d up, float size, float distance, float rotation, Color c) {
+		float x = (float) dir.x;
+		float y = (float) dir.y;
+		float z = (float) dir.z;
+
+		float ux = (float) up.x;
+		float uy = (float) up.y;
+		float uz = (float) up.z;
+
+		float f = MathHelper.sin(rotation / 2.0F);
+		float qx = x * f;
+		float qy = y * f;
+		float qz = z * f;
+		float qw = MathHelper.cos(rotation / 2.0F);
+
+		float t1x = -y*uz+(z*uy);
+		float t1y = -z*ux+(x*uz);
+		float t1z = -x*uy+(y*ux);
+
+		Vec3d q = rotateViaQuat(t1x, t1y, t1z, qx, qy, qz, qw);
+		t1x = (float) q.x;
+		t1y = (float) q.y;
+		t1z = (float) q.z;
+
+		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
+
+		t1x /= t1d2; t1y /= t1d2; t1z /= t1d2;
+
+		float t2x = -y*t1z+(z*t1y);
+		float t2y = -z*t1x+(x*t1z);
+		float t2z = -x*t1y+(y*t1x);
+
+		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
+
+		t2x /= t2d2; t2y /= t2d2; t2z /= t2d2;
+		t1x *= size; t1y *= size; t1z *= size;
+		t2x *= size; t2y *= size; t2z *= size;
+
+		x *= distance;
+		y *= distance;
+		z *= distance;
+
+		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z),  new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
+	}
+
+	private static @NotNull Vec3d rotateViaQuat(float x, float y, float z, float ux, float uy, float uz, float scalar) {
+
+		float cx = -y*uz+(z*uy);
+		float cy = -z*ux+(x*uz);
+		float cz = -x*uy+(y*ux);
+
+		double s1 = 2.0f * (ux*x + uy*y + uz*z);
+		double s2 = scalar*scalar - (ux*ux + uy*uy + uz*uz);
+		double s3 = 2.0f * scalar;
+
+		double vpx = s1 * ux + s2 * x + s3 * cx;
+		double vpy = s1 * uy + s2 * y + s3 * cy;
+		double vpz = s1 * uz + s2 * z + s3 * cz;
+
+		return new Vec3d(vpx, vpy, vpz);
 	}
 	private static VertexData createFadeoutVertexData(Vec3d pos, Vec3d up, float beginSize, float endSize, Color c, int endAlpha, float vOffset) {
 		Vec3d b = pos.normalize();
