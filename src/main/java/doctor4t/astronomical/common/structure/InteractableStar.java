@@ -12,16 +12,17 @@ import net.minecraft.world.World;
 import java.util.function.Consumer;
 
 public class InteractableStar extends Star {
-	public boolean subjectForTermination = false;
-	public int supernovaTicks = 0;
+	public static final Identifier INTERACTABLE_TEX = Astronomical.id("textures/vfx/interactable.png");
+	public static final Identifier SUPERNOVA_TEX = Astronomical.id("textures/vfx/supernova.png");
+	public static final Identifier SUPERNOVA_DUST_TEX = Astronomical.id("textures/vfx/supernova_dust.png");
+	private static final Identifier ID = Astronomical.id("supernoveable");
 	public static int FULL_COLLAPSE_TICKS = 100;
 	public static int EXPLOSION_TICKS = FULL_COLLAPSE_TICKS + 1000;
 	public static int START_FADE_OUT_TICKS = FULL_COLLAPSE_TICKS + 800;
 	public static int STARFALL_TICKS = FULL_COLLAPSE_TICKS + 200;
+	public boolean subjectForTermination = false;
+	public int supernovaTicks = 0;
 	public Consumer<World> crossFire;
-	public static final Identifier INTERACTABLE_TEX = Astronomical.id("textures/vfx/interactable.png");
-	public static final Identifier SUPERNOVA_TEX = Astronomical.id("textures/vfx/supernova.png");
-	public static final Identifier SUPERNOVA_DUST_TEX = Astronomical.id("textures/vfx/supernova_dust.png");
 
 	public InteractableStar(Vec3d vec, float size, float alpha, float heat) {
 		super(vec, size, alpha, heat);
@@ -57,7 +58,7 @@ public class InteractableStar extends Star {
 			if (supernovaTicks <= FULL_COLLAPSE_TICKS) {
 				ret = MathHelper.lerp(Easing.EXPO_IN.ease((float) supernovaTicks / FULL_COLLAPSE_TICKS, 0f, 1f, 1f), size, 0);
 			} else if (supernovaTicks <= EXPLOSION_TICKS) {
-				ret = MathHelper.lerp(Easing.CUBIC_OUT.ease((float) (supernovaTicks - FULL_COLLAPSE_TICKS) / (EXPLOSION_TICKS- FULL_COLLAPSE_TICKS), 0f, 1f, 1f), 0, size * 3f);
+				ret = MathHelper.lerp(Easing.CUBIC_OUT.ease((float) (supernovaTicks - FULL_COLLAPSE_TICKS) / (EXPLOSION_TICKS - FULL_COLLAPSE_TICKS), 0f, 1f, 1f), 0, size * 3f);
 			}
 		}
 
@@ -71,7 +72,7 @@ public class InteractableStar extends Star {
 
 		if (subjectForTermination && supernovaTicks >= 0) {
 			if (supernovaTicks >= START_FADE_OUT_TICKS && supernovaTicks <= EXPLOSION_TICKS) {
-				ret = MathHelper.lerp(Easing.SINE_OUT.ease((float) (supernovaTicks-START_FADE_OUT_TICKS) / (EXPLOSION_TICKS- START_FADE_OUT_TICKS), 0f, 1f, 1f), alpha, 0);
+				ret = MathHelper.lerp(Easing.SINE_OUT.ease((float) (supernovaTicks - START_FADE_OUT_TICKS) / (EXPLOSION_TICKS - START_FADE_OUT_TICKS), 0f, 1f, 1f), alpha, 0);
 			}
 		}
 
@@ -82,8 +83,6 @@ public class InteractableStar extends Star {
 	public boolean canInteract() {
 		return true;
 	}
-
-	private static final Identifier ID = Astronomical.id("supernoveable");
 
 	@Override
 	public Identifier getId() {

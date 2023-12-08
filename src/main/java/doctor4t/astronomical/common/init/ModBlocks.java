@@ -2,7 +2,6 @@ package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
-import static doctor4t.astronomical.common.init.ModItems.ITEMS;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
@@ -14,6 +13,8 @@ import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static doctor4t.astronomical.common.init.ModItems.ITEMS;
 
 public interface ModBlocks {
 	Map<Block, Identifier> BLOCKS = new LinkedHashMap<>();

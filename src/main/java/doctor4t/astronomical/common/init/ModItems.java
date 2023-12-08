@@ -42,7 +42,8 @@ public interface ModItems {
 	static void initItemGroups() {
 		ASTRONOMICAL_ITEM_GROUP.setItems((itemStacks, itemGroup) -> {
 			for (var item : ITEMS.keySet()) {
-				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP)) continue;
+				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP))
+					continue;
 				if (item == MARSHMALLOW_STICK) {
 					for (var state : MarshmallowStickItem.CookState.values()) {
 						var stack = new ItemStack(item, 1);

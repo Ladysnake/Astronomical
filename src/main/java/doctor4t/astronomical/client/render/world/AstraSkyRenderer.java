@@ -28,6 +28,7 @@ import java.util.List;
 
 public class AstraSkyRenderer {
 	public static final Identifier SHIMMER = Astronomical.id("textures/vfx/shimmer.png");
+	public static final Color STARFALL = new Color(230, 185, 255, 200);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
@@ -146,8 +147,6 @@ public class AstraSkyRenderer {
 	public static void redrawStars() {
 		shouldTankPerformanceForAFewFrames = true;
 	}
-
-	public static final Color STARFALL = new Color(230, 185, 255, 200);
 
 	public static void renderStarfalls(MatrixStack matrices, float tickDelta, ClientWorld world, MinecraftClient client) {
 		matrices.push();

@@ -22,8 +22,8 @@ import java.util.List;
 
 public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private static final Identifier def = Astronomical.id("star");
-	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
 	private static final int maximumStars = 5;
+	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
 	private final RandomGenerator random;
 	private final World obj;
 
@@ -94,8 +94,8 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		interactStarTick();
 		boolean[] beel = new boolean[1];
 		heavenlySpheres.stream().iterator().forEachRemaining(celestialObject -> {
-			if(celestialObject instanceof InteractableStar s && s.supernovaTicks == InteractableStar.STARFALL_TICKS) {
-				if(((InteractableStar) celestialObject).crossFire != null)
+			if (celestialObject instanceof InteractableStar s && s.supernovaTicks == InteractableStar.STARFALL_TICKS) {
+				if (((InteractableStar) celestialObject).crossFire != null)
 					((InteractableStar) celestialObject).crossFire.accept(obj);
 				beel[0] = true;
 			}

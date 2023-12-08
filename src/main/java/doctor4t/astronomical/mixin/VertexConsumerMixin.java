@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(VertexConsumer.class)
 public interface VertexConsumerMixin {
-	@Shadow VertexConsumer vertex(double x, double y, double z);
+	@Shadow
+	VertexConsumer vertex(double x, double y, double z);
 
 	/**
 	 * @author

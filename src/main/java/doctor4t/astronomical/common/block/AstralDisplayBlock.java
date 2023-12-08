@@ -121,7 +121,7 @@ public class AstralDisplayBlock extends BlockWithEntity {
 					Direction direction = world.getBlockState(pos.offset(state.get(FACING), i)).get(FACING);
 
 					// if same orientation, set to parent
-					if (direction == state.get(FACING)){
+					if (direction == state.get(FACING)) {
 						astralDisplayBlockEntity.setParentPos(foundAstralDisplayBE.getParentPos());
 					} else { // if different horizontal orientation set to display found
 						astralDisplayBlockEntity.setParentPos(pos.offset(state.get(FACING), i));

@@ -4,9 +4,6 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.InteractableStar;
 import doctor4t.astronomical.common.structure.Star;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
 import java.util.LinkedHashMap;

@@ -16,9 +16,11 @@ import java.util.List;
 public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private final List<Starfall> starfalls = new LinkedList<>();
 	private final World obj;
+
 	public AstraStarfallComponent(World object) {
 		this.obj = object;
 	}
+
 	@Override
 	public void readFromNbt(NbtCompound tag) {
 		NbtList nbtList = tag.getList("falls", 10);
@@ -58,7 +60,7 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 		//starfalls.removeIf(s -> s.progress >= LANDING_PROGRESS);
 
 		//TODO sync when removing a starfall.
-		if(false)
+		if (false)
 			AstraCardinalComponents.FALL.sync(obj);
 	}
 

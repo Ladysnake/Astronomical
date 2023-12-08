@@ -1,7 +1,6 @@
 package doctor4t.astronomical.client.render.entity.block;
 
 import com.sammy.lodestone.handlers.RenderHandler;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
@@ -9,14 +8,9 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
-import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.item.NanoAstralObjectItem;
-import doctor4t.astronomical.common.item.NanoCosmosItem;
-import doctor4t.astronomical.common.item.NanoPlanetItem;
-import doctor4t.astronomical.common.item.NanoRingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;

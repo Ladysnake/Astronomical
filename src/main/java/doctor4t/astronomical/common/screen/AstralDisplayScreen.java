@@ -19,8 +19,8 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.util.function.Consumer;
 
 public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandler> {
-	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astral_display.png");
 	public static final Identifier ASTRAL_WIDGETS_TEXTURE = new Identifier("textures/gui/astral_widgets.png");
+	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astral_display.png");
 	private static final Text YLEVEL_TEXT = Text.translatable("screen.astronomical.astraldisplay.ylevel");
 	private static final Text ROTSPEED_TEXT = Text.translatable("screen.astronomical.astraldisplay.rotspeed");
 	private static final Text SPIN_TEXT = Text.translatable("screen.astronomical.astraldisplay.spin");
@@ -49,23 +49,23 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	public void addSliders() {
 		if (this.handler.entity() == null) return;
 //		if (this.yLevelSlider == null) {
-//			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel, (d) -> this.syncSlider("y_level", d));
+//			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel, (d) -> this.syncSlider(Astronomical.Y_LEVEL_PACKET, d));
 //			this.addDrawableChild(this.yLevelSlider);
 //		}
 		if (this.rotSpeedSlider == null) {
-			this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider("rot_speed", d));
+			this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider(Astronomical.ROT_SPEED_PACKET, d));
 			this.addDrawableChild(this.rotSpeedSlider);
 		}
 		if (this.spinSlider == null) {
-			this.spinSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider("spin", d));
+			this.spinSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider(Astronomical.SPIN_PACKET, d));
 			this.addDrawableChild(this.spinSlider);
 		}
 	}
 
-	private void syncSlider(String id, double value) {
+	private void syncSlider(Identifier packet, double value) {
 		var buf = PacketByteBufs.create();
 		buf.writeDouble(value);
-		ClientPlayNetworking.send(Astronomical.id(id), buf);
+		ClientPlayNetworking.send(packet, buf);
 	}
 
 	@Override
@@ -106,7 +106,8 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		}
 
 		@Override
-		protected void updateMessage() {}
+		protected void updateMessage() {
+		}
 
 		@Override
 		protected void applyValue() {

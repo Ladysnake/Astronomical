@@ -4,5 +4,7 @@ public interface PlayerAttackHeld {
 	default boolean astronomical$isHoldingAttack() {
 		return false;
 	}
-	default void astronomical$setHoldingAttack(boolean attackHeld) {}
+
+	default void astronomical$setHoldingAttack(boolean attackHeld) {
+	}
 }

@@ -15,10 +15,6 @@ import java.awt.*;
 public class AstralBundleItem extends Item {
 	public Type type;
 
-	public enum Type {
-		PLANET, STAR, COSMOS, RING
-	}
-
 	public AstralBundleItem(Settings settings, Type type) {
 		super(settings);
 		this.type = type;
@@ -62,5 +58,9 @@ public class AstralBundleItem extends Item {
 		user.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 1.0f, 1.0f);
 		user.giveItemStack(retItemStack);
 		return TypedActionResult.success(user.getStackInHand(hand));
+	}
+
+	public enum Type {
+		PLANET, STAR, COSMOS, RING
 	}
 }

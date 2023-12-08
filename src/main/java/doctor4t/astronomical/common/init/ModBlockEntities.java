@@ -14,14 +14,14 @@ import java.util.Map;
 public interface ModBlockEntities {
 	Map<BlockEntityType<? extends BlockEntity>, Identifier> BLOCK_ENTITIES = new LinkedHashMap<>();
 
-	BlockEntityType<AstralDisplayBlockEntity> ASTRAL_DISPLAY = createBlockEntity("astral_display", QuiltBlockEntityTypeBuilder.create(AstralDisplayBlockEntity::new, ModBlocks.ASTRAL_DISPLAY).build());
-
 	private static <T extends BlockEntityType<? extends BlockEntity>> T createBlockEntity(String name, T entity) {
 		BLOCK_ENTITIES.put(entity, Astronomical.id(name));
 		return entity;
-	}
+	}	BlockEntityType<AstralDisplayBlockEntity> ASTRAL_DISPLAY = createBlockEntity("astral_display", QuiltBlockEntityTypeBuilder.create(AstralDisplayBlockEntity::new, ModBlocks.ASTRAL_DISPLAY).build());
 
 	static void initialize() {
 		BLOCK_ENTITIES.keySet().forEach(entityType -> Registry.register(Registry.BLOCK_ENTITY_TYPE, BLOCK_ENTITIES.get(entityType), entityType));
 	}
+
+
 }

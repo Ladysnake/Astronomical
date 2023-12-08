@@ -8,11 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class PlanetColorScreenHandler extends ScreenHandler {
+public class RingColorScreenHandler extends ScreenHandler {
 	public AstralDisplayBlockEntity entity;
 
-	public PlanetColorScreenHandler(int syncId, @NotNull PlayerInventory playerInventory) {
-		super(Astronomical.PLANET_COLOR_SCREEN_HANDLER, syncId);
+	public RingColorScreenHandler(int syncId, @NotNull PlayerInventory playerInventory) {
+		super(Astronomical.RING_COLOR_SCREEN_HANDLER, syncId);
 	}
 
 	public AstralDisplayBlockEntity entity() {

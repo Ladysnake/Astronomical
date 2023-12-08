@@ -18,10 +18,15 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
-	@Shadow @Final public GameOptions options;
-	@Shadow @Nullable public ClientPlayerEntity player;
+	@Shadow
+	@Final
+	public GameOptions options;
+	@Shadow
+	@Nullable
+	public ClientPlayerEntity player;
 
-	@Unique private boolean astronomical$holding = false;
+	@Unique
+	private boolean astronomical$holding = false;
 
 	@WrapOperation(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;handleBlockBreaking(Z)V"))
 	private void astronomical$holding(MinecraftClient instance, boolean bl, Operation<Void> original) {
@@ -30,7 +35,7 @@ public class MinecraftClientMixin {
 			this.astronomical$holding = holding;
 			var buf = PacketByteBufs.create();
 			buf.writeBoolean(holding);
-			ClientPlayNetworking.send(Astronomical.id("holding"), buf);
+			ClientPlayNetworking.send(Astronomical.HOLDING_PACKET, buf);
 		}
 		if (this.player == null || !(this.player.getMainHandStack().getItem() instanceof MarshmallowStickItem)) {
 			original.call(instance, bl);

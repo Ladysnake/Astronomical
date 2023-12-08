@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-	@Shadow public abstract ItemStack getStackInHand(Hand hand);
+	@Shadow
+	public abstract ItemStack getStackInHand(Hand hand);
 
 	@Inject(method = "swingHand(Lnet/minecraft/util/Hand;Z)V", at = @At("HEAD"), cancellable = true)
 	private void astronomical$swingHand(Hand hand, boolean fromServerPlayer, CallbackInfo ci) {

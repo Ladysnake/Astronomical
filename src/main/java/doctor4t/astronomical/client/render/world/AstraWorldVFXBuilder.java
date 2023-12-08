@@ -31,34 +31,36 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vec3f[] positions, float width, float height) {
 		Matrix4f last = stack.peek().getModel();
 
-        this.supplier.placeVertex(vertexConsumer, last, positions[0].getX()+xOffset, positions[0].getY()+yOffset, positions[0].getZ()+zOffset, this.u0, this.v1);
-        this.supplier.placeVertex(vertexConsumer, last, positions[1].getX()+xOffset, positions[1].getY()+yOffset, positions[1].getZ()+zOffset, this.u1, this.v1);
-        this.supplier.placeVertex(vertexConsumer, last, positions[2].getX()+xOffset, positions[2].getY()+yOffset, positions[2].getZ()+zOffset, this.u1, this.v0);
-        this.supplier.placeVertex(vertexConsumer, last, positions[3].getX()+xOffset, positions[3].getY()+yOffset, positions[3].getZ()+zOffset, this.u0, this.v0);
+		this.supplier.placeVertex(vertexConsumer, last, positions[0].getX() + xOffset, positions[0].getY() + yOffset, positions[0].getZ() + zOffset, this.u0, this.v1);
+		this.supplier.placeVertex(vertexConsumer, last, positions[1].getX() + xOffset, positions[1].getY() + yOffset, positions[1].getZ() + zOffset, this.u1, this.v1);
+		this.supplier.placeVertex(vertexConsumer, last, positions[2].getX() + xOffset, positions[2].getY() + yOffset, positions[2].getZ() + zOffset, this.u1, this.v0);
+		this.supplier.placeVertex(vertexConsumer, last, positions[3].getX() + xOffset, positions[3].getY() + yOffset, positions[3].getZ() + zOffset, this.u0, this.v0);
 
 		return this;
 	}
+
 	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, VertexData data, Runnable r) {
 		Matrix4f last = stack.peek().getModel();
 		int[] iter = new int[1];
 		setVertexSupplier((c, l, x, y, z, u, v) -> {
 			Color col = data.color()[iter[0]];
 			if (l == null)
-				c.vertex(x, y, z).color(col.getRed()/255f, col.getGreen()/255f, col.getBlue()/255f, col.getAlpha()/255f*this.a).uv(u, v).light(this.light).next();
+				c.vertex(x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
 			else
-				c.vertex(l, x, y, z).color(col.getRed()/255f, col.getGreen()/255f, col.getBlue()/255f, col.getAlpha()/255f*this.a).uv(u, v).light(this.light).next();
+				c.vertex(l, x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
 			iter[0]++;
 		}).setFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[0].getX()+xOffset, data.vertices()[0].getY()+yOffset, data.vertices()[0].getZ()+zOffset, data.uv()[0].x, data.uv()[0].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[1].getX()+xOffset, data.vertices()[1].getY()+yOffset, data.vertices()[1].getZ()+zOffset, data.uv()[1].x, data.uv()[1].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[2].getX()+xOffset, data.vertices()[2].getY()+yOffset, data.vertices()[2].getZ()+zOffset, data.uv()[2].x, data.uv()[2].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[3].getX()+xOffset, data.vertices()[3].getY()+yOffset, data.vertices()[3].getZ()+zOffset, data.uv()[3].x, data.uv()[3].y);
+		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[0].getX() + xOffset, data.vertices()[0].getY() + yOffset, data.vertices()[0].getZ() + zOffset, data.uv()[0].x, data.uv()[0].y);
+		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[1].getX() + xOffset, data.vertices()[1].getY() + yOffset, data.vertices()[1].getZ() + zOffset, data.uv()[1].x, data.uv()[1].y);
+		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[2].getX() + xOffset, data.vertices()[2].getY() + yOffset, data.vertices()[2].getZ() + zOffset, data.uv()[2].x, data.uv()[2].y);
+		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[3].getX() + xOffset, data.vertices()[3].getY() + yOffset, data.vertices()[3].getZ() + zOffset, data.uv()[3].x, data.uv()[3].y);
 
 		r.run();
 
 		return this;
 	}
+
 	@Override
 	public VFXBuilders.WorldVFXBuilder renderSphere(VertexConsumer vertexConsumer, MatrixStack stack, float radius, int longs, int lats) {
 		Matrix4f last = stack.peek().getModel();

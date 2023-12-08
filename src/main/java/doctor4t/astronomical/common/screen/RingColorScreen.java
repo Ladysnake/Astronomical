@@ -29,21 +29,17 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
+public class RingColorScreen extends HandledScreen<RingColorScreenHandler> {
 	private static final Identifier TEXTURE = Astronomical.id("textures/gui/color_change.png");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("minecraft", "textures/gui/widgets.png");
 	VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
-	private SliderWidget red1Slider;
-	private SliderWidget red2Slider;
-	private SliderWidget green1Slider;
-	private SliderWidget green2Slider;
-	private SliderWidget blue1Slider;
-	private SliderWidget blue2Slider;
-	private int color1;
-	private int color2;
+	private SliderWidget redSlider;
+	private SliderWidget greenSlider;
+	private SliderWidget blueSlider;
+	private int color;
 	private ItemStack retItemStack;
 
-	public PlanetColorScreen(PlanetColorScreenHandler handler, PlayerInventory inventory, Text title) {
+	public RingColorScreen(RingColorScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
 	}
 
@@ -58,55 +54,37 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		this.addSliders();
 
 		ItemStack stack = MinecraftClient.getInstance().player.getMainHandStack();
-		if (!stack.isOf(ModItems.NANO_PLANET)) {
+		if (!stack.isOf(ModItems.NANO_RING)) {
 			stack = MinecraftClient.getInstance().player.getOffHandStack();
-			if (!stack.isOf(ModItems.NANO_PLANET)) {
+			if (!stack.isOf(ModItems.NANO_RING)) {
 				return;
 			}
 		}
 
 		retItemStack = stack;
-		this.color1 = retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color1");
-		this.color2 = retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color2");
+		this.color = retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 		refreshSliders();
 	}
 
 	public void addSliders() {
 		int RENDER_WIDTH = 0;
 		int RENDER_HEIGHT = 0;
-		int offsetX1 = -59;
-		int offsetX2 = 5;
+		int offsetX = -27;
 		int offsetY = -81;
 
-		this.red1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color1) & 0xFF, (m) -> Text.literal("Red: %.0f".formatted(m)), (r) -> {
-			color1 &= 0xFF00FFFF;
-			color1 |= ((r & 0xFF) << 16);
+		this.redSlider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color) & 0xFF, (m) -> Text.literal("Red: %.0f".formatted(m)), (r) -> {
+			color &= 0xFF00FFFF;
+			color |= ((r & 0xFF) << 16);
 			this.refreshSliders();
 		});
-		this.green1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color1 >> 8) & 0xFF, (m) -> Text.literal("Green: %.0f".formatted(m)), (g) -> {
-			color1 &= 0xFFFF00FF;
-			color1 |= ((g & 0xFF) << 8);
+		this.greenSlider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color >> 8) & 0xFF, (m) -> Text.literal("Green: %.0f".formatted(m)), (g) -> {
+			color &= 0xFFFF00FF;
+			color |= ((g & 0xFF) << 8);
 			this.refreshSliders();
 		});
-		this.blue1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color1 >> 16) & 0xFF, (m) -> Text.literal("Blue: %.0f".formatted(m)), (b) -> {
-			color1 &= 0xFFFFFF00;
-			color1 |= (b & 0xFF);
-			this.refreshSliders();
-		});
-
-		this.red2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color2) & 0xFF, (m) -> Text.literal("Red: %.0f".formatted(m)), (r) -> {
-			color2 &= 0xFF00FFFF;
-			color2 |= ((r & 0xFF) << 16);
-			this.refreshSliders();
-		});
-		this.green2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color2 >> 8) & 0xFF, (m) -> Text.literal("Green: %.0f".formatted(m)), (g) -> {
-			color2 &= 0xFFFF00FF;
-			color2 |= ((g & 0xFF) << 8);
-			this.refreshSliders();
-		});
-		this.blue2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color2 >> 16) & 0xFF, (m) -> Text.literal("Blue: %.0f".formatted(m)), (b) -> {
-			color2 &= 0xFFFFFF00;
-			color2 |= (b & 0xFF);
+		this.blueSlider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color >> 16) & 0xFF, (m) -> Text.literal("Blue: %.0f".formatted(m)), (b) -> {
+			color &= 0xFFFFFF00;
+			color |= (b & 0xFF);
 			this.refreshSliders();
 		});
 	}
@@ -129,22 +107,17 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 	}
 
 	private void refreshSliders() {
-		this.red1Slider.setValue(((color1 >> 16) & 0xFF) / 255f);
-		this.green1Slider.setValue(((color1 >> 8) & 0xFF) / 255f);
-		this.blue1Slider.setValue((color1 & 0xFF) / 255f);
+		this.redSlider.setValue(((color >> 16) & 0xFF) / 255f);
+		this.greenSlider.setValue(((color >> 8) & 0xFF) / 255f);
+		this.blueSlider.setValue((color & 0xFF) / 255f);
 
-		this.red2Slider.setValue(((color2 >> 16) & 0xFF) / 255f);
-		this.green2Slider.setValue(((color2 >> 8) & 0xFF) / 255f);
-		this.blue2Slider.setValue((color2 & 0xFF) / 255f);
-
-		syncColors(color1, color2);
+		syncColors(color);
 	}
 
-	private void syncColors(int color1, int color2) {
+	private void syncColors(int color) {
 		var buf = PacketByteBufs.create();
-		buf.writeInt(color1);
-		buf.writeInt(color2);
-		ClientPlayNetworking.send(Astronomical.PLANET_COLOR_CHANGE_PACKET, buf);
+		buf.writeInt(color);
+		ClientPlayNetworking.send(Astronomical.RING_COLOR_CHANGE_PACKET, buf);
 	}
 
 	@Override
@@ -159,8 +132,7 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 		matrices.pop();
 
-		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", color1);
-		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", color2);
+		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", color);
 		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1);
 		renderStar(retItemStack, x + this.backgroundWidth / 2 - 8, y + this.backgroundHeight / 2 - 8);
 	}
@@ -221,7 +193,7 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		private final int backgroundHeight;
 		private final Consumer<Double> syncConsumer;
 
-		private AstralSlider(PlanetColorScreen screen, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer) {
+		private AstralSlider(RingColorScreen screen, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer) {
 			super(x, y, width, 20, Text.empty(), value);
 			this.backgroundHeight = height;
 			this.syncConsumer = syncConsumer;
@@ -246,7 +218,7 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			var minecraftClient = MinecraftClient.getInstance();
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, PlanetColorScreen.WIDGETS_TEXTURE);
+			RenderSystem.setShaderTexture(0, RingColorScreen.WIDGETS_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 			var i = this.getYImage(this.isHoveredOrFocused());
 			RenderSystem.enableBlend();

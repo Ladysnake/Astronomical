@@ -2,8 +2,6 @@ package doctor4t.astronomical.client;
 
 import com.mojang.blaze3d.vertex.VertexFormats;
 import com.mojang.datafixers.util.Pair;
-import com.sammy.lodestone.LodestoneLib;
-import com.sammy.lodestone.setup.LodestoneShaders;
 import com.sammy.lodestone.systems.rendering.ExtendedShader;
 import com.sammy.lodestone.systems.rendering.ShaderHolder;
 import doctor4t.astronomical.common.Astronomical;

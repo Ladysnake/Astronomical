@@ -12,21 +12,21 @@ public class ScaledDouble {
 		this.max = max;
 	}
 
+	public double getValue() {
+		return this.value;
+	}
+
 	public void setValue(double value) {
 		this.value = value;
 		this.scaledValue = value * (this.max - this.min) + this.min;
 	}
 
+	public double getScaledValue() {
+		return this.scaledValue;
+	}
+
 	public void setScaledValue(double scaledValue) {
 		this.scaledValue = scaledValue;
 		this.value = (scaledValue - this.min) / (this.max - this.min);
-	}
-
-	public double getValue() {
-		return this.value;
-	}
-
-	public double getScaledValue() {
-		return this.scaledValue;
 	}
 }
