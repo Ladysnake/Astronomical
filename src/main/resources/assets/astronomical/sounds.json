@@ -1,0 +1,35 @@
+{
+  "entity.star.break": {
+    "sounds": [
+      "astronomical:star_break_1",
+      "astronomical:star_break_2"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.break"
+  },
+  "entity.star.collect": {
+    "sounds": [
+      "astronomical:star_collect"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.collect"
+  },
+  "entity.star.craft": {
+    "sounds": [
+      "astronomical:star_craft"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.craft"
+  },
+  "entity.star.fall": {
+    "sounds": [
+      "astronomical:star_fall_1",
+      "astronomical:star_fall_2",
+      "astronomical:star_fall_3"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.fall"
+  },
+  "entity.star.impact": {
+    "sounds": [
+      "astronomical:star_impact"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.impact"
+  }
+}

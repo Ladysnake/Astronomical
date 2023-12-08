@@ -1,13 +1,17 @@
 package doctor4t.astronomical.common.structure;
 
+import doctor4t.astronomical.common.init.ModSoundEvents;
 import doctor4t.astronomical.common.util.Vec2d;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Starfall {
+	public static final int LANDING_PROGRESS = 10;
 	public final Vec3d startDirection, endPos;
 	public int progress = 0;
 
@@ -36,14 +40,16 @@ public class Starfall {
 		this.endPos = end;
 	}
 
-	public void tick(World w) {
+	public void tick(World world) {
 		progress++;
-		if(progress == 70 && !w.isClient) {
+		if(progress == LANDING_PROGRESS && world instanceof ServerWorld serverWorld) {
 			//TODO spawn stuff here
-			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, w);
-			l.setPosition(endPos);
-			l.setCosmetic(true);
-			w.spawnEntity(l);
+			serverWorld.playSound(null, endPos.getX(), endPos.getY(), endPos.getZ(), ModSoundEvents.STAR_IMPACT, SoundCategory.AMBIENT, 20f, 1f);
+
+//			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, serverWorld);
+//			l.setPosition(endPos);
+//			l.setCosmetic(true);
+//			world.spawnEntity(l);
 		}
 	}
 }

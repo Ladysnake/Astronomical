@@ -10,11 +10,9 @@ import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.AstraCelestialObjects;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.InteractableStar;
-import doctor4t.astronomical.common.structure.Star;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
@@ -28,6 +26,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 	private static final int maximumStars = 5;
 	private final RandomGenerator random;
 	private final World obj;
+
 	public AstraSkyComponent(World object) {
 		this.obj = object;
 		long seed = this.getWorldSeed(this.obj);
@@ -45,6 +44,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		//not sure how to do this so
 		return 666L + obj.getTime() % 1000 >> 7;
 	}
+
 	@Override
 	public void readFromNbt(NbtCompound tag) {
 		NbtList nbtList = tag.getList("spherical", 10);
@@ -55,15 +55,16 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 			star.readNbt(n);
 			heavenlySpheres.add(star);
 		});
-		if(obj != null && obj.isClient())
+		if (obj != null && obj.isClient())
 			RenderSystem.recordRenderCall(AstraSkyRenderer::redrawStars);
 	}
 
 	public List<CelestialObject> getCelestialObjects() {
 		return this.heavenlySpheres;
 	}
+
 	public CelestialObject getObjectByType(NbtCompound nbt) {
-		if(nbt.contains("id")) {
+		if (nbt.contains("id")) {
 			return AstraCelestialObjects.OBJECTS.get(new Identifier(nbt.getString("id"))).get();
 		} else {
 			return AstraCelestialObjects.OBJECTS.get(def).get();
@@ -87,27 +88,26 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 
 	@Override
 	public void serverTick() {
-		if(obj.getTime() % 400 == 0 && obj.random.nextFloat() > 0.4f) {
+		if (obj.getTime() % 40 == 0 && obj.random.nextFloat() > 0.4f) { // TODO CHANGE BACK TO % 400
 			regenerate();
 		}
 		interactStarTick();
 		boolean[] beel = new boolean[1];
-		heavenlySpheres.removeIf(b -> {
-			boolean bl =  b instanceof InteractableStar s && s.countDownThreeTwoOne <= 0;
-			if(bl) {
-				if(((InteractableStar) b).crossFire != null)
-					((InteractableStar) b).crossFire.accept(obj);
+		heavenlySpheres.stream().iterator().forEachRemaining(celestialObject -> {
+			if(celestialObject instanceof InteractableStar s && s.supernovaTicks == InteractableStar.STARFALL_TICKS) {
+				if(((InteractableStar) celestialObject).crossFire != null)
+					((InteractableStar) celestialObject).crossFire.accept(obj);
 				beel[0] = true;
 			}
-			return bl;
 		});
-		if(beel[0]) {
+		heavenlySpheres.removeIf(b -> b instanceof InteractableStar s && s.supernovaTicks >= InteractableStar.EXPLOSION_TICKS);
+		if (beel[0]) {
 			AstraCardinalComponents.SKY.sync(obj);
 		}
 	}
 
 	public void regenerate() {
-		if(heavenlySpheres.size() < maximumStars) {
+		if (heavenlySpheres.size() < maximumStars) {
 			this.heavenlySpheres.add(generateStar());
 			AstraCardinalComponents.SKY.sync(obj);
 		}
@@ -116,20 +116,21 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 	private CelestialObject generateStar() {
 		Vec3d up = new Vec3d(0, -1, 0);
 		Vec3d rot = generateDirectionalVector();
-		while(rot.dotProduct(up) < 0) {
+		while (rot.dotProduct(up) < 0) {
 			rot = generateDirectionalVector();
 		}
-		return new InteractableStar(rot.normalize(), 3f, 1);
+		return new InteractableStar(rot.normalize(), 3f, .5f, 1);
 	}
 
 	@Override
 	public void clientTick() {
 		interactStarTick();
 	}
+
 	private void interactStarTick() {
-		for(CelestialObject c : heavenlySpheres) {
-			if(c instanceof InteractableStar s && s.subjectForTermination) {
-				s.countDownThreeTwoOne--;
+		for (CelestialObject c : heavenlySpheres) {
+			if (c instanceof InteractableStar s && s.subjectForTermination) {
+				s.supernovaTicks++;
 			}
 		}
 	}

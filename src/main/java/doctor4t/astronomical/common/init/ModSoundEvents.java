@@ -11,7 +11,11 @@ import java.util.Map;
 public interface ModSoundEvents {
 
 	Map<SoundEvent, Identifier> SOUND_EVENTS = new LinkedHashMap<>();
-//	SoundEvent BLOCK_LOCKER_INTERACT = createSoundEvent("block.locker.interact");
+	SoundEvent STAR_BREAK = createSoundEvent("entity.star.break");
+	SoundEvent STAR_COLLECT = createSoundEvent("entity.star.collect");
+	SoundEvent STAR_CRAFT = createSoundEvent("entity.star.craft");
+	SoundEvent STAR_FALL = createSoundEvent("entity.star.fall");
+	SoundEvent STAR_IMPACT = createSoundEvent("entity.star.impact");
 
 	static void initialize() {
 		SOUND_EVENTS.keySet().forEach(soundEvent -> Registry.register(Registry.SOUND_EVENT, SOUND_EVENTS.get(soundEvent), soundEvent));
