@@ -1,6 +1,5 @@
 package doctor4t.astronomical.client.render.world;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.sammy.lodestone.handlers.RenderHandler;
@@ -8,7 +7,6 @@ import com.sammy.lodestone.helpers.RenderHelper;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.setup.LodestoneShaders;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
-import com.sammy.lodestone.systems.rendering.particle.ParticleTextureSheets;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.cca.world.AstraSkyComponent;
 import doctor4t.astronomical.cca.world.AstraStarfallComponent;
@@ -19,7 +17,6 @@ import doctor4t.astronomical.common.structure.Star;
 import doctor4t.astronomical.common.structure.Starfall;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
@@ -33,7 +30,7 @@ import java.util.List;
 
 public class AstraSkyRenderer {
 	public static final Identifier SHIMMER = Astronomical.id("textures/vfx/shimmer.png");
-	public static final Color STARFALL = new Color(230, 185, 255, 200);
+	public static final Color STARFALL = new Color(90, 214, 255, 255);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;
@@ -76,7 +73,7 @@ public class AstraSkyRenderer {
 		float scale = .2f;
 		AstraSkyComponent com = world.getComponent(AstraCardinalComponents.SKY);
 
-		List<CelestialObject> list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks <= InteractableStar.FULL_COLLAPSE_TICKS).toList();
+		List<CelestialObject> list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks <= InteractableStar.HOLD_COLLAPSE_TICKS).toList();
 		for (CelestialObject c : list) {
 			Vec3d vector = c.getDirectionVector();
 			float rot1 = (time + ran + tickDelta) / 50f;
@@ -103,26 +100,20 @@ public class AstraSkyRenderer {
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		RenderSystem.setShaderTexture(0, InteractableStar.SUPERNOVA_TEX);
 		float yuh = 0;
-		Color supernovaColor = STARFALL;
 
-		list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks >= InteractableStar.FULL_COLLAPSE_TICKS).toList();
+		list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks >= InteractableStar.HOLD_COLLAPSE_TICKS).toList();
 		for (CelestialObject c : list) {
+			Color supernovaColor = new Color(c.getColor());
 			Vec3d vector = c.getDirectionVector();
 
 			int alpha = (int) (c.getAlpha() * 255);
 
-			VertexData p = createVertexData(vector, UP, (scale) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
+			for (int i = 0; i < 5; i++) {
+				VertexData p = createVertexData(vector, UP, (scale + i * .02f) * c.getSize(), 95, yuh, Color.WHITE);
+				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 
-			yuh += 0.5f;
-
-			p = createVertexData(vector, UP, (scale) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
-
-			yuh += 0.5f;
-
-			p = createVertexData(vector, UP, (scale) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
+				yuh += 0.5f;
+			}
 
 			yuh += 200;
 		}
@@ -134,21 +125,16 @@ public class AstraSkyRenderer {
 		yuh = 0;
 
 		for (CelestialObject c : list) {
+			Color supernovaColor = new Color(c.getColor());
 			Vec3d vector = c.getDirectionVector();
 
 			int alpha = (int) (c.getAlpha() * 255);
 
-			VertexData p = createVertexData(vector, UP, (scale + .1f) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
-			yuh += 10;
-			VertexData p2 = createVertexData(vector, UP, (scale + .2f) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p2);
-			yuh += 10;
-			VertexData p3 = createVertexData(vector, UP, (scale + .3f) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p3);
-			yuh += 10;
-			VertexData p4 = createVertexData(vector, UP, (scale + .4f) * c.getSize(), 95, yuh, Color.WHITE);
-			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), 255).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p4);
+			for (int i = 0; i < 5; i++) {
+				VertexData p = createVertexData(vector, UP, (scale + i * .1f) * c.getSize(), 95, yuh, Color.WHITE);
+				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
+				yuh += 10;
+			}
 
 			yuh += 200;
 		}
@@ -160,6 +146,7 @@ public class AstraSkyRenderer {
 		renderStarfalls(matrices, tickDelta, world, client);
 		RenderSystem.defaultBlendFunc();
 	}
+
 	private static VertexBuffer upload(BufferBuilder.RenderedBuffer renderedBuffer) {
 		RenderSystem.assertOnRenderThread();
 		if (renderedBuffer.isEmpty()) {
@@ -171,17 +158,20 @@ public class AstraSkyRenderer {
 			return vertexBuffer;
 		}
 	}
+
 	private static VertexBuffer getAndBindBuffer(VertexFormat format) {
 		VertexBuffer vertexBuffer = format.getBuffer();
 		vertexBuffer.bind();
 		return vertexBuffer;
 	}
+
 	private static void drawWithShader(BufferBuilder.RenderedBuffer renderedBuffer) {
 		VertexBuffer vertexBuffer = upload(renderedBuffer);
 		if (vertexBuffer != null) {
 			vertexBuffer.setShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), LodestoneShaders.ADDITIVE_TEXTURE.instance);
 		}
 	}
+
 	public static void redrawStars() {
 		shouldTankPerformanceForAFewFrames = true;
 	}
@@ -192,10 +182,10 @@ public class AstraSkyRenderer {
 		VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 		Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
 		for (Starfall s : c.getStarfalls()) {
-			if (s.progress <= Starfall.LANDING_PROGRESS) {
+			if (s.progress <= s.ticksUntilLanded) {
 				Vec3d one = playerPos.add(s.startDirection.multiply(100f));
 				Vec3d two = s.endPos;
-				float delta = (s.progress + tickDelta) / Starfall.LANDING_PROGRESS;
+				float delta = (s.progress + tickDelta) / s.ticksUntilLanded;
 				float alpha = 0.6f * (1 - delta) + delta;
 				one = one.lerp(two, delta);
 				VertexData d = createVertexData(one.subtract(playerPos), UP, 10, Color.WHITE);
@@ -205,31 +195,32 @@ public class AstraSkyRenderer {
 //					.renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, d.vertices(), 1f);
 
 				// trail
-				float trailProgress = (float) s.progress / Starfall.LANDING_PROGRESS;
-				Vec3d directionalVector = s.startDirection.multiply(MathHelper.lerp(trailProgress, 20000, 100));
+				float trailProgress = (float) s.progress / s.ticksUntilLanded;
+				Vec3d directionalVector = s.startDirection.multiply(MathHelper.lerp(trailProgress, 20000, 0));
 				Vec3d pos = one;
 
 				Vec3d diff = pos.subtract(playerPos);
+				Color color = new Color(s.color);
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
+				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, -(world.getTime() + tickDelta % 190) / 190f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 				diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
+				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 				diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
+				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 
 			} else {
-				Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - Starfall.LANDING_PROGRESS), 0, 30));
+				Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - s.ticksUntilLanded), 0, 30));
 				Vec3d pos = s.endPos;
 
 				Vec3d diff = pos.subtract(playerPos);
@@ -269,7 +260,7 @@ public class AstraSkyRenderer {
 		for (CelestialObject c : objects.stream().filter(p -> !p.canInteract()).toList()) {
 			Vec3d vector = c.getDirectionVector();
 
-			VertexData p = createVertexData(vector, UP, c.getSize() + 0.5f, 100, new Color(Astronomical.getRandomStarTemperature(c.getHeat())));
+			VertexData p = createVertexData(vector, UP, c.getSize() + 0.5f, 100, new Color(Astronomical.getRandomStarTemperature(c.getColor())));
 //			if(shouldRender(((AstraFrustum)frustum), p, rotation))
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha()).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 		}

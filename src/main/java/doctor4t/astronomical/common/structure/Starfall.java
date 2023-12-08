@@ -9,17 +9,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Starfall {
-	public static final int LANDING_PROGRESS = 10;
 	public final Vec3d startDirection, endPos;
 	public int progress = 0;
+	public int color;
+	public int ticksUntilLanded;
 
 	public Starfall(NbtCompound n) {
 		this.startDirection = new Vec3d(n.getDouble("x"), n.getDouble("y"), n.getDouble("z"));
 		this.endPos = new Vec3d(n.getDouble("tgtX"), n.getDouble("tgtY"), n.getDouble("tgtZ"));
 		this.progress = n.getInt("prog");
+		this.color = n.getInt("color");
+		this.ticksUntilLanded = n.getInt("ticksUntilLanded");
 	}
 
-	public Starfall(Vec3d startDirection, Vec3d end) {
+	public Starfall(int ticksUntilLanded, int color, Vec3d startDirection, Vec3d end) {
+		this.ticksUntilLanded = ticksUntilLanded;
+		this.color = color;
 		this.startDirection = startDirection;
 		this.endPos = end;
 	}
@@ -30,6 +35,8 @@ public class Starfall {
 
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putInt("prog", progress);
+		nbt.putInt("color", color);
+		nbt.putInt("ticksUntilLanded", ticksUntilLanded);
 		nbt.putDouble("tgtX", endPos.x);
 		nbt.putDouble("tgtY", endPos.y);
 		nbt.putDouble("tgtZ", endPos.z);
@@ -40,9 +47,9 @@ public class Starfall {
 
 	public void tick(World world) {
 		progress++;
-		if (progress == LANDING_PROGRESS && world instanceof ServerWorld serverWorld) {
+		if (progress == ticksUntilLanded && world instanceof ServerWorld serverWorld) {
 			//TODO spawn stuff here
-			serverWorld.playSound(null, endPos.getX(), endPos.getY(), endPos.getZ(), ModSoundEvents.STAR_IMPACT, SoundCategory.AMBIENT, 20f, 1f);
+			serverWorld.playSound(null, endPos.getX(), endPos.getY(), endPos.getZ(), ModSoundEvents.STAR_IMPACT, SoundCategory.AMBIENT, 20f, (float) (1f + world.random.nextGaussian() * .1f));
 
 //			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, serverWorld);
 //			l.setPosition(endPos);

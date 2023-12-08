@@ -10,16 +10,17 @@ public class Star implements CelestialObject {
 	public static final Identifier TEMPTEX = Astronomical.id("textures/vfx/temp.png");
 	private static final Identifier ID = Astronomical.id("star");
 	protected Vec3d directionalVector;
-	private float size, alpha, heat;
+	private float size, alpha;
+	private int color;
 
 	public Star() {
 	}
 
-	public Star(Vec3d vec, float size, float alpha, float heat) {
+	public Star(Vec3d vec, float size, float alpha, int color) {
 		this.directionalVector = vec;
 		this.size = size;
 		this.alpha = alpha;
-		this.heat = heat;
+		this.color = color;
 	}
 
 	public static Vec3d decompressDirectionalVector(double pitch, double yaw) {
@@ -55,15 +56,15 @@ public class Star implements CelestialObject {
 	}
 
 	@Override
-	public float getHeat() {
-		return heat;
+	public int getColor() {
+		return this.color;
 	}
 
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		size = nbt.getFloat("s");
 		alpha = nbt.getFloat("a");
-		heat = nbt.getFloat("h");
+		color = nbt.getInt("c");
 		this.directionalVector = new Vec3d(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
 	}
 
@@ -71,7 +72,7 @@ public class Star implements CelestialObject {
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putFloat("s", size);
 		nbt.putFloat("a", alpha);
-		nbt.putFloat("h", heat);
+		nbt.putFloat("c", color);
 		nbt.putDouble("x", directionalVector.x);
 		nbt.putDouble("y", directionalVector.y);
 		nbt.putDouble("z", directionalVector.z);

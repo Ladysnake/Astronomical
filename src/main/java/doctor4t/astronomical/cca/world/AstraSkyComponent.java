@@ -14,9 +14,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.random.LegacySimpleRandom;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -119,7 +121,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		while (rot.dotProduct(up) < 0) {
 			rot = generateDirectionalVector();
 		}
-		return new InteractableStar(rot.normalize(), 3f, .5f, 1);
+		return new InteractableStar(rot.normalize(), 1.5f, .3f, Astronomical.getStarColorForTemperature(Astronomical.getRandomStarTemperature(this.random)));
 	}
 
 	@Override

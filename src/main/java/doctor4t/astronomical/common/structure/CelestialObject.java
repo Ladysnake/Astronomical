@@ -15,7 +15,7 @@ public interface CelestialObject {
 
 	float getAlpha();
 
-	float getHeat();
+	int getColor();
 
 	void readNbt(NbtCompound nbt);
 
