@@ -32,9 +32,19 @@ public abstract class SpyglassItemMixin extends Item {
 		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
 		return (float) (d * 2.0 + e) / 3.0F;
 	}
+	public float getStarBrightness(World w) {
+		float f = w.getSkyAngle(1);
+		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.25F);
+		g = MathHelper.clamp(g, 0.0F, 1.0F);
+		return g * g * 0.5F;
+	}
 
 	@Override
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+		if(getStarBrightness(world) <= 0) {
+			return;
+		}
+
 		Quaternion rotation = Vec3f.POSITIVE_Z.getDegreesQuaternion(world.getSkyAngle(1) * 360.0F);
 		//rotation.normalize();
 		Vec3d vec = user.getRotationVector();
@@ -43,7 +53,8 @@ public abstract class SpyglassItemMixin extends Item {
 		for (CelestialObject obj : c.getCelestialObjects().stream().filter(g -> g.canInteract() && !((InteractableStar) g).subjectForTermination).toList()) {
 			Vec3d rotatedVec = rotateViaQuat(obj.getDirectionVector(), rotation).normalize();
 			double h = vec.x * rotatedVec.x + vec.y * rotatedVec.y + vec.z * rotatedVec.z;
-			if (h > 0.99995 && rotatedVec.dotProduct(new Vec3d(0, 1, 0)) > 0) {
+			if (h > 0.9999) {
+				if(rotatedVec.dotProduct(new Vec3d(0, 1, 0)) > -0.2)
 				if (world instanceof ServerWorld serverWorld) {
 					((InteractableStar) obj).crossFire = (k) -> {
 						serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), ModSoundEvents.STAR_FALL, SoundCategory.AMBIENT, 20f, 1f);
