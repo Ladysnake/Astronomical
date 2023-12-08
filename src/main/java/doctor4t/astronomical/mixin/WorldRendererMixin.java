@@ -29,7 +29,7 @@ public class WorldRendererMixin {
 	@Final
 	private BufferBuilderStorage bufferBuilders;
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", shift = At.Shift.BEFORE, ordinal = 6), method = "render")
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", shift = At.Shift.AFTER, ordinal = 6), method = "render")
 	private void astra$renderSky(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f projectionMatrix, CallbackInfo ci) {
 		if (this.world.getRegistryKey().equals(World.OVERWORLD)) {
 			AstraSkyRenderer.renderSky(matrices, this.bufferBuilders.getEntityVertexConsumers(), projectionMatrix, tickDelta, this.world, this.client);
