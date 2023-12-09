@@ -9,8 +9,8 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleType;
 
-public class OrbParticleType extends ParticleType<WorldParticleEffect> {
-	public OrbParticleType() {
+public class ExplosionParticleType extends ParticleType<WorldParticleEffect> {
+	public ExplosionParticleType() {
 		super(false, WorldParticleEffect.DESERIALIZER);
 	}
 

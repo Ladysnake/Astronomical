@@ -36,8 +36,8 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 		return starfalls;
 	}
 
-	public void addFall(int ticksUntilLanded, int color, Vec3d rot, Vec3d target) {
-		starfalls.add(new Starfall(ticksUntilLanded, color, rot, target));
+	public void addFall(int ticksUntilLanded, Vec3d rot, Vec3d target) {
+		starfalls.add(new Starfall(ticksUntilLanded, rot, target));
 		AstraCardinalComponents.FALL.sync(obj);
 	}
 
@@ -56,12 +56,8 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 	@Override
 	public void serverTick() {
 		starfalls.forEach(s -> s.tick(obj));
-		//TODO uncomment this once you have a replacement for the starfall render code
-		starfalls.removeIf(s -> s.progress > s.ticksUntilLanded*2f);
-
-		//TODO sync when removing a starfall.
-		if (false)
-			AstraCardinalComponents.FALL.sync(obj);
+		starfalls.removeIf(s -> s.progress > (s.ticksUntilLanded * Starfall.ANIMATION_EXTENSION));
+		AstraCardinalComponents.FALL.sync(obj);
 	}
 
 	@Override

@@ -3,14 +3,22 @@ package doctor4t.astronomical.client.render.world;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.sammy.lodestone.handlers.RenderHandler;
+import com.sammy.lodestone.handlers.ScreenshakeHandler;
 import com.sammy.lodestone.helpers.RenderHelper;
+import com.sammy.lodestone.setup.LodestoneParticles;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
+import com.sammy.lodestone.setup.LodestoneScreenParticles;
 import com.sammy.lodestone.setup.LodestoneShaders;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import com.sammy.lodestone.systems.rendering.particle.Easing;
+import com.sammy.lodestone.systems.rendering.particle.ParticleBuilders;
+import com.sammy.lodestone.systems.rendering.particle.screen.base.ScreenParticle;
+import com.sammy.lodestone.systems.screenshake.ScreenshakeInstance;
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.cca.world.AstraSkyComponent;
 import doctor4t.astronomical.cca.world.AstraStarfallComponent;
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.InteractableStar;
 import doctor4t.astronomical.common.structure.Star;
@@ -112,10 +120,10 @@ public class AstraSkyRenderer {
 				VertexData p = createVertexData(vector, UP, (scale + i * .02f) * c.getSize(), 95, yuh, Color.WHITE);
 				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 
-				yuh += 0.5f;
+				yuh += c.getRandomOffset()/10f;
 			}
 
-			yuh += 200;
+			yuh += c.getRandomOffset()*10f;
 		}
 		drawWithShader(bufferBuilder.end());
 
@@ -131,9 +139,9 @@ public class AstraSkyRenderer {
 			int alpha = (int) (c.getAlpha() * 255);
 
 			for (int i = 0; i < 5; i++) {
-				VertexData p = createVertexData(vector, UP, (scale + i * .1f) * c.getSize(), 95, yuh, Color.WHITE);
+				VertexData p = createVertexData(vector, UP, (scale * (i)) * c.getSize(), 95, yuh, Color.WHITE);
 				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
-				yuh += 10;
+				yuh += c.getRandomOffset();
 			}
 
 			yuh += 200;
@@ -181,26 +189,21 @@ public class AstraSkyRenderer {
 		AstraStarfallComponent c = world.getComponent(AstraCardinalComponents.FALL);
 		VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 		Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
+
 		for (Starfall s : c.getStarfalls()) {
-			if (s.progress <= s.ticksUntilLanded) {
+			if (s.progress <= s.ticksUntilLanded * Starfall.ANIMATION_EXTENSION) {
 				Vec3d one = playerPos.add(s.startDirection.multiply(1000f));
 				Vec3d two = s.endPos;
 				float delta = (s.progress + tickDelta) / s.ticksUntilLanded;
-				float alpha = 0.6f * (1 - delta) + delta;
-				one = one.lerp(two, delta);
+				one = one.lerp(two, s.progress <= s.ticksUntilLanded ? delta : 1);
 				VertexData d = createVertexData(one.subtract(playerPos), UP, 10, Color.WHITE);
-//				builder
-//					.setColor(d.color()[0])
-//					.setAlpha(alpha)
-//					.renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, d.vertices(), 1f);
 
 				// trail
-				float trailProgress = (float) s.progress / s.ticksUntilLanded;
-				Vec3d directionalVector = s.startDirection.multiply(MathHelper.lerp(trailProgress, 10000, 100));
+				Vec3d directionalVector = s.progress <= s.ticksUntilLanded ? s.startDirection.multiply(MathHelper.lerp((float) s.progress / s.ticksUntilLanded, 10000, 100)) : s.startDirection.multiply(MathHelper.lerp((s.progress - s.ticksUntilLanded) / ((s.ticksUntilLanded * Starfall.ANIMATION_EXTENSION) - s.ticksUntilLanded), 100, 0));
 				Vec3d pos = one;
 
 				Vec3d diff = pos.subtract(playerPos);
-				Color color = new Color(s.color);
+				Color color = new Color(0xC065FF);
 
 				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, -(world.getTime() + tickDelta % 190) / 190f);
 
@@ -219,28 +222,107 @@ public class AstraSkyRenderer {
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 
-			} else {
-				Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - s.ticksUntilLanded), 0, 30));
-				Vec3d pos = s.endPos;
+				if (s.progress == s.ticksUntilLanded && !s.hasPlayedExplosion()) {
+					double h = MinecraftClient.getInstance().player.getPos().distanceTo(new Vec3d(one.getX(), one.getY(), one.getZ()));
+					if (h < 300) {
+						h /= 300;
+						h *= (MinecraftClient.getInstance().cameraEntity.getRotationVecClient().dotProduct(new Vec3d(one.getX(), one.getY(), one.getZ()).subtract(MinecraftClient.getInstance().player.getPos()).normalize()) + 1) / 2;
+						ParticleBuilders.ScreenParticleBuilder b2 = ParticleBuilders.create(LodestoneScreenParticles.SPARKLE).setAlpha((float) h, 0f).setScale(100000f).setColor(color, color).setLifetime(10).overrideRenderOrder(ScreenParticle.RenderOrder.AFTER_EVERYTHING);
+						b2.repeat(0, 0, 1);
 
-				Vec3d diff = pos.subtract(playerPos);
+						ScreenshakeHandler.addScreenshake(new ScreenshakeInstance((int) (50 * h)).setIntensity(0f, 1f, 0f).setEasing(Easing.EXPO_OUT, Easing.SINE_OUT));
+					}
 
-				VertexData d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
+					ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
+						.setColor(color, color)
+						.setScale(40f)
+						.setMotion(0, 0, 0)
+						.setAlpha(0f, 1f, 0f)
+						.setAlphaEasing(Easing.CIRC_OUT)
+						.enableNoClip()
+						.setLifetime(10)
+						.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
 
-				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+					for (int i = 0; i < 20; ++i) {
+						float size = world.random.nextFloat() * 20;
+						Vec3f randomMotion = new Vec3f((float) (world.random.nextGaussian() / 8), 0, (float) (world.random.nextGaussian() / 8));
+						float randomSpin = (float) (world.random.nextGaussian() * .01f);
 
-				diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
+						ParticleBuilders.create(ModParticles.STAR_IMPACT_EXPLOSION)
+							.setColor(color, color)
+							.setScale(0f, size)
+							.setScaleCoefficient(20f)
+							.setScaleEasing(Easing.EXPO_OUT)
+							.setForcedMotion(randomMotion, Vec3f.ZERO)
+							.setAlpha(0.1f, 0f)
+							.setAlphaEasing(Easing.SINE_OUT)
+							.setSpin(randomSpin, randomSpin / 100f)
+							.setSpinEasing(Easing.SINE_IN)
+							.enableNoClip()
+							.setLifetime(50 + (i))
+							.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
 
-				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
+						// bloom
+						ParticleBuilders.create(ModParticles.STAR_IMPACT_EXPLOSION)
+							.setScale(0f, size * 2f)
+							.setScaleCoefficient(20f)
+							.setScaleEasing(Easing.EXPO_OUT)
+							.setForcedMotion(randomMotion, Vec3f.ZERO)
+							.setAlpha(0.005f, 0f)
+							.setAlphaEasing(Easing.SINE_OUT)
+							.setSpin(randomSpin, randomSpin / 100f)
+							.setSpinEasing(Easing.SINE_IN)
+							.enableNoClip()
+							.setLifetime(50 * (i))
+							.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
+					}
 
-				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+					for (int i = 0; i < 20; ++i) {
+						float size = world.random.nextFloat() * 20;
+						Vec3f randomMotion = new Vec3f((float) world.random.nextGaussian() / 2f, (float) world.random.nextGaussian() / 2f, (float) world.random.nextGaussian() / 2f);
+						float randomSpin = (float) (world.random.nextGaussian() * .1f);
 
-				diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
+						ParticleBuilders.create(LodestoneParticles.TWINKLE_PARTICLE)
+							.setColor(color, color)
+							.setScale(size, 0f)
+							.setScaleEasing(Easing.EXPO_OUT)
+							.setForcedMotion(randomMotion, Vec3f.ZERO)
+							.setAlpha(1f)
+							.setAlphaEasing(Easing.SINE_OUT)
+							.setSpin(randomSpin, randomSpin / 100f)
+							.setSpinEasing(Easing.SINE_IN)
+							.enableNoClip()
+							.setLifetime(20 + world.random.nextInt(20))
+							.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
 
-				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
+					}
 
-				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+					s.setPlayedExplosion(true);
+				}
+
 			}
+//			else {
+//				Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - s.ticksUntilLanded), 0, 30));
+//				Vec3d pos = s.endPos;
+//
+//				Vec3d diff = pos.subtract(playerPos);
+//
+//				VertexData d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
+//
+//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+//
+//				diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
+//
+//				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
+//
+//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+//
+//				diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
+//
+//				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
+//
+//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+//			}
 		}
 		matrices.pop();
 	}

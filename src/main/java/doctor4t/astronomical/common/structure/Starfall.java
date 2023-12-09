@@ -9,24 +9,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Starfall {
+	public static final float ANIMATION_EXTENSION = 1.5f;
 	public final Vec3d startDirection, endPos;
 	public int progress = 0;
-	public int color;
 	public int ticksUntilLanded;
+	public boolean playedExplosion;
 
 	public Starfall(NbtCompound n) {
 		this.startDirection = new Vec3d(n.getDouble("x"), n.getDouble("y"), n.getDouble("z"));
 		this.endPos = new Vec3d(n.getDouble("tgtX"), n.getDouble("tgtY"), n.getDouble("tgtZ"));
 		this.progress = n.getInt("prog");
-		this.color = n.getInt("color");
 		this.ticksUntilLanded = n.getInt("ticksUntilLanded");
+		this.playedExplosion = n.getBoolean("playedExplosion");
 	}
 
-	public Starfall(int ticksUntilLanded, int color, Vec3d startDirection, Vec3d end) {
+	public Starfall(int ticksUntilLanded, Vec3d startDirection, Vec3d end) {
 		this.ticksUntilLanded = ticksUntilLanded;
-		this.color = color;
 		this.startDirection = startDirection;
 		this.endPos = end;
+		this.playedExplosion = false;
 	}
 
 	private static Vec2d compressDirectionalVector(Vec3d directionalVector) {
@@ -35,7 +36,6 @@ public class Starfall {
 
 	public void writeNbt(NbtCompound nbt) {
 		nbt.putInt("prog", progress);
-		nbt.putInt("color", color);
 		nbt.putInt("ticksUntilLanded", ticksUntilLanded);
 		nbt.putDouble("tgtX", endPos.x);
 		nbt.putDouble("tgtY", endPos.y);
@@ -43,6 +43,7 @@ public class Starfall {
 		nbt.putDouble("x", startDirection.x);
 		nbt.putDouble("y", startDirection.y);
 		nbt.putDouble("z", startDirection.z);
+		nbt.putBoolean("playedExplosion", playedExplosion);
 	}
 
 	public void tick(World world) {
@@ -56,5 +57,13 @@ public class Starfall {
 //			l.setCosmetic(true);
 //			world.spawnEntity(l);
 		}
+	}
+
+	public boolean hasPlayedExplosion() {
+		return playedExplosion;
+	}
+
+	public void setPlayedExplosion(boolean playedExplosion) {
+		this.playedExplosion = playedExplosion;
 	}
 }

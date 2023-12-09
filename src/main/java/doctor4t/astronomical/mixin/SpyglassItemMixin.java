@@ -61,8 +61,8 @@ public abstract class SpyglassItemMixin extends Item {
 							serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), ModSoundEvents.STAR_FALL, SoundCategory.AMBIENT, 20f, 1f);
 
 							for (int i = 0; i <= world.random.nextInt(3); i++) {
-								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 120, 0, world.random.nextGaussian() * 120);
-								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), obj.getColor(), rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
+								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 80, 0, world.random.nextGaussian() * 80);
+								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)), pos.z));
 							}
 						};
 						supernovad = obj;
