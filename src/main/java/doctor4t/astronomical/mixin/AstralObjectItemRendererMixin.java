@@ -37,8 +37,8 @@ public abstract class AstralObjectItemRendererMixin {
 
 			float scale = .25f;
 			if (renderMode == ModelTransformation.Mode.GROUND) {
-				scale = .15f;
-				matrices.translate(0, .11, 0);
+				scale = .13f;
+				matrices.translate(0, .13, 0);
 			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND) {
 				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
 				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90f));
@@ -54,8 +54,8 @@ public abstract class AstralObjectItemRendererMixin {
 				matrices.translate(0,-.03,0);
 				scale = .28f;
 			} else if (renderMode == ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND) {
-				scale = .15f;
-				matrices.translate(0, .185, .07);
+				scale = .14f;
+				matrices.translate(0, .2, .07);
 			}
 			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
 
