@@ -64,7 +64,7 @@ public abstract class AstralObjectItemRendererMixin {
 
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
-			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 5, time, false);
+			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, false);
 			matrices.pop();
 		}
 	}
