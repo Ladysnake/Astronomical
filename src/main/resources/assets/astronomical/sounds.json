@@ -28,7 +28,8 @@
   },
   "entity.star.impact": {
     "sounds": [
-      "astronomical:star_impact"
+      "astronomical:star_impact_1",
+      "astronomical:star_impact_2"
     ],
     "subtitle": "subtitles.astronomical.entity.star.impact"
   }

@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "astronomical:block/marshmallow_can_0"
+    },
+    "level=1": {
+      "model": "astronomical:block/marshmallow_can_1"
+    },
+    "level=2": {
+      "model": "astronomical:block/marshmallow_can_2"
+    },
+    "level=3": {
+      "model": "astronomical:block/marshmallow_can_3"
+    },
+    "level=4": {
+      "model": "astronomical:block/marshmallow_can_4"
+    },
+    "level=5": {
+      "model": "astronomical:block/marshmallow_can_5"
+    },
+    "level=6": {
+      "model": "astronomical:block/marshmallow_can_6"
+    },
+    "level=7": {
+      "model": "astronomical:block/marshmallow_can_7"
+    },
+    "level=8": {
+      "model": "astronomical:block/marshmallow_can_8"
+    }
+  }
+}

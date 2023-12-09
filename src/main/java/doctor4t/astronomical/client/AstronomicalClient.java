@@ -8,6 +8,7 @@ import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlockEntities;
+import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
@@ -33,6 +34,7 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -170,14 +172,16 @@ public class AstronomicalClient implements ClientModInitializer {
 //		ModModelLayers.initialize();
 
 		// entity renderers registration
-		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
 //		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
+
+		// block entity renderers registration
+		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
 
 		// particle renderers registration
 		ModParticles.registerFactories();
 
 		// block special layers
-//		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.LOCKER, ModBlocks.CLOSED_LOCKER, ModBlocks.WALKWAY, ModBlocks.WALKWAY_STAIRS, ModBlocks.ABYSSTEEL_CHAIN, ModBlocks.ANGLERWEED, ModBlocks.ANGLERWEED_PLANT, ModBlocks.LURKING_LAMP, ModBlocks.OCTANT);
+		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.MARSHMALLOW_CAN);
 
 		HandledScreens.register(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, AstralDisplayScreen::new);
 		HandledScreens.register(Astronomical.PLANET_COLOR_SCREEN_HANDLER, PlanetColorScreen::new);

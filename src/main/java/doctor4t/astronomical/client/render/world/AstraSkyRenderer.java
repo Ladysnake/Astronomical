@@ -183,7 +183,7 @@ public class AstraSkyRenderer {
 		Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
 		for (Starfall s : c.getStarfalls()) {
 			if (s.progress <= s.ticksUntilLanded) {
-				Vec3d one = playerPos.add(s.startDirection.multiply(100f));
+				Vec3d one = playerPos.add(s.startDirection.multiply(1000f));
 				Vec3d two = s.endPos;
 				float delta = (s.progress + tickDelta) / s.ticksUntilLanded;
 				float alpha = 0.6f * (1 - delta) + delta;
@@ -196,7 +196,7 @@ public class AstraSkyRenderer {
 
 				// trail
 				float trailProgress = (float) s.progress / s.ticksUntilLanded;
-				Vec3d directionalVector = s.startDirection.multiply(MathHelper.lerp(trailProgress, 20000, 0));
+				Vec3d directionalVector = s.startDirection.multiply(MathHelper.lerp(trailProgress, 10000, 100));
 				Vec3d pos = one;
 
 				Vec3d diff = pos.subtract(playerPos);
