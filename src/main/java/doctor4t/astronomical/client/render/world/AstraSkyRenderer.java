@@ -77,17 +77,16 @@ public class AstraSkyRenderer {
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		RenderSystem.setShader(LodestoneShaders.ADDITIVE_TEXTURE.getInstance());
 		RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
-		int ran = 0;
 		float scale = .2f;
 		AstraSkyComponent com = world.getComponent(AstraCardinalComponents.SKY);
 
 		List<CelestialObject> list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks <= InteractableStar.HOLD_COLLAPSE_TICKS).toList();
 		for (CelestialObject c : list) {
 			Vec3d vector = c.getDirectionVector();
-			float rot1 = (time + ran + tickDelta) / 50f;
-			float rot2 = (time + ran + tickDelta + 10) / 100f;
-			float rot3 = -(time + ran + tickDelta + 20) / 50f;
-			float rot4 = -(time + ran + tickDelta + 20) / 100f;
+			float rot1 = (time + c.getRandomOffset() + tickDelta) / 50f;
+			float rot2 = (time + c.getRandomOffset() + tickDelta + 10) / 100f;
+			float rot3 = -(time + c.getRandomOffset() + tickDelta + 20) / 50f;
+			float rot4 = -(time + c.getRandomOffset() + tickDelta + 20) / 100f;
 
 			int alpha = (int) (c.getAlpha() * 255);
 
@@ -99,15 +98,12 @@ public class AstraSkyRenderer {
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p3);
 			VertexData p4 = createVertexData(vector, UP, (scale + 0.4f * ((1 + MathHelper.sin(rot4)) / 2f)) * .5f * c.getSize(), 95, rot4, Color.WHITE);
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(col.getRed(), col.getGreen(), col.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p4);
-
-			ran += 200;
 		}
 		drawWithShader(bufferBuilder.end());
 
 		// supernovae explosions
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		RenderSystem.setShaderTexture(0, InteractableStar.SUPERNOVA_TEX);
-		float yuh = 0;
 
 		list = com.getCelestialObjects().stream().filter(celestialObject -> celestialObject instanceof InteractableStar interactableStar && interactableStar.supernovaTicks >= InteractableStar.HOLD_COLLAPSE_TICKS).toList();
 		for (CelestialObject c : list) {
@@ -115,6 +111,7 @@ public class AstraSkyRenderer {
 			Vec3d vector = c.getDirectionVector();
 
 			int alpha = (int) (c.getAlpha() * 255);
+			float yuh = 0;
 
 			for (int i = 0; i < 5; i++) {
 				VertexData p = createVertexData(vector, UP, (scale + i * .02f) * c.getSize(), 95, yuh, Color.WHITE);
@@ -122,29 +119,25 @@ public class AstraSkyRenderer {
 
 				yuh += c.getRandomOffset()/10f;
 			}
-
-			yuh += c.getRandomOffset()*10f;
 		}
 		drawWithShader(bufferBuilder.end());
 
 		// supernovae explosions dust
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 		RenderSystem.setShaderTexture(0, InteractableStar.SUPERNOVA_DUST_TEX);
-		yuh = 0;
 
 		for (CelestialObject c : list) {
 			Color supernovaColor = new Color(c.getColor());
 			Vec3d vector = c.getDirectionVector();
 
 			int alpha = (int) (c.getAlpha() * 255);
+			int yuh = 0;
 
 			for (int i = 0; i < 5; i++) {
 				VertexData p = createVertexData(vector, UP, (scale * (i)) * c.getSize(), 95, yuh, Color.WHITE);
 				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 				yuh += c.getRandomOffset();
 			}
-
-			yuh += 200;
 		}
 		drawWithShader(bufferBuilder.end());
 
