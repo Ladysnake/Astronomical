@@ -17,6 +17,8 @@ public interface CelestialObject {
 
 	int getColor();
 
+	int getRandomOffset();
+
 	void readNbt(NbtCompound nbt);
 
 	void writeNbt(NbtCompound nbt);

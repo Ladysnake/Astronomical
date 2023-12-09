@@ -37,17 +37,29 @@ public abstract class AstralObjectItemRendererMixin {
 
 			float scale = .25f;
 			if (renderMode == ModelTransformation.Mode.GROUND) {
-				scale = .1f;
-				matrices.translate(0, .185, 0);
-			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND || renderMode == ModelTransformation.Mode.FIXED) {
 				scale = .15f;
+				matrices.translate(0, .11, 0);
+			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND) {
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90f));
+				matrices.translate(.2, .10, -.06);
+				scale = .17f;
+			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND) {
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90f));
+				matrices.translate(-.2, .10, -.06);
+				scale = .17f;
+			} else if (renderMode == ModelTransformation.Mode.FIXED) {
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-180f));
+				matrices.translate(0,-.03,0);
+				scale = .28f;
 			} else if (renderMode == ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND) {
 				scale = .15f;
-				matrices.translate(0, .185, 0);
+				matrices.translate(0, .185, .07);
 			}
 			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
 
-			matrices.scale(1f, 1, 0.1f);
+			matrices.scale(1f, 1, 0.01f);
 			matrices.scale(scale, scale, scale);
 
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));

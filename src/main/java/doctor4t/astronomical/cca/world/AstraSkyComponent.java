@@ -121,7 +121,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		while (rot.dotProduct(up) < 0) {
 			rot = generateDirectionalVector();
 		}
-		return new InteractableStar(rot.normalize(), 1.5f, .3f, Astronomical.getStarColorForTemperature(Astronomical.getRandomStarTemperature(this.random)));
+		return new InteractableStar(rot.normalize(), 1.5f, .3f, Astronomical.getStarColorForTemperature(Astronomical.getRandomStarTemperature(this.random)), 1 + random.nextInt(10));
 	}
 
 	@Override

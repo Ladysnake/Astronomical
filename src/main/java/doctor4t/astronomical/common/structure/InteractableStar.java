@@ -25,8 +25,8 @@ public class InteractableStar extends Star {
 	public int supernovaTicks = 0;
 	public Consumer<World> crossFire;
 
-	public InteractableStar(Vec3d vec, float size, float alpha, int color) {
-		super(vec, size, alpha, color);
+	public InteractableStar(Vec3d vec, float size, float alpha, int color, int randomOffset) {
+		super(vec, size, alpha, color, randomOffset);
 	}
 
 	public InteractableStar() {
@@ -61,7 +61,7 @@ public class InteractableStar extends Star {
 			} else if (supernovaTicks <= HOLD_COLLAPSE_TICKS) {
 				ret = 0.1f;
 			} else if (supernovaTicks <= EXPLOSION_TICKS) {
-				ret = MathHelper.lerp(Easing.EXPO_OUT.ease((float) (supernovaTicks - HOLD_COLLAPSE_TICKS) / (EXPLOSION_TICKS - HOLD_COLLAPSE_TICKS), 0f, 1f, 1f), 0, size*2f);
+				ret = MathHelper.lerp(Easing.EXPO_OUT.ease((float) (supernovaTicks - HOLD_COLLAPSE_TICKS) / (EXPLOSION_TICKS - HOLD_COLLAPSE_TICKS), 0f, 1f, 1f), 0, size * 2f);
 			} else {
 				ret = 0f;
 			}
