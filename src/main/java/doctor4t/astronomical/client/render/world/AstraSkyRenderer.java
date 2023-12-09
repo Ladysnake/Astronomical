@@ -196,7 +196,7 @@ public class AstraSkyRenderer {
 				Vec3d pos = one;
 
 				Vec3d diff = pos.subtract(playerPos);
-				Color color = new Color(0xC065FF);
+				Color color = Astronomical.STAR_PURPLE;
 
 				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, -(world.getTime() + tickDelta % 190) / 190f);
 

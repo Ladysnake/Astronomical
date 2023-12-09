@@ -60,7 +60,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 				orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
 
 				// astral link connecting displays
-				this.builder.setColor(new Color(0x5FEBEB))
+				this.builder.setColor(Astronomical.STAR_PURPLE)
 					.setAlpha(0.5f)
 					.renderBeam(
 						RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
