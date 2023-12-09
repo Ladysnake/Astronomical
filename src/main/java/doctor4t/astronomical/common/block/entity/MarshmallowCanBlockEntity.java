@@ -63,7 +63,11 @@ public class MarshmallowCanBlockEntity extends BlockEntity {
 		return false;
 	}
 
+	public void setMarshmallowCount(int marshmallowCount) {
+		this.marshmallowCount = marshmallowCount;
+	}
+
 	public void updateBlockState() {
-		this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(MarshmallowCanBlock.LEVEL, this.marshmallowCount / 8));
+		this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(MarshmallowCanBlock.LEVEL, (int) Math.ceil((double) this.marshmallowCount / 8)));
 	}
 }

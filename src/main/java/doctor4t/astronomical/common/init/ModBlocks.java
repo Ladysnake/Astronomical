@@ -3,6 +3,7 @@ package doctor4t.astronomical.common.init;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.MarshmallowCanBlock;
+import doctor4t.astronomical.common.item.MarshmallowCanBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -36,7 +37,14 @@ public interface ModBlocks {
 			if (itemGroup != null) {
 				settings.group(itemGroup);
 			}
-			ITEMS.put(new BlockItem(block, settings), BLOCKS.get(block));
+
+			System.out.println(block);
+			if (block instanceof MarshmallowCanBlock) {
+				settings.maxCount(1);
+				ITEMS.put(new MarshmallowCanBlockItem(block, settings), BLOCKS.get(block));
+			} else {
+				ITEMS.put(new BlockItem(block, settings), BLOCKS.get(block));
+			}
 		}
 		return block;
 	}
