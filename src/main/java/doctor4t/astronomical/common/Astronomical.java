@@ -1,16 +1,14 @@
 package doctor4t.astronomical.common;
 
 import doctor4t.astronomical.common.effects.StargazingStatusEffect;
-import doctor4t.astronomical.common.init.ModBlockEntities;
-import doctor4t.astronomical.common.init.ModBlocks;
-import doctor4t.astronomical.common.init.ModEntities;
-import doctor4t.astronomical.common.init.ModItems;
-import doctor4t.astronomical.common.init.ModParticles;
-import doctor4t.astronomical.common.init.ModSoundEvents;
+import doctor4t.astronomical.common.init.*;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
+import doctor4t.astronomical.common.screen.RingColorScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -31,7 +29,17 @@ import java.util.List;
 public class Astronomical implements ModInitializer {
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
 	public static final String MOD_ID = "astronomical";
-	private static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();
+	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
+	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
+	private static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	// packets
+	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
+	public static Identifier ROT_SPEED_PACKET = id("rot_speed");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
+	public static Identifier SPIN_PACKET = id("spin");
+	public static Identifier HOLDING_PACKET = id("holding");
+	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");
+	public static Identifier RING_COLOR_CHANGE_PACKET = id("ring_color_change");
+
 	static {
 		STAR_TEMPERATURE_COLORS.put(10000, 0x1F8CFF);
 		STAR_TEMPERATURE_COLORS.put(9000, 0x65B5FF);
@@ -45,55 +53,6 @@ public class Astronomical implements ModInitializer {
 		STAR_TEMPERATURE_COLORS.put(1000, 0xFF0000);
 	}
 
-	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
-	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
-    public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
-
-    @Override
-	public void onInitialize(ModContainer mod) {
-		ModBlocks.initialize();
-		ModBlockEntities.initialize();
-		ModEntities.initialize();
-		ModItems.initialize();
-		ModSoundEvents.initialize();
-		ModParticles.initialize();
-
-		ServerPlayNetworking.registerGlobalReceiver(id("y_level"), (server, player, handler, buf, responseSender) -> {
-			var yLevel = buf.readDouble();
-			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
-				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
-					astralDisplayScreenHandler.entity().yLevel.setValue(yLevel);
-					astralDisplayScreenHandler.entity().markDirty();
-				}
-			});
-		});
-		ServerPlayNetworking.registerGlobalReceiver(id("rot_speed"), (server, player, handler, buf, responseSender) -> {
-			var rotSpeed = buf.readDouble();
-			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
-				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
-					astralDisplayScreenHandler.entity().rotSpeed.setValue(rotSpeed);
-					astralDisplayScreenHandler.entity().markDirty();
-				}
-			});
-		});
-		ServerPlayNetworking.registerGlobalReceiver(id("spin"), (server, player, handler, buf, responseSender) -> {
-			var spin = buf.readDouble();
-			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
-				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
-					astralDisplayScreenHandler.entity().spin.setValue(spin);
-					astralDisplayScreenHandler.entity().markDirty();
-				}
-			});
-		});
-		ServerPlayNetworking.registerGlobalReceiver(id("holding"), (server, player, handler, buf, responseSender) -> {
-			var holding = buf.readBoolean();
-			server.execute(() -> player.astronomical$setHoldingAttack(holding));
-		});
-	}
-
 	public static @NotNull Vec3d rotateViaQuat(@NotNull Vec3d rot, @NotNull Quaternion quat) {
 		float x = (float) rot.x;
 		float y = (float) rot.y;
@@ -105,12 +64,12 @@ public class Astronomical implements ModInitializer {
 
 		float scalar = quat.getW();
 
-		float cx = -y*uz+(z*uy);
-		float cy = -z*ux+(x*uz);
-		float cz = -x*uy+(y*ux);
+		float cx = -y * uz + (z * uy);
+		float cy = -z * ux + (x * uz);
+		float cz = -x * uy + (y * ux);
 
-		double s1 = 2.0f * (ux*x + uy*y + uz*z);
-		double s2 = scalar*scalar - (ux*ux + uy*uy + uz*uz);
+		double s1 = 2.0f * (ux * x + uy * y + uz * z);
+		double s2 = scalar * scalar - (ux * ux + uy * uy + uz * uz);
 		double s3 = 2.0f * scalar;
 
 		double vpx = s1 * ux + s2 * x + s3 * cx;
@@ -140,8 +99,113 @@ public class Astronomical implements ModInitializer {
 		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.keySet());
 		return temperatures.get(randomGenerator.nextInt(temperatures.size()));
 	}
+
 	public static int getRandomStarTemperature(float delta) {
 		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
 		return temperatures.get(MathHelper.ceil(delta * temperatures.size()) - 1);
 	}
+
+	@Override
+	public void onInitialize(ModContainer mod) {
+		ModBlocks.initialize();
+		ModBlockEntities.initialize();
+		ModEntities.initialize();
+		ModItems.initialize();
+		ModSoundEvents.initialize();
+		ModParticles.initialize();
+
+		ServerPlayNetworking.registerGlobalReceiver(Y_LEVEL_PACKET, (server, player, handler, buf, responseSender) -> {
+			var yLevel = buf.readDouble();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
+					astralDisplayScreenHandler.entity().yLevel.setValue(yLevel);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
+					astralDisplayScreenHandler.entity().markDirty();
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(ROT_SPEED_PACKET, (server, player, handler, buf, responseSender) -> {
+			var rotSpeed = buf.readDouble();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
+					astralDisplayScreenHandler.entity().rotSpeed.setValue(rotSpeed);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
+					astralDisplayScreenHandler.entity().markDirty();
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(SPIN_PACKET, (server, player, handler, buf, responseSender) -> {
+			var spin = buf.readDouble();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
+					astralDisplayScreenHandler.entity().spin.setValue(spin);
+
+					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
+
+					astralDisplayScreenHandler.entity().markDirty();
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(HOLDING_PACKET, (server, player, handler, buf, responseSender) -> {
+			var holding = buf.readBoolean();
+			server.execute(() -> player.astronomical$setHoldingAttack(holding));
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(PLANET_COLOR_CHANGE_PACKET, (server, player, handler, buf, responseSender) -> {
+			int color1 = buf.readInt();
+			int color2 = buf.readInt();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof PlanetColorScreenHandler) {
+					ItemStack stack = player.getMainHandStack();
+					if (!stack.isOf(ModItems.NANO_PLANET)) {
+						stack = player.getOffHandStack();
+						if (!stack.isOf(ModItems.NANO_PLANET)) {
+							return;
+						}
+					}
+
+					stack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", color1);
+					stack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", color2);
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(RING_COLOR_CHANGE_PACKET, (server, player, handler, buf, responseSender) -> {
+			int color = buf.readInt();
+			server.execute(() -> {
+				var screenHandler = player.currentScreenHandler;
+				if (screenHandler instanceof RingColorScreenHandler) {
+					ItemStack stack = player.getMainHandStack();
+					if (!stack.isOf(ModItems.NANO_RING)) {
+						stack = player.getOffHandStack();
+						if (!stack.isOf(ModItems.NANO_RING)) {
+							return;
+						}
+					}
+
+					stack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", color);
+				}
+			});
+		});
+	}
+
+
+
+
+
+
 }

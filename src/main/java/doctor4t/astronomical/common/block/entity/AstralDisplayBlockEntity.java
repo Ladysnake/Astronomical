@@ -24,11 +24,11 @@ import net.minecraft.util.math.BlockPos;
 public class AstralDisplayBlockEntity extends LockableContainerBlockEntity implements InventoryChangedListener {
 	public static final int SIZE = 9;
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
-	private BlockPos parentPos;
 	// yLevel, rotSpeed and spin are all values between 0 and 1, scale accordingly
 	public ScaledDouble yLevel = new ScaledDouble(0.5, 0, 1);
 	public ScaledDouble rotSpeed = new ScaledDouble(0.5, 0, 1);
 	public ScaledDouble spin = new ScaledDouble(0.5, 0, 1);
+	private BlockPos parentPos;
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
@@ -60,7 +60,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public ItemStack removeStack(int slot, int amount) {
-        return this.inventory.removeStack(slot, amount);
+		return this.inventory.removeStack(slot, amount);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-        this.inventory.setStack(slot, stack);
+		this.inventory.setStack(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
@@ -86,7 +86,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 		if (this.world != null && this.world.getBlockEntity(this.pos) != this) {
 			return false;
 		}
-		return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+		return !(player.squaredDistanceTo((double) this.pos.getX() + 0.5, (double) this.pos.getY() + 0.5, (double) this.pos.getZ() + 0.5) > 64.0);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("parentPos")) {
-            this.setParentPos(NbtHelper.toBlockPos(nbt.getCompound("parentPos")));
+			this.setParentPos(NbtHelper.toBlockPos(nbt.getCompound("parentPos")));
 		}
 		this.inventory.clear();
 		this.inventory.readNbtList(nbt.getList("inventory", 10));
@@ -121,7 +121,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new AstralDisplayScreenHandler(syncId, playerInventory, this);
+		return new AstralDisplayScreenHandler(syncId, playerInventory, this);
 	}
 
 	@Override

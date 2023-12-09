@@ -16,9 +16,11 @@ import java.util.List;
 public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private final List<Starfall> starfalls = new LinkedList<>();
 	private final World obj;
+
 	public AstraStarfallComponent(World object) {
 		this.obj = object;
 	}
+
 	@Override
 	public void readFromNbt(NbtCompound tag) {
 		NbtList nbtList = tag.getList("falls", 10);
@@ -34,8 +36,8 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 		return starfalls;
 	}
 
-	public void addFall(Vec3d rot, Vec3d target) {
-		starfalls.add(new Starfall(rot, target));
+	public void addFall(int ticksUntilLanded, Vec3d rot, Vec3d target) {
+		starfalls.add(new Starfall(ticksUntilLanded, rot, target));
 		AstraCardinalComponents.FALL.sync(obj);
 	}
 
@@ -54,12 +56,8 @@ public class AstraStarfallComponent implements AutoSyncedComponent, ServerTickin
 	@Override
 	public void serverTick() {
 		starfalls.forEach(s -> s.tick(obj));
-		//TODO uncomment this once you have a replacement for the starfall render code
-		//starfalls.removeIf(s -> s.progress >= 70);
-
-		//TODO sync when removing a starfall.
-		if(false)
-			AstraCardinalComponents.FALL.sync(obj);
+		starfalls.removeIf(s -> s.progress > (s.ticksUntilLanded * Starfall.ANIMATION_EXTENSION));
+		AstraCardinalComponents.FALL.sync(obj);
 	}
 
 	@Override

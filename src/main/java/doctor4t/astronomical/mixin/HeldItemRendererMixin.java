@@ -20,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HeldItemRenderer.class)
 public abstract class HeldItemRendererMixin {
-	@Unique private int roastTicks;
+	@Unique
+	private int roastTicks;
 
 	@Inject(method = "updateHeldItems", at = @At("HEAD"))
 	private void astronomical$roasting(CallbackInfo ci) {

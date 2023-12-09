@@ -3,6 +3,7 @@
   "textures": {
     "bottom": "astronomical:block/astral_display_bottom",
     "side": "astronomical:block/astral_display_side_receptor",
-    "top": "astronomical:block/astral_display_top_off"
+    "top": "astronomical:block/astral_display_top_on",
+    "particle": "astronomical:block/astral_display_top_off"
   }
 }

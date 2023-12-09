@@ -8,7 +8,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -36,8 +35,10 @@ public class NanoCosmosItem extends NanoAstralObjectItem {
 		LIGHT(Astronomical.id("textures/astral_object/white.png"));
 
 
+		private static final List<CosmosTexture> VALUES = List.of(values());
+		private static final int SIZE = VALUES.size();
+		private static final Random RANDOM = new Random();
 		public final Identifier texture;
-
 		CosmosTexture(Identifier texture) {
 			this.texture = texture;
 		}
@@ -51,11 +52,7 @@ public class NanoCosmosItem extends NanoAstralObjectItem {
 			return VOID;
 		}
 
-		private static final List<CosmosTexture> VALUES = List.of(values());
-		private static final int SIZE = VALUES.size();
-		private static final Random RANDOM = new Random();
-
-		public static CosmosTexture getRandom()  {
+		public static CosmosTexture getRandom() {
 			return VALUES.get(RANDOM.nextInt(SIZE));
 		}
 	}

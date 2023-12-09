@@ -2,15 +2,10 @@ package doctor4t.astronomical.mixin;
 
 import com.mojang.blaze3d.shader.ShaderStage;
 import com.mojang.datafixers.util.Pair;
-import com.sammy.lodestone.handlers.PostProcessHandler;
-import com.sammy.lodestone.handlers.RenderHandler;
 import doctor4t.astronomical.client.AstronomicalShaders;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.ShaderProgram;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

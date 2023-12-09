@@ -8,6 +8,7 @@ import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import doctor4t.astronomical.common.init.ModBlockEntities;
+import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
@@ -16,6 +17,8 @@ import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoRingItem;
 import doctor4t.astronomical.common.screen.AstralDisplayScreen;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
+import doctor4t.astronomical.common.screen.PlanetColorScreen;
+import doctor4t.astronomical.common.screen.RingColorScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
@@ -31,6 +34,7 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -47,48 +51,6 @@ public class AstronomicalClient implements ClientModInitializer {
 	public static final RenderLayer STAR_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_1.png"));
 	public static final RenderLayer STAR_2 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_2.png"));
 	public static final RenderLayer STAR_3 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_3.png"));
-
-	@Override
-	public void onInitializeClient(ModContainer mod) {
-		// init model layers
-//		ModModelLayers.initialize();
-
-		// entity renderers registration
-		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
-//		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
-
-		// particle renderers registration
-		ModParticles.registerFactories();
-
-		// block special layers
-//		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.LOCKER, ModBlocks.CLOSED_LOCKER, ModBlocks.WALKWAY, ModBlocks.WALKWAY_STAIRS, ModBlocks.ABYSSTEEL_CHAIN, ModBlocks.ANGLERWEED, ModBlocks.ANGLERWEED_PLANT, ModBlocks.LURKING_LAMP, ModBlocks.OCTANT);
-
-		HandledScreens.register(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, AstralDisplayScreen::new);
-
-		ClientPlayNetworking.registerGlobalReceiver(Astronomical.id("astral_display"), (minecraftClient, playNetworkHandler, packetByteBuf, packetSender) -> {
-			var pos = packetByteBuf.readBlockPos();
-			var yLevel = packetByteBuf.readDouble();
-			var rotSpeed = packetByteBuf.readDouble();
-			var spin = packetByteBuf.readDouble();
-			minecraftClient.execute(() -> {
-				World world = minecraftClient.world;
-				var player = minecraftClient.player;
-				if (player != null && world != null && world.getBlockEntity(pos) instanceof AstralDisplayBlockEntity display) {
-					if (player.currentScreenHandler instanceof AstralDisplayScreenHandler handler) {
-						handler.entity = display;
-						display.yLevel.setValue(yLevel);
-						display.rotSpeed.setValue(rotSpeed);
-						display.spin.setValue(spin);
-						if (minecraftClient.currentScreen instanceof AstralDisplayScreen screen) {
-							screen.addSliders();
-						}
-					}
-				}
-			});
-		});
-
-		ModelPredicateProviderRegistry.register(ModItems.MARSHMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
-	}
 
 	// centralized method to render all astral objects
 	// don't forget to push the matrix stack before and pop it after!!
@@ -179,9 +141,9 @@ public class AstronomicalClient implements ClientModInitializer {
 			int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 			NanoRingItem.RingTexture ringTexture = NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture"));
 			RenderLayer renderLayer = (ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? LodestoneRenderLayers.ADDITIVE_TEXTURE : LodestoneRenderLayers.TRANSPARENT_TEXTURE).applyAndCache(ringTexture.texture);
-			float scale =(ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? 2f : 1f);
+			float scale = (ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? 2f : 1f);
 
-			matrixStack.scale(scale, scale,scale);
+			matrixStack.scale(scale, scale, scale);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
 
 			builder.setColor(new Color(color))
@@ -202,5 +164,51 @@ public class AstronomicalClient implements ClientModInitializer {
 					1
 				);
 		}
+	}
+
+	@Override
+	public void onInitializeClient(ModContainer mod) {
+		// init model layers
+//		ModModelLayers.initialize();
+
+		// entity renderers registration
+//		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
+
+		// block entity renderers registration
+		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
+
+		// particle renderers registration
+		ModParticles.registerFactories();
+
+		// block special layers
+		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.MARSHMALLOW_CAN);
+
+		HandledScreens.register(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, AstralDisplayScreen::new);
+		HandledScreens.register(Astronomical.PLANET_COLOR_SCREEN_HANDLER, PlanetColorScreen::new);
+		HandledScreens.register(Astronomical.RING_COLOR_SCREEN_HANDLER, RingColorScreen::new);
+
+		ClientPlayNetworking.registerGlobalReceiver(Astronomical.id("astral_display"), (minecraftClient, playNetworkHandler, packetByteBuf, packetSender) -> {
+			var pos = packetByteBuf.readBlockPos();
+			var yLevel = packetByteBuf.readDouble();
+			var rotSpeed = packetByteBuf.readDouble();
+			var spin = packetByteBuf.readDouble();
+			minecraftClient.execute(() -> {
+				World world = minecraftClient.world;
+				var player = minecraftClient.player;
+				if (player != null && world != null && world.getBlockEntity(pos) instanceof AstralDisplayBlockEntity display) {
+					if (player.currentScreenHandler instanceof AstralDisplayScreenHandler handler) {
+						handler.entity = display;
+						display.yLevel.setValue(yLevel);
+						display.rotSpeed.setValue(rotSpeed);
+						display.spin.setValue(spin);
+						if (minecraftClient.currentScreen instanceof AstralDisplayScreen screen) {
+							screen.addSliders();
+						}
+					}
+				}
+			});
+		});
+
+		ModelPredicateProviderRegistry.register(ModItems.MARSHMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 	}
 }

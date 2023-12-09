@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-	@Shadow public abstract Item getItem();
+	@Shadow
+	public abstract Item getItem();
 
 	@Inject(method = "getEatSound", at = @At("HEAD"), cancellable = true)
 	private void astronomical$burnt(CallbackInfoReturnable<SoundEvent> cir) {

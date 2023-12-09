@@ -21,11 +21,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
-	@Shadow @Final private MinecraftClient client;
-	@Shadow private int scaledWidth;
-	@Shadow private int scaledHeight;
+	@Unique
+	private static final Identifier MARSHMALLOW_TEXTURE = Astronomical.id("textures/gui/marshmallow.png");
+	@Shadow
+	@Final
+	private MinecraftClient client;
+	@Shadow
+	private int scaledWidth;
+	@Shadow
+	private int scaledHeight;
 
-	@Unique private static final Identifier MARSHMALLOW_TEXTURE = Astronomical.id("textures/gui/marshmallow.png");
+	@Unique
+	private static MarshmallowStickItem.CookState getStateAtI(int i) {
+		var states = MarshmallowStickItem.CookState.values();
+		var state = states[states.length - 1];
+		for (var cookState : states) {
+			if (cookState.next().cookTime / 10 >= i) {
+				return cookState;
+			}
+		}
+		return state;
+	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V", shift = At.Shift.AFTER))
 	private void astronomical$renderCrosshair(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
@@ -52,24 +68,12 @@ public abstract class InGameHudMixin extends DrawableHelper {
 			for (var i = 0; i < width; i++) {
 				var progressed = i <= progress;
 				var state = getStateAtI(i);
-				var rgb = new float[] { state.color >> 16 & 255, state.color >> 8 & 255, state.color & 255, state.color >> 24 & 255 };
+				var rgb = new float[]{state.color >> 16 & 255, state.color >> 8 & 255, state.color & 255, state.color >> 24 & 255};
 				RenderSystem.setShaderColor(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 1.0f);
 				var u = i < 4 ? i : i > width - 5 ? 7 + i - width + 4 : 5;
 				drawTexture(matrices, x + i, y, u, progressed ? 5 : 0, 2, 5, 16, 16);
 			}
 			RenderSystem.disableBlend();
 		}
-	}
-
-	@Unique
-	private static MarshmallowStickItem.CookState getStateAtI(int i) {
-		var states = MarshmallowStickItem.CookState.values();
-		var state = states[states.length - 1];
-        for (var cookState : states) {
-            if (cookState.next().cookTime / 10 >= i) {
-                return cookState;
-            }
-        }
-		return state;
 	}
 }

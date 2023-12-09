@@ -47,7 +47,7 @@ public class MarshmallowStickItem extends Item {
 			var off = player.getOffHandStack().getItem() == this;
 			if (!main && !off) return;
 			if (player.astronomical$isHoldingAttack()) {
-				var blocks = BlockCastFinder.castRayForGridPoints(player.getPos(), player.getRotationVector(), 2, 4);
+				var blocks = BlockCastFinder.castRayForGridPoints(player.getPos(), player.getRotationVector(), 2, 2);
 				var headDistance = -1f;
 				for (var block : blocks) {
 					var state = world.getBlockState(block);
@@ -68,7 +68,8 @@ public class MarshmallowStickItem extends Item {
 						var nbt = heldStack.getOrCreateNbt();
 						var ticks = nbt.getFloat("RoastTicks");
 						if (ticks < CookState.BURNT.cookTime + 3 * 20) {
-							var growth = Math.max(0, (4f - headDistance) / 4f);
+//							var growth = Math.max(0, (4f - headDistance) / 10f);
+							var growth = 1f;
 							nbt.putFloat("RoastTicks", ticks + growth);
 						}
 					}

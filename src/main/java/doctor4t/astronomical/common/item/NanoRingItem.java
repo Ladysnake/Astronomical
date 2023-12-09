@@ -1,10 +1,15 @@
 package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.screen.RingColorScreenHandler;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +39,13 @@ public class NanoRingItem extends NanoAstralObjectItem {
 		super.appendTooltip(stack, world, tooltip, context);
 	}
 
+	@Override
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		user.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new RingColorScreenHandler(syncId, playerInventory), Text.literal("")));
+
+		return super.use(world, user, hand);
+	}
+
 	public enum RingTexture {
 		PARTICLES(Astronomical.id("textures/astral_object/ring/particles.png")),
 		ASTEROIDS(Astronomical.id("textures/astral_object/ring/asteroids.png")),
@@ -43,8 +55,10 @@ public class NanoRingItem extends NanoAstralObjectItem {
 		EYE_OF_THE_UNIVERSE(Astronomical.id("textures/astral_object/ring/eye_of_the_universe.png"));
 
 
+		private static final List<RingTexture> VALUES = Arrays.stream(values()).filter(ringTexture -> ringTexture != EYE_OF_THE_UNIVERSE).toList();
+		private static final int SIZE = VALUES.size();
+		private static final Random RANDOM = new Random();
 		public final Identifier texture;
-
 		RingTexture(Identifier texture) {
 			this.texture = texture;
 		}
@@ -58,11 +72,7 @@ public class NanoRingItem extends NanoAstralObjectItem {
 			return PARTICLES;
 		}
 
-		private static final List<RingTexture> VALUES = Arrays.stream(values()).filter(ringTexture -> ringTexture != EYE_OF_THE_UNIVERSE).toList();
-		private static final int SIZE = VALUES.size();
-		private static final Random RANDOM = new Random();
-
-		public static RingTexture getRandom()  {
+		public static RingTexture getRandom() {
 			return VALUES.get(RANDOM.nextInt(SIZE));
 		}
 	}

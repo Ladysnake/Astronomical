@@ -3,7 +3,6 @@ package doctor4t.astronomical.mixin;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;

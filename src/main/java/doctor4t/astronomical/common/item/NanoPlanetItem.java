@@ -1,10 +1,15 @@
 package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +38,12 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 		super.appendTooltip(stack, world, tooltip, context);
 	}
 
+	@Override
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		user.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new PlanetColorScreenHandler(syncId, playerInventory), Text.literal("")));
+
+		return super.use(world, user, hand);
+	}
 
 	public enum PlanetTexture {
 		ACID(Astronomical.id("textures/astral_object/planet/acid.png")),
@@ -47,8 +58,10 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 		SWIRL(Astronomical.id("textures/astral_object/planet/swirl.png"));
 
 
+		private static final List<PlanetTexture> VALUES = List.of(values());
+		private static final int SIZE = VALUES.size();
+		private static final Random RANDOM = new Random();
 		public final Identifier texture;
-
 		PlanetTexture(Identifier texture) {
 			this.texture = texture;
 		}
@@ -61,10 +74,6 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 			}
 			return HOME;
 		}
-
-		private static final List<PlanetTexture> VALUES = List.of(values());
-		private static final int SIZE = VALUES.size();
-		private static final Random RANDOM = new Random();
 
 		public static PlanetTexture getRandom() {
 			return VALUES.get(RANDOM.nextInt(SIZE));

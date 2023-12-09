@@ -6,10 +6,20 @@ import net.minecraft.util.math.Vec3d;
 
 public interface CelestialObject {
 	boolean canInteract();
+
 	Identifier getId();
+
 	Vec3d getDirectionVector();
+
 	float getSize();
-	float getHeat();
+
+	float getAlpha();
+
+	int getColor();
+
+	int getRandomOffset();
+
 	void readNbt(NbtCompound nbt);
+
 	void writeNbt(NbtCompound nbt);
 }

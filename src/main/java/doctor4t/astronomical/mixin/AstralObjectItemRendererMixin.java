@@ -4,8 +4,6 @@ import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.item.NanoAstralObjectItem;
-import doctor4t.astronomical.common.item.NanoRingItem;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -23,11 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 public abstract class AstralObjectItemRendererMixin {
-	@Shadow
-	public abstract void renderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model);
-
 	@Unique
 	VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
+
+	@Shadow
+	public abstract void renderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model);
 
 	@Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V", at = @At("HEAD"))
 
@@ -39,22 +37,34 @@ public abstract class AstralObjectItemRendererMixin {
 
 			float scale = .25f;
 			if (renderMode == ModelTransformation.Mode.GROUND) {
-				scale = .1f;
-				matrices.translate(0 ,.185, 0);
-			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND || renderMode == ModelTransformation.Mode.FIXED) {
 				scale = .15f;
+				matrices.translate(0, .11, 0);
+			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND) {
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90f));
+				matrices.translate(.2, .10, -.06);
+				scale = .17f;
+			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND) {
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90f));
+				matrices.translate(-.2, .10, -.06);
+				scale = .17f;
+			} else if (renderMode == ModelTransformation.Mode.FIXED) {
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-180f));
+				matrices.translate(0,-.03,0);
+				scale = .28f;
 			} else if (renderMode == ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND) {
 				scale = .15f;
-				matrices.translate(0 ,.185, 0);
+				matrices.translate(0, .185, .07);
 			}
 			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
 
-			matrices.scale(1f, 1, 0.1f);
+			matrices.scale(1f, 1, 0.01f);
 			matrices.scale(scale, scale, scale);
 
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
-			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 5, time, false);
+			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, false);
 			matrices.pop();
 		}
 	}
