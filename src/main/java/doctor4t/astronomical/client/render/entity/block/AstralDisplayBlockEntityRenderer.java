@@ -89,7 +89,8 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 
 					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
-					if (astralDisplayBlockEntity.getWorld().getBlockState(nextNextBP).isOf(ModBlocks.ASTRAL_DISPLAY)) {
+					BlockState bs = astralDisplayBlockEntity.getWorld().getBlockState(nextNextBP);
+					if (bs.isOf(ModBlocks.ASTRAL_DISPLAY) && bs.get(AstralDisplayBlock.POWERED)) {
 						break;
 					}
 				}
