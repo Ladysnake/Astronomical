@@ -1,7 +1,9 @@
 package doctor4t.astronomical.mixin;
 
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +21,9 @@ public abstract class LivingEntityMixin {
 	private void astronomical$swingHand(Hand hand, boolean fromServerPlayer, CallbackInfo ci) {
 		var stack = this.getStackInHand(hand);
 		if (stack.getItem() instanceof MarshmallowStickItem) {
-			ci.cancel();
+			if (!(((LivingEntity) Object.class.cast(this)).getUuid().equals(MinecraftClient.getInstance().player.getUuid()) && MinecraftClient.getInstance().options.getPerspective().isFirstPerson())) {
+				ci.cancel();
+			}
 		}
 	}
 }
