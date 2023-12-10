@@ -226,19 +226,23 @@ public class AstraSkyRenderer {
 						ScreenshakeHandler.addScreenshake(new ScreenshakeInstance((int) (50 * h)).setIntensity(0f, 1f, 0f).setEasing(Easing.EXPO_OUT, Easing.SINE_OUT));
 					}
 
-					ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
-						.setColor(color, color)
-						.setScale(40f)
-						.setMotion(0, 0, 0)
-						.setAlpha(0f, 1f, 0f)
-						.setAlphaEasing(Easing.CIRC_OUT)
-						.enableNoClip()
-						.setLifetime(10)
-						.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
+					for (int i = 0; i < 2; i++) {
+						ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
+							.setColor(color, color)
+							.setScale(80f)
+							.setMotion(0, 0, 0)
+							.setAlpha(0f, 1f, 0f)
+							.setAlphaEasing(Easing.CIRC_OUT)
+							.enableNoClip()
+							.setLifetime(10)
+							.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
+					}
 
 					for (int i = 0; i < 20; ++i) {
 						float size = world.random.nextFloat() * 20;
-						Vec3f randomMotion = new Vec3f((float) (world.random.nextGaussian() / 8), 0, (float) (world.random.nextGaussian() / 8));
+						Vec3f randomMotion = new Vec3f((float) (world.random.nextGaussian()), 0, (float) (world.random.nextGaussian()));
+						randomMotion.normalize();
+						randomMotion.scale(1/8f);
 						float randomSpin = (float) (world.random.nextGaussian() * .01f);
 
 						ParticleBuilders.create(ModParticles.STAR_IMPACT_EXPLOSION)
@@ -270,17 +274,19 @@ public class AstraSkyRenderer {
 							.spawn(world, s.endPos.getX(), s.endPos.getY(), s.endPos.getZ());
 					}
 
-					for (int i = 0; i < 20; ++i) {
-						float size = world.random.nextFloat() * 20;
-						Vec3f randomMotion = new Vec3f((float) world.random.nextGaussian() / 2f, (float) world.random.nextGaussian() / 2f, (float) world.random.nextGaussian() / 2f);
+					for (int i = 0; i < 100; ++i) {
+						float size = .2f + world.random.nextFloat();
+						Vec3f randomMotion = new Vec3f((float) world.random.nextGaussian(), (float) world.random.nextGaussian(), (float) world.random.nextGaussian());
+						randomMotion.normalize();
+						randomMotion.scale(1f);
 						float randomSpin = (float) (world.random.nextGaussian() * .1f);
 
 						ParticleBuilders.create(LodestoneParticles.TWINKLE_PARTICLE)
 							.setColor(color, color)
-							.setScale(size, 0f)
+							.setScale(size)
 							.setScaleEasing(Easing.EXPO_OUT)
 							.setForcedMotion(randomMotion, Vec3f.ZERO)
-							.setAlpha(1f)
+							.setAlpha(1f, 0f)
 							.setAlphaEasing(Easing.SINE_OUT)
 							.setSpin(randomSpin, randomSpin / 100f)
 							.setSpinEasing(Easing.SINE_IN)
