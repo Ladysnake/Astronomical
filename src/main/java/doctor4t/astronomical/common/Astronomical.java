@@ -6,9 +6,11 @@ import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import doctor4t.astronomical.common.screen.RingColorScreenHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -118,13 +120,13 @@ public class Astronomical implements ModInitializer {
 		ModParticles.initialize();
 
 		ServerPlayNetworking.registerGlobalReceiver(Y_LEVEL_PACKET, (server, player, handler, buf, responseSender) -> {
-			var yLevel = buf.readDouble();
+			double yLevel = buf.readDouble();
 			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
+				ScreenHandler screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().yLevel.setValue(yLevel);
 
-					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					BlockState state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
 					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
 
 					astralDisplayScreenHandler.entity().markDirty();
@@ -133,13 +135,13 @@ public class Astronomical implements ModInitializer {
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(ROT_SPEED_PACKET, (server, player, handler, buf, responseSender) -> {
-			var rotSpeed = buf.readDouble();
+			double rotSpeed = buf.readDouble();
 			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
+				ScreenHandler screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().rotSpeed.setValue(rotSpeed);
 
-					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					BlockState state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
 					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
 
 					astralDisplayScreenHandler.entity().markDirty();
@@ -148,13 +150,13 @@ public class Astronomical implements ModInitializer {
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(SPIN_PACKET, (server, player, handler, buf, responseSender) -> {
-			var spin = buf.readDouble();
+			double spin = buf.readDouble();
 			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
+				ScreenHandler screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof AstralDisplayScreenHandler astralDisplayScreenHandler) {
 					astralDisplayScreenHandler.entity().spin.setValue(spin);
 
-					var state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
+					BlockState state = astralDisplayScreenHandler.entity().getWorld().getBlockState(astralDisplayScreenHandler.entity().getPos());
 					astralDisplayScreenHandler.entity().getWorld().updateListeners(astralDisplayScreenHandler.entity().getPos(), state, state, Block.NOTIFY_LISTENERS);
 
 					astralDisplayScreenHandler.entity().markDirty();
@@ -163,7 +165,7 @@ public class Astronomical implements ModInitializer {
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(HOLDING_PACKET, (server, player, handler, buf, responseSender) -> {
-			var holding = buf.readBoolean();
+			boolean holding = buf.readBoolean();
 			server.execute(() -> player.astronomical$setHoldingAttack(holding));
 		});
 
@@ -171,7 +173,7 @@ public class Astronomical implements ModInitializer {
 			int color1 = buf.readInt();
 			int color2 = buf.readInt();
 			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
+				ScreenHandler screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof PlanetColorScreenHandler) {
 					ItemStack stack = player.getMainHandStack();
 					if (!stack.isOf(ModItems.NANO_PLANET)) {
@@ -190,7 +192,7 @@ public class Astronomical implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(RING_COLOR_CHANGE_PACKET, (server, player, handler, buf, responseSender) -> {
 			int color = buf.readInt();
 			server.execute(() -> {
-				var screenHandler = player.currentScreenHandler;
+				ScreenHandler screenHandler = player.currentScreenHandler;
 				if (screenHandler instanceof RingColorScreenHandler) {
 					ItemStack stack = player.getMainHandStack();
 					if (!stack.isOf(ModItems.NANO_RING)) {

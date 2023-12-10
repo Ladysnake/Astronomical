@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -113,7 +114,7 @@ public class AstralDisplayBlock extends BlockWithEntity {
 		if (state.get(FACING).getAxis().isHorizontal()) {
 			var astralDisplay = world.getBlockEntity(pos);
 			for (var i = 1; i <= 20; i++) {
-				var foundAstralDisplay = world.getBlockEntity(pos.offset(state.get(FACING), i));
+				BlockEntity foundAstralDisplay = world.getBlockEntity(pos.offset(state.get(FACING), i));
 				// if astral display found
 				if (astralDisplay instanceof AstralDisplayBlockEntity astralDisplayBlockEntity
 					&& foundAstralDisplay instanceof AstralDisplayBlockEntity foundAstralDisplayBE
@@ -135,7 +136,7 @@ public class AstralDisplayBlock extends BlockWithEntity {
 	@Override
 	public void onStateReplaced(@NotNull BlockState state, World world, BlockPos pos, @NotNull BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
-			var blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
 				world.updateComparators(pos, this);
@@ -149,10 +150,10 @@ public class AstralDisplayBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			var blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof AstralDisplayBlockEntity astralDisplayBlockEntity) {
 				player.openHandledScreen(astralDisplayBlockEntity);
-				var buf = PacketByteBufs.create();
+				PacketByteBuf buf = PacketByteBufs.create();
 				buf.writeBlockPos(pos);
 				buf.writeDouble(astralDisplayBlockEntity.yLevel.getValue());
 				buf.writeDouble(astralDisplayBlockEntity.rotSpeed.getValue());
