@@ -17,6 +17,8 @@ import java.util.Map;
 public interface ModItems {
 	Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
 	MialeeItemGroup ASTRONOMICAL_ITEM_GROUP = MialeeItemGroup.create(Astronomical.id("astronomical"));
+	Item ASTRAL_FRAGMENT = createItem("astral_fragment", new Item(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
+	Item ASTRAL_CONTAINER = createItem("astral_container", new Item(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP)));
 	Item ASTRAL_BUNDLE_PLANET = createItem("astral_bundle_planet", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.PLANET));
 	Item ASTRAL_BUNDLE_STAR = createItem("astral_bundle_star", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.STAR));
 	Item ASTRAL_BUNDLE_COSMOS = createItem("astral_bundle_cosmos", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.COSMOS));
@@ -58,6 +60,6 @@ public interface ModItems {
 				itemStacks.add(item.getDefaultStack());
 			}
 		});
-		ASTRONOMICAL_ITEM_GROUP.setIcon(ASTRAL_BUNDLE_PLANET.asItem().getDefaultStack());
+		ASTRONOMICAL_ITEM_GROUP.setIcon(ASTRAL_FRAGMENT.asItem().getDefaultStack());
 	}
 }

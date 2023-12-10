@@ -1,9 +1,12 @@
 package doctor4t.astronomical.client.render.entity.block;
 
 import com.sammy.lodestone.handlers.RenderHandler;
+import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
+import doctor4t.astronomical.client.render.world.AstraSkyRenderer;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
+import doctor4t.astronomical.client.render.world.VertexData;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
@@ -16,9 +19,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.awt.*;
@@ -33,14 +34,14 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 	}
 
 	@Override
-	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(T astralDisplayBlockEntity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = astralDisplayBlockEntity.getWorld().getBlockState(astralDisplayBlockEntity.getPos());
 
 		if (blockState.isOf(ModBlocks.ASTRAL_DISPLAY) && blockState.get(AstralDisplayBlock.POWERED)) {
 			float tickDelta = MinecraftClient.getInstance().isPaused() ? 0f : MinecraftClient.getInstance().getTickDelta();
 
 			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + tickDelta);
-			matrixStack.translate(0.5f, 0.5f, 0.5f);
+			matrices.translate(0.5f, 0.5f, 0.5f);
 
 			double distance;
 			float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()));
@@ -60,23 +61,38 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 				orbitCenter = AstronomicalClient.ORBITING_POSITIONS.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
 
 				// astral link connecting displays
-				this.builder.setColor(Astronomical.STAR_PURPLE)
-					.setAlpha(0.5f)
-					.renderBeam(
-						RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
-						matrixStack,
-						Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-						parentPos,
-						(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 15f));
+				double v = bePos.distanceTo(parentPos);
+				for (int k = 0; k < v; k++) {
+					Vec3d nextPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos().offset(blockState.get(AstralDisplayBlock.FACING), k));
+					BlockPos nextNextBP = astralDisplayBlockEntity.getPos().offset(blockState.get(AstralDisplayBlock.FACING), k+1);
+					Vec3d nextNextPos = Vec3d.ofCenter(nextNextBP);
 
-				this.builder.setColor(new Color(0xFFFFFF))
-					.setAlpha(0.4f)
-					.renderBeam(
-						RenderHandler.EARLY_DELAYED_RENDER.getBuffer(AstronomicalClient.ASTRAL_DISPLAY_LINK),
-						matrixStack,
-						Vec3d.ofCenter(astralDisplayBlockEntity.getPos()),
-						parentPos,
-						(float) (.25f + ((Math.cos(time / 10f) + 1) / 2f) / 30f));
+					VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
+					MinecraftClient client = MinecraftClient.getInstance();
+					Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
+					Vec3d diff = nextPos.subtract(playerPos);
+					Vec3d dirVec = nextNextPos.subtract(nextPos);
+					Color color = Astronomical.STAR_PURPLE;
+					VertexData d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f,.1f, color, color.getAlpha(), -(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f);
+
+					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+
+					diff = nextPos.subtract(playerPos).add(-0.0, -0.02, -0.0);
+
+					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f,.1f, color, color.getAlpha(), (-(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f + 0.1f) * 4f);
+
+					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+
+					diff = nextPos.subtract(playerPos).add(0.0, 0.02, 0.0);
+
+					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f,.1f, color, color.getAlpha(), (-(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f + 0.6f) * 2f);
+
+					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+
+					if (astralDisplayBlockEntity.getWorld().getBlockState(nextNextBP).isOf(ModBlocks.ASTRAL_DISPLAY)) {
+						break;
+					}
+				}
 
 				// update orbit position hashmap
 				distance = parentPos.distanceTo(bePos);
@@ -98,16 +114,16 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					float scale = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") * .5f;
 					int circlePrecision = MathHelper.clamp((int) scale * 2, 15, 50);
 
-					matrixStack.push();
+					matrices.push();
 
-					matrixStack.translate(astralPos.x - bePos.getX(), astralPos.y - bePos.getY(), astralPos.z - bePos.getZ());
+					matrices.translate(astralPos.x - bePos.getX(), astralPos.y - bePos.getY(), astralPos.z - bePos.getZ());
 
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
-					matrixStack.scale(scale, scale, scale);
+					matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+					matrices.scale(scale, scale, scale);
 
-					AstronomicalClient.renderAstralObject(matrixStack, vertexConsumerProvider, this.builder, stackToDisplay, circlePrecision, time, true);
+					AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stackToDisplay, circlePrecision, time, true);
 
-					matrixStack.pop();
+					matrices.pop();
 				}
 			}
 		}

@@ -43,7 +43,6 @@ public class AstronomicalClient implements ClientModInitializer {
 	public static final HashMap<BlockPos, Vec3d> ORBITING_POSITIONS = new HashMap<>();
 
 	// common / misc layers
-	public static final RenderLayer ASTRAL_DISPLAY_LINK = LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(new Identifier(Astronomical.MOD_ID, "textures/vfx/astral_display_link.png"));
 	public static final RenderLayer SOLID_BALL = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/white.png"));
 
 	// star layer
