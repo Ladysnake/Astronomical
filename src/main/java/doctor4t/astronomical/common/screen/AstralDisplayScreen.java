@@ -143,7 +143,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 			this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 			i = this.isHoveredOrFocused() ? 1 : 0;
 			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
-			this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 10)), this.y, type * 20, i*20, 20, 20);
+			this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 20)), this.y, type * 20, i*20, 20, 20);
 			//this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		}
 	}
