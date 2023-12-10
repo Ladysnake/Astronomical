@@ -36,6 +36,10 @@ public class FallenStarEntity extends Entity {
 	public void tick() {
 		super.tick();
 
+		if (world.isDay()) {
+			this.damage(DamageSource.GENERIC, 1.0f);
+		}
+
 		ParticleBuilders.create(ModParticles.FALLEN_STAR)
 			.setScale((.8f + this.world.random.nextFloat() / 3f))
 			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
