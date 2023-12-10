@@ -19,6 +19,7 @@
     "LoadAstronomicalShadersGameRendererMixin",
     "MinecraftClientMixin",
     "PlayerEntityRendererMixin",
+    "PlayFallenStarSoundInstanceClientPlayNetworkHandlerMixin",
     "VertexConsumerMixin",
     "WorldRendererMixin"
   ],

@@ -1,5 +1,7 @@
 package doctor4t.astronomical.common.structure;
 
+import doctor4t.astronomical.common.entity.FallenStarEntity;
+import doctor4t.astronomical.common.init.ModEntities;
 import doctor4t.astronomical.common.init.ModSoundEvents;
 import doctor4t.astronomical.common.util.Vec2d;
 import net.minecraft.nbt.NbtCompound;
@@ -49,13 +51,11 @@ public class Starfall {
 	public void tick(World world) {
 		progress++;
 		if (progress == ticksUntilLanded && world instanceof ServerWorld serverWorld) {
-			//TODO spawn stuff here
 			serverWorld.playSound(null, endPos.getX(), endPos.getY(), endPos.getZ(), ModSoundEvents.STAR_IMPACT, SoundCategory.AMBIENT, 20f, (float) (1f + world.random.nextGaussian() * .1f));
 
-//			LightningEntity l = new LightningEntity(EntityType.LIGHTNING_BOLT, serverWorld);
-//			l.setPosition(endPos);
-//			l.setCosmetic(true);
-//			world.spawnEntity(l);
+			FallenStarEntity star = new FallenStarEntity(ModEntities.FALLEN_STAR, serverWorld);
+			star.setPosition(endPos);
+			world.spawnEntity(star);
 		}
 	}
 

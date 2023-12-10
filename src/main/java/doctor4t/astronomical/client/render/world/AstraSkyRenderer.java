@@ -189,7 +189,7 @@ public class AstraSkyRenderer {
 				Vec3d two = s.endPos;
 				float delta = (s.progress + tickDelta) / s.ticksUntilLanded;
 				one = one.lerp(two, s.progress <= s.ticksUntilLanded ? delta : 1);
-				VertexData d = createVertexData(one.subtract(playerPos), UP, 10, Color.WHITE);
+				VertexData d;
 
 				// trail
 				Vec3d directionalVector = s.progress <= s.ticksUntilLanded ? s.startDirection.multiply(MathHelper.lerp((float) s.progress / s.ticksUntilLanded, 10000, 100)) : s.startDirection.multiply(MathHelper.lerp((s.progress - s.ticksUntilLanded) / ((s.ticksUntilLanded * Starfall.ANIMATION_EXTENSION) - s.ticksUntilLanded), 100, 0));
@@ -198,19 +198,19 @@ public class AstraSkyRenderer {
 				Vec3d diff = pos.subtract(playerPos);
 				Color color = Astronomical.STAR_PURPLE;
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, -(world.getTime() + tickDelta % 190) / 190f);
+				d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, -(world.getTime() + tickDelta % 190) / 190f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 				diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
+				d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 				diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
 
-				d = createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
+				d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, directionalVector, 0.25f, 0f, color, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
 
 				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
@@ -298,30 +298,7 @@ public class AstraSkyRenderer {
 
 					s.setPlayedExplosion(true);
 				}
-
 			}
-//			else {
-//				Vec3d directionalVector = s.startDirection.multiply(40f + MathHelper.clamp(30f / (s.progress + tickDelta - s.ticksUntilLanded), 0, 30));
-//				Vec3d pos = s.endPos;
-//
-//				Vec3d diff = pos.subtract(playerPos);
-//
-//				VertexData d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, -(world.getTime() + tickDelta % 190) / 190f);
-//
-//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-//
-//				diff = pos.subtract(playerPos).add(-0.08, -0.08, -0.08);
-//
-//				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
-//
-//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-//
-//				diff = pos.subtract(playerPos).add(0.08, 0.08, 0.08);
-//
-//				d = createFadeoutVertexData(diff, directionalVector, 2f, 1.4f, STARFALL, 0, (-(world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
-//
-//				((AstraWorldVFXBuilder) builder.setAlpha(1 - MathHelper.clamp(8 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-//			}
 		}
 		matrices.pop();
 	}
@@ -369,7 +346,7 @@ public class AstraSkyRenderer {
 		float t1y = -z * ux + (x * uz);
 		float t1z = -x * uy + (y * ux);
 
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
+		float t1d2 = (float) Math.sqrt(AstraWorldVFXBuilder.distanceSquared(t1x, t1y, t1z));
 
 		t1x /= t1d2;
 		t1y /= t1d2;
@@ -379,7 +356,7 @@ public class AstraSkyRenderer {
 		float t2y = -z * t1x + (x * t1z);
 		float t2z = -x * t1y + (y * t1x);
 
-		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
+		float t2d2 = (float) Math.sqrt(AstraWorldVFXBuilder.distanceSquared(t2x, t2y, t2z));
 
 		t2x /= t2d2;
 		t2y /= t2d2;
@@ -422,7 +399,7 @@ public class AstraSkyRenderer {
 		t1y = (float) q.y;
 		t1z = (float) q.z;
 
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
+		float t1d2 = (float) Math.sqrt(AstraWorldVFXBuilder.distanceSquared(t1x, t1y, t1z));
 
 		t1x /= t1d2;
 		t1y /= t1d2;
@@ -432,7 +409,7 @@ public class AstraSkyRenderer {
 		float t2y = -z * t1x + (x * t1z);
 		float t2z = -x * t1y + (y * t1x);
 
-		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
+		float t2d2 = (float) Math.sqrt(AstraWorldVFXBuilder.distanceSquared(t2x, t2y, t2z));
 
 		t2x /= t2d2;
 		t2y /= t2d2;
@@ -466,90 +443,6 @@ public class AstraSkyRenderer {
 		double vpz = s1 * uz + s2 * z + s3 * cz;
 
 		return new Vec3d(vpx, vpy, vpz);
-	}
-
-	private static VertexData createFadeoutVertexData(Vec3d pos, Vec3d up, float beginSize, float endSize, Color c, int endAlpha, float vOffset) {
-		Vec3d b = pos.normalize();
-		float x = (float) b.x;
-		float y = (float) b.y;
-		float z = (float) b.z;
-
-		Vec3d dir = up.normalize();
-		float ux = (float) -dir.x;
-		float uy = (float) -dir.y;
-		float uz = (float) -dir.z;
-
-		float t1x = -y * uz + (z * uy);
-		float t1y = -z * ux + (x * uz);
-		float t1z = -x * uy + (y * ux);
-
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
-
-		t1x /= t1d2;
-		t1y /= t1d2;
-		t1z /= t1d2;
-
-		x = (float) pos.x;
-		y = (float) pos.y;
-		z = (float) pos.z;
-
-		ux = (float) up.x;
-		uy = (float) up.y;
-		uz = (float) up.z;
-
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x * endSize + ux, y + t1y * endSize + uy, z + t1z * endSize + uz), new Vec3f(x - t1x * endSize + ux, y - t1y * endSize + uy, z - t1z * endSize + uz), new Vec3f(x - t1x * beginSize, y - t1y * beginSize, z - t1z * beginSize), new Vec3f(x + t1x * beginSize, y + t1y * beginSize, z + t1z * beginSize)}, new Color[]{new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), c, c}, new Vec2f[]{new Vec2f(0, 6 + vOffset), new Vec2f(1, 6 + vOffset), new Vec2f(1, 0 + vOffset), new Vec2f(0, 0 + vOffset)});
-	}
-
-	private static VertexData createVertexData(Vec3d pos, Vec3d up, float size, Color c) {
-		Vec3d b = pos.normalize();
-		float x = (float) b.x;
-		float y = (float) b.y;
-		float z = (float) b.z;
-
-		float ux = (float) up.x;
-		float uy = (float) up.y;
-		float uz = (float) up.z;
-
-		float t1x = -y * uz + (z * uy);
-		float t1y = -z * ux + (x * uz);
-		float t1z = -x * uy + (y * ux);
-
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
-
-		t1x /= t1d2;
-		t1y /= t1d2;
-		t1z /= t1d2;
-
-		float t2x = -y * t1z + (z * t1y);
-		float t2y = -z * t1x + (x * t1z);
-		float t2z = -x * t1y + (y * t1x);
-
-		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
-
-		t2x /= t2d2;
-		t2y /= t2d2;
-		t2z /= t2d2;
-		t1x *= size;
-		t1y *= size;
-		t1z *= size;
-		t2x *= size;
-		t2y *= size;
-		t2z *= size;
-
-		x = (float) pos.x;
-		y = (float) pos.y;
-		z = (float) pos.z;
-
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
-	}
-
-	public static Quaternion invert(Quaternion in) {
-		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
-		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
-	}
-
-	private static float distanceSquared(float x, float y, float z) {
-		return x * x + y * y + z * z;
 	}
 
 

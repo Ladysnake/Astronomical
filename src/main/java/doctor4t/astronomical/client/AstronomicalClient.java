@@ -3,14 +3,12 @@ package doctor4t.astronomical.client;
 import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
-import doctor4t.astronomical.common.init.ModBlockEntities;
-import doctor4t.astronomical.common.init.ModBlocks;
-import doctor4t.astronomical.common.init.ModItems;
-import doctor4t.astronomical.common.init.ModParticles;
+import doctor4t.astronomical.common.init.*;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
 import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
@@ -20,6 +18,7 @@ import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import doctor4t.astronomical.common.screen.PlanetColorScreen;
 import doctor4t.astronomical.common.screen.RingColorScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
@@ -172,7 +171,7 @@ public class AstronomicalClient implements ClientModInitializer {
 //		ModModelLayers.initialize();
 
 		// entity renderers registration
-//		EntityRendererRegistry.register(ModEntities.STAR, StarEntityRenderer::new);
+		EntityRendererRegistry.register(ModEntities.FALLEN_STAR, FallenStarEntityRenderer::new);
 
 		// block entity renderers registration
 		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
