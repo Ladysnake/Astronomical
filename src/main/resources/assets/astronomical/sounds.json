@@ -32,5 +32,11 @@
       "astronomical:star_impact_2"
     ],
     "subtitle": "subtitles.astronomical.entity.star.impact"
+  },
+  "entity.star.ambient": {
+    "sounds": [
+      "astronomical:star_ambient"
+    ],
+    "subtitle": "subtitles.astronomical.entity.star.ambient"
   }
 }

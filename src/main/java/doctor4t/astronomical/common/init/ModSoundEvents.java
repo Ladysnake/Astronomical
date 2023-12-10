@@ -16,6 +16,7 @@ public interface ModSoundEvents {
 	SoundEvent STAR_CRAFT = createSoundEvent("entity.star.craft");
 	SoundEvent STAR_FALL = createSoundEvent("entity.star.fall");
 	SoundEvent STAR_IMPACT = createSoundEvent("entity.star.impact");
+	SoundEvent STAR_AMBIENT = createSoundEvent("entity.star.ambient");
 
 	static void initialize() {
 		SOUND_EVENTS.keySet().forEach(soundEvent -> Registry.register(Registry.SOUND_EVENT, SOUND_EVENTS.get(soundEvent), soundEvent));

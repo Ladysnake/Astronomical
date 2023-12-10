@@ -1,5 +1,7 @@
 {
   "itemGroup.astronomical.astronomical": "Astronomical",
+  "item.astronomical.astral_fragment": "Astral Fragment",
+  "item.astronomical.astral_container": "Astral Container",
   "item.astronomical.nano_planet": "Nano-Planet",
   "item.astronomical.nano_star": "Nano-Star",
   "item.astronomical.nano_cosmos": "Nano-Cosmos",
