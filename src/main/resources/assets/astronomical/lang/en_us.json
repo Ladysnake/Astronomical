@@ -18,6 +18,7 @@
   "item.astronomical.marshmallow_stick.burnt": "Burnt",
   "block.astronomical.astral_display": "Astral Display",
   "effect.astronomical.stargazing": "Stargazing",
+  "effect.astronomical.starfall": "Star-fall",
   "effect.astronomical.stargazing.time": "Until Sunrise",
   "container.astral_display": "Astral Display"
 }
