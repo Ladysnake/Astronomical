@@ -27,7 +27,11 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 			this.entity = blockEntity;
 		}
 		for (var i = 0; i < 5; i++) {
-			this.addSlot(new Slot(inventory, i, 44 + i * 18, 8));
+			this.addSlot(new Slot(inventory, i, 44 + i * 18, 8) {
+				public boolean canInsert(ItemStack stack) {
+					return AstralDisplayBlockEntity.isAstral(stack);
+				}
+			});
 		}
 		for (var i = 0; i < 3; i++) {
 			for (var j = 0; j < 9; j++) {
@@ -56,10 +60,10 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 
 	@Override
 	public ItemStack quickTransfer(PlayerEntity player, int index) {
-		var itemStack = ItemStack.EMPTY;
-		var slot = this.slots.get(index);
+		ItemStack itemStack = ItemStack.EMPTY;
+		Slot slot = this.slots.get(index);
 		if (slot.hasStack()) {
-			var itemStack2 = slot.getStack();
+			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (index < 5 ? !this.insertItem(itemStack2, 5, 41, true) : !this.insertItem(itemStack2, 0, 5, false)) {
 				return ItemStack.EMPTY;

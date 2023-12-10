@@ -1,6 +1,7 @@
 package doctor4t.astronomical.common.block.entity;
 
 import doctor4t.astronomical.common.init.ModBlockEntities;
+import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import doctor4t.astronomical.common.util.ScaledDouble;
 import net.minecraft.block.Block;
@@ -33,6 +34,10 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
 		this.inventory.addListener(this);
+	}
+
+	public static boolean isAstral(ItemStack s) {
+		return s.getItem() instanceof NanoAstralObjectItem;
 	}
 
 	public BlockPos getParentPos() {
@@ -70,10 +75,18 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
+		if(!isAstral(stack)) {
+			return;
+		}
 		this.inventory.setStack(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());
 		}
+	}
+
+	@Override
+	public boolean isValid(int slot, ItemStack stack) {
+		return super.isValid(slot, stack) && isAstral(stack);
 	}
 
 	@Override
@@ -131,7 +144,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		var nbt = super.toInitialChunkDataNbt();
+		NbtCompound nbt = super.toInitialChunkDataNbt();
 		this.writeNbt(nbt);
 		return nbt;
 	}
@@ -139,7 +152,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	@Override
 	public void onInventoryChanged(Inventory sender) {
 		if (this.world != null && !this.world.isClient()) {
-			var state = this.world.getBlockState(this.pos);
+			BlockState state = this.world.getBlockState(this.pos);
 			this.world.updateListeners(this.pos, state, state, Block.NOTIFY_LISTENERS);
 			this.markDirty();
 		}
