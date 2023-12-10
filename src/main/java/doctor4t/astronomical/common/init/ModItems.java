@@ -41,6 +41,9 @@ public interface ModItems {
 
 	static void initItemGroups() {
 		ASTRONOMICAL_ITEM_GROUP.setItems((itemStacks, itemGroup) -> {
+			// additional vanilla items that fit in the category
+			itemStacks.add(Items.SPYGLASS.getDefaultStack());
+
 			for (var item : ITEMS.keySet()) {
 				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP))
 					continue;
