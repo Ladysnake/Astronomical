@@ -131,7 +131,7 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		int marshmallowCount = stack.getOrCreateNbt().getInt("marshmallowCount");
-		tooltip.add(Text.literal(marshmallowCount + " Marshmallows").setStyle(Style.EMPTY.withColor(Formatting.GRAY)));
+		tooltip.add(Text.literal(marshmallowCount + " Marshmallow"+(marshmallowCount == 1 ? "" : "s")).setStyle(Style.EMPTY.withColor(Formatting.GRAY)));
 
 		super.appendTooltip(stack, world, tooltip, options);
 	}
