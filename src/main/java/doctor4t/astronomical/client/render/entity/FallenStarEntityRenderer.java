@@ -3,6 +3,7 @@ package doctor4t.astronomical.client.render.entity;
 import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import com.sammy.lodestone.systems.rendering.particle.Easing;
 import doctor4t.astronomical.client.render.world.AstraSkyRenderer;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.client.render.world.VertexData;
@@ -32,23 +33,24 @@ public class FallenStarEntityRenderer extends EntityRenderer<FallenStarEntity> {
 			MinecraftClient client = MinecraftClient.getInstance();
 			Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
 			Vec3d diff = entity.getPos().subtract(playerPos);
-			Vec3d dirVec = new Vec3d(0, 100, 0);
+			float easein = MathHelper.lerp(Easing.SINE_OUT.ease(MathHelper.clamp(entity.age / 100f, 0, 1), 0, 1, 1), 0f, 1f);
+			Vec3d dirVec = new Vec3d(0, easein*100f, 0);
 			Color color = Astronomical.STAR_PURPLE.darker();
 			VertexData d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, -(entity.world.getTime() + tickDelta % 190) / 190f);
 
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein*(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 			diff = entity.getPos().subtract(playerPos).add(-0.08, -0.08, -0.08);
 
 			d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, (-(entity.world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
 
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein*(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 			diff = entity.getPos().subtract(playerPos).add(0.08, 0.08, 0.08);
 
 			d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, (-(entity.world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
 
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein*(1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 		}
 
 		super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
