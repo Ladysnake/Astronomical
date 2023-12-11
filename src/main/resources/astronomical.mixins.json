@@ -11,6 +11,7 @@
     "StatusEffectUtilMixin"
   ],
   "client": [
+    "AstralFragmentTinkleItemEntityMixin",
     "AstralDisplayRendererEnforcerMixin",
     "AstralObjectItemRendererMixin",
     "DisableCrosshairWhenUsingSpyglassInGameHudMixin",

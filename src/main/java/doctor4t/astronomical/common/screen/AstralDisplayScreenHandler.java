@@ -74,6 +74,7 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 				slot.markDirty();
 			}
 		}
+		this.entity.onInventoryChanged(this.inventory);
 		return itemStack;
 	}
 }
