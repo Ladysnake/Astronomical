@@ -8,19 +8,27 @@ import doctor4t.astronomical.common.init.ModEntities;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.init.ModSoundEvents;
+import doctor4t.astronomical.common.item.NanoCosmosItem;
+import doctor4t.astronomical.common.item.NanoPlanetItem;
+import doctor4t.astronomical.common.item.NanoRingItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
+
+import java.awt.*;
 
 public class FallenStarEntity extends Entity {
 	public FallenStarEntity(EntityType<?> type, World world) {
@@ -36,7 +44,7 @@ public class FallenStarEntity extends Entity {
 	public void tick() {
 		super.tick();
 
-		if (world.isDay()) {
+		if (!world.isClient && world.isDay()) {
 			this.damage(DamageSource.GENERIC, 1.0f);
 		}
 
@@ -70,12 +78,54 @@ public class FallenStarEntity extends Entity {
 			.setSpinOffset(random.nextFloat() * 360f)
 			.setSpin((float) (this.world.random.nextGaussian() / 50f))
 			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
-
 	}
 
 	@Override
 	public boolean collides() {
 		return true;
+	}
+
+	@Override
+	public ActionResult interact(PlayerEntity player, Hand hand) {
+		if (!world.isClient) {
+			if (player.getStackInHand(hand).isOf(ModItems.ASTRAL_CONTAINER)) {
+				ItemStack retItemStack = ItemStack.EMPTY;
+				int poolSize = NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE;
+				int ran = 1 + random.nextInt(poolSize);
+
+				int size = 1 + player.getRandom().nextInt(3);
+				if (ran <= NanoPlanetItem.PlanetTexture.SIZE) {
+					retItemStack = new ItemStack(ModItems.NANO_PLANET);
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+					String texture = NanoPlanetItem.PlanetTexture.getRandom().name();
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size()) {
+					retItemStack = new ItemStack(ModItems.NANO_STAR);
+					int temp = Astronomical.getRandomStarTemperature(player.getRandom());
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("temperature", temp);
+				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE) {
+					retItemStack = new ItemStack(ModItems.NANO_COSMOS);
+					String texture = NanoCosmosItem.CosmosTexture.getRandom().name();
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE) {
+					retItemStack = new ItemStack(ModItems.NANO_RING);
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+					String texture = NanoRingItem.RingTexture.getRandom().name();
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+				}
+				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", size);
+
+				player.getStackInHand(hand).decrement(1);
+				world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_COLLECT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
+				player.giveItemStack(retItemStack);
+				this.discard();
+			} else {
+				this.damage(DamageSource.GENERIC, 1.0f);
+			}
+		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
@@ -114,7 +164,7 @@ public class FallenStarEntity extends Entity {
 					.setLifetime(20)
 					.setSpinOffset(random.nextFloat() * 360f)
 					.setSpin((float) (this.world.random.nextGaussian() / 2f))
-					.setForcedMotion(ranMove,ranMove)
+					.setForcedMotion(ranMove, ranMove)
 					.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
 			}
 		}

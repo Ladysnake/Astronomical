@@ -36,7 +36,7 @@ public class Astronomical implements ModInitializer {
 	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
 	public static final StatusEffect STARFALL_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("starfall"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
 	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
-	private static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 	// packets
 	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
 	public static Identifier ROT_SPEED_PACKET = id("rot_speed");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
