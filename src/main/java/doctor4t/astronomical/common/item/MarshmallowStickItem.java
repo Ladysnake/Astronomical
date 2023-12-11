@@ -96,7 +96,7 @@ public class MarshmallowStickItem extends Item {
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		} else {
 			if (state.givesEffect) {
-				user.addStatusEffect(new StatusEffectInstance(Astronomical.STARGAZING_EFFECT, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
+				user.addStatusEffect(new StatusEffectInstance(stack.isOf(ModItems.STARMALLOW_STICK) ? Astronomical.STARFALL_EFFECT : Astronomical.STARGAZING_EFFECT, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
 			}
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), user.getEatSound(stack), SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		}
@@ -131,7 +131,7 @@ public class MarshmallowStickItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, @NotNull List<Text> tooltip, TooltipContext context) {
-		tooltip.add(MialeeText.withColor(Text.translatable(this.getTranslationKey(stack) + "." + CookState.getCookState(stack).name().toLowerCase()), CookState.getCookState(stack).color));
+		tooltip.add(MialeeText.withColor(Text.translatable("tooltip.astronomical.cook_level." + CookState.getCookState(stack).name().toLowerCase()), CookState.getCookState(stack).color));
 		super.appendTooltip(stack, world, tooltip, context);
 	}
 

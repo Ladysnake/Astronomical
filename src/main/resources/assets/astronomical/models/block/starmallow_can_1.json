@@ -1,0 +1,46 @@
+{
+	"credit": "Model by Luxintrus",
+	"texture_size": [32, 16],
+	"textures": {
+		"4": "astronomical:block/starmallow_can",
+    "particle": "astronomical:block/starmallow_can"
+	},
+	"elements": [
+		{
+			"name": "can_outer",
+			"from": [4, 0, 4],
+			"to": [12, 10, 12],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 5, 8]},
+			"faces": {
+				"north": {"uv": [0, 6, 4, 16], "texture": "#4"},
+				"east": {"uv": [0, 6, 4, 16], "texture": "#4"},
+				"south": {"uv": [0, 6, 4, 16], "texture": "#4"},
+				"west": {"uv": [0, 6, 4, 16], "texture": "#4"},
+				"up": {"uv": [8, 0, 12, 8], "texture": "#4"},
+				"down": {"uv": [8, 8, 12, 16], "texture": "#4"}
+			}
+		},
+		{
+			"name": "starmallow_layer",
+			"from": [4, 1, 4],
+			"to": [12, 1, 12],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 5, 8]},
+			"faces": {
+				"up": {"uv": [12, 8, 16, 16], "texture": "#4"}
+			}
+		},
+		{
+			"name": "can_inner",
+			"from": [12, 0, 4],
+			"to": [4, 10, 12],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 5, 8]},
+			"faces": {
+				"north": {"uv": [4, 6, 8, 16], "texture": "#4"},
+				"east": {"uv": [4, 6, 8, 16], "texture": "#4"},
+				"south": {"uv": [4, 6, 8, 16], "texture": "#4"},
+				"west": {"uv": [4, 6, 8, 16], "texture": "#4"},
+				"down": {"uv": [8, 8, 12, 16], "texture": "#4"}
+			}
+		}
+	]
+}

@@ -56,7 +56,7 @@ public class NanoRingItem extends NanoAstralObjectItem {
 
 
 		private static final List<RingTexture> VALUES = Arrays.stream(values()).filter(ringTexture -> ringTexture != EYE_OF_THE_UNIVERSE).toList();
-		private static final int SIZE = VALUES.size();
+		public static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 		public final Identifier texture;
 		RingTexture(Identifier texture) {
