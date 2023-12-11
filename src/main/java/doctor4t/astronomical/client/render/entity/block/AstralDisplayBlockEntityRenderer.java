@@ -68,7 +68,7 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			Vec3d bePos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
 			Vec3d parentPos;
 			Vec3d orbitCenter;
-			Vec3d astralPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos());
+			Vec3d astralPos = Vec3d.ofCenter(astralDisplayBlockEntity.getPos()).add(0, astralDisplayBlockEntity.yLevel.getScaledValue(), 0);
 
 			// if connected child, render object orbiting around parent
 			if (astralDisplayBlockEntity.getParentPos() != null

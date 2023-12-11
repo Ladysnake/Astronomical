@@ -26,9 +26,9 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 	public static final int SIZE = 9;
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
 	// yLevel, rotSpeed and spin are all values between 0 and 1, scale accordingly
-	public ScaledDouble yLevel = new ScaledDouble(0.5, 0, 1);
-	public ScaledDouble rotSpeed = new ScaledDouble(0.5, 0, 1);
-	public ScaledDouble spin = new ScaledDouble(0.5, 0, 1);
+	public ScaledDouble yLevel = new ScaledDouble(0.0, 0, 32);
+	public ScaledDouble rotSpeed = new ScaledDouble(0.0, 0, 1);
+	public ScaledDouble spin = new ScaledDouble(0.0, 0, 1);
 	private BlockPos parentPos;
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {

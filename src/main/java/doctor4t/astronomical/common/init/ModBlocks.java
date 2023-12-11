@@ -27,7 +27,7 @@ public interface ModBlocks {
 	Block ASTRAL_DISPLAY = createBlock("astral_display", new AstralDisplayBlock(QuiltBlockSettings.copy(Blocks.OBSERVER).sounds(BlockSoundGroup.COPPER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 	Block MARSHMALLOW_CAN = createBlock("marshmallow_can", new MarshmallowCanBlock(QuiltBlockSettings.of(Material.METAL).breakInstantly().sounds(BlockSoundGroup.LANTERN).nonOpaque()), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 	Block STARMALLOW_CAN = createBlock("starmallow_can", new MarshmallowCanBlock(QuiltBlockSettings.copy(MARSHMALLOW_CAN)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
-	Block ASTRAL_LANTERN = createBlock("astral_lantern", new AstralLanternBlock(QuiltBlockSettings.copy(Blocks.LANTERN).sounds(BlockSoundGroup.COPPER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
+	Block ASTRAL_LANTERN = createBlock("astral_lantern", new AstralLanternBlock(QuiltBlockSettings.copy(Blocks.LANTERN)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 
 	static void initialize() {
 		BLOCKS.keySet().forEach(block -> Registry.register(Registry.BLOCK, BLOCKS.get(block), block));
@@ -41,7 +41,6 @@ public interface ModBlocks {
 				settings.group(itemGroup);
 			}
 
-			System.out.println(block);
 			if (block instanceof MarshmallowCanBlock) {
 				settings.maxCount(1);
 				ITEMS.put(new MarshmallowCanBlockItem(block, settings), BLOCKS.get(block));
