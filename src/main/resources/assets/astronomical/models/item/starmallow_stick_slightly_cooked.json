@@ -1,0 +1,6 @@
+{
+  "parent": "astronomical:item/handheld_marshmallow_stick",
+  "textures": {
+    "layer0": "astronomical:item/starmallow_stick_slightly_cooked"
+  }
+}

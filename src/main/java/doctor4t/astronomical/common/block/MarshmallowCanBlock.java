@@ -68,18 +68,19 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
+		boolean isStarmallow = state.isOf(ModBlocks.STARMALLOW_CAN);
 		if (blockEntity instanceof MarshmallowCanBlockEntity marshmallowCanBlockEntity) {
 			if (player.getStackInHand(hand).isOf(Items.STICK)) {
 				if (marshmallowCanBlockEntity.decrementMarshmallowCount()) {
 					if (player.getStackInHand(hand).getCount() == 1) {
-						player.setStackInHand(hand, new ItemStack(ModItems.MARSHMALLOW_STICK));
+						player.setStackInHand(hand, new ItemStack(isStarmallow ? ModItems.STARMALLOW_STICK : ModItems.MARSHMALLOW_STICK));
 					} else {
 						player.getStackInHand(hand).decrement(1);
-						player.giveItemStack(new ItemStack(ModItems.MARSHMALLOW_STICK));
+						player.giveItemStack(new ItemStack(isStarmallow ? ModItems.STARMALLOW_STICK : ModItems.MARSHMALLOW_STICK));
 					}
 					return ActionResult.SUCCESS;
 				}
-			} else if (player.getStackInHand(hand).isOf(ModItems.MARSHMALLOW)) {
+			} else if (player.getStackInHand(hand).isOf(isStarmallow ? ModItems.STARMALLOW : ModItems.MARSHMALLOW)) {
 				int i = marshmallowCanBlockEntity.incrementMarshmallowCount(player.getStackInHand(hand).getCount());
 				if (i > 0) {
 					player.getStackInHand(hand).decrement(i);
@@ -106,7 +107,7 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof MarshmallowCanBlockEntity marshmallowCanBlockEntity) {
-				ItemStack itemStack = new ItemStack(ModBlocks.MARSHMALLOW_CAN.asItem());
+				ItemStack itemStack = new ItemStack(state.getBlock().asItem());
 				if (!world.isClient) {
 					itemStack.getOrCreateNbt().putInt("marshmallowCount", marshmallowCanBlockEntity.getMarshmallowCount());
 				}
@@ -131,7 +132,12 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		int marshmallowCount = stack.getOrCreateNbt().getInt("marshmallowCount");
-		tooltip.add(Text.literal(marshmallowCount + " Marshmallow"+(marshmallowCount == 1 ? "" : "s")).setStyle(Style.EMPTY.withColor(Formatting.GRAY)));
+		boolean isStarmallow = stack.isOf(ModBlocks.STARMALLOW_CAN.asItem());
+		String plural = (marshmallowCount == 1 ? "s" : "");
+
+		tooltip.add(Text.literal(marshmallowCount + " ").append(
+			Text.translatable(isStarmallow ? ("item.astronomical.starmallow" + plural) : ("item.astronomical.marshmallow" + plural))
+		).setStyle(Style.EMPTY.withColor(isStarmallow ? 0xD570FF : 11184810)));
 
 		super.appendTooltip(stack, world, tooltip, options);
 	}

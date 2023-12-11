@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "astronomical:starmallow"
+    }
+  ],
+  "result": {
+    "item": "astronomical:starmallow_stick"
+  },
+  "show_notification": true
+}

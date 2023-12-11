@@ -30,6 +30,8 @@ public interface ModItems {
 
 	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
 	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item STARMALLOW = createItem("starmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(4).saturationModifier(0.2F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item STARMALLOW_STICK = createItem("starmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));
@@ -49,7 +51,7 @@ public interface ModItems {
 			for (var item : ITEMS.keySet()) {
 				if (item == Items.AIR || item.getGroup() == null || !item.getGroup().equals(ModItems.ASTRONOMICAL_ITEM_GROUP))
 					continue;
-				if (item == MARSHMALLOW_STICK) {
+				if (item instanceof MarshmallowStickItem) {
 					for (var state : MarshmallowStickItem.CookState.values()) {
 						var stack = new ItemStack(item, 1);
 						stack.getOrCreateNbt().putFloat("RoastTicks", state.cookTime);

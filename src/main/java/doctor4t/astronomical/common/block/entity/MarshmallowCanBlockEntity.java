@@ -11,7 +11,7 @@ public class MarshmallowCanBlockEntity extends BlockEntity {
 	public int marshmallowCount;
 
 	public MarshmallowCanBlockEntity(BlockPos pos, BlockState state) {
-		super(ModBlockEntities.ASTRAL_DISPLAY, pos, state);
+		super(ModBlockEntities.MARSHMALLOW_CAN, pos, state);
 	}
 
 	@Override
