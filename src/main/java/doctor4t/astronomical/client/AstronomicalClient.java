@@ -1,8 +1,12 @@
 package doctor4t.astronomical.client;
 
 import com.sammy.lodestone.handlers.RenderHandler;
+import com.sammy.lodestone.handlers.ScreenParticleHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import com.sammy.lodestone.systems.rendering.particle.screen.emitter.ItemParticleEmitter;
+import com.sammy.lodestone.systems.rendering.particle.screen.emitter.ParticleEmitter;
+import doctor4t.astronomical.client.particle.AstralFragmentParticleEmitter;
 import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
@@ -209,5 +213,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 		ModelPredicateProviderRegistry.register(ModItems.MARSHMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 		ModelPredicateProviderRegistry.register(ModItems.STARMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
+
+		ScreenParticleHandler.registerItemParticleEmitter(ModItems.ASTRAL_FRAGMENT, AstralFragmentParticleEmitter::particleTick);
 	}
 }

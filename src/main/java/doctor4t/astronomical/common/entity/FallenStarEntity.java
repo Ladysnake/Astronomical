@@ -69,7 +69,7 @@ public class FallenStarEntity extends Entity {
 			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
 
 		ParticleBuilders.create(ModParticles.FALLEN_STAR)
-			.randomOffset(random.nextGaussian() * 10f)
+			.randomOffset(random.nextFloat() * Math.signum(random.nextGaussian()) *10f)
 			.setScale((.2f + this.world.random.nextFloat() / 10f))
 			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
 			.setAlpha(0, .5f, 0)
@@ -140,36 +140,41 @@ public class FallenStarEntity extends Entity {
 				serverWorld.spawnEntity(itemEntity);
 			}
 			this.discard();
-		} else {
-			for (int i = 0; i < 3; i++) {
-				ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
-					.setScale((3f + this.world.random.nextFloat() * 5f))
-					.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
-					.setAlpha(0, 1f, 0)
-					.setAlphaEasing(Easing.EXPO_OUT, Easing.SINE_OUT)
-					.enableNoClip()
-					.setLifetime(10)
-					.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
-			}
-
-			for (int i = 0; i < 100; i++) {
-				Vec3f ranMove = new Vec3f((float) random.nextGaussian(), (float) random.nextGaussian(), (float) random.nextGaussian());
-				ranMove.normalize();
-				ranMove.scale(.5f);
-				ParticleBuilders.create(LodestoneParticles.TWINKLE_PARTICLE)
-					.setScale((.2f + this.world.random.nextFloat() / 10f))
-					.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
-					.setAlpha(0, 1f, 0)
-					.enableNoClip()
-					.setLifetime(20)
-					.setSpinOffset(random.nextFloat() * 360f)
-					.setSpin((float) (this.world.random.nextGaussian() / 2f))
-					.setForcedMotion(ranMove, ranMove)
-					.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
-			}
 		}
 
 		return super.damage(source, amount);
+	}
+
+	@Override
+	public void onRemoved() {
+		for (int i = 0; i < 3; i++) {
+			ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
+				.setScale((3f + this.world.random.nextFloat() * 5f))
+				.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
+				.setAlpha(0, 1f, 0)
+				.setAlphaEasing(Easing.EXPO_OUT, Easing.SINE_OUT)
+				.enableNoClip()
+				.setLifetime(10)
+				.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+		}
+
+		for (int i = 0; i < 100; i++) {
+			Vec3f ranMove = new Vec3f((float) random.nextGaussian(), (float) random.nextGaussian(), (float) random.nextGaussian());
+			ranMove.normalize();
+			ranMove.scale(.5f);
+			ParticleBuilders.create(LodestoneParticles.TWINKLE_PARTICLE)
+				.setScale((.2f + this.world.random.nextFloat() / 10f))
+				.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
+				.setAlpha(0, 1f, 0)
+				.enableNoClip()
+				.setLifetime(20)
+				.setSpinOffset(random.nextFloat() * 360f)
+				.setSpin((float) (this.world.random.nextGaussian() / 2f))
+				.setForcedMotion(ranMove, ranMove)
+				.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+		}
+
+		super.onRemoved();
 	}
 
 	@Override

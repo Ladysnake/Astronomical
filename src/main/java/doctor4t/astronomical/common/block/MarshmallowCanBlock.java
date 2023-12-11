@@ -133,7 +133,7 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		int marshmallowCount = stack.getOrCreateNbt().getInt("marshmallowCount");
 		boolean isStarmallow = stack.isOf(ModBlocks.STARMALLOW_CAN.asItem());
-		String plural = (marshmallowCount == 1 ? "s" : "");
+		String plural = (marshmallowCount == 1 ? "" : "s");
 
 		tooltip.add(Text.literal(marshmallowCount + " ").append(
 			Text.translatable(isStarmallow ? ("item.astronomical.starmallow" + plural) : ("item.astronomical.marshmallow" + plural))

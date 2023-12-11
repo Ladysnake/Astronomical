@@ -25,9 +25,6 @@ import java.util.function.Consumer;
 public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandler> {
 	public static final Identifier ASTRAL_WIDGETS_TEXTURE = Astronomical.id("textures/gui/astral_widgets.png");
 	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astral_display.png");
-	private static final Text YLEVEL_TEXT = Text.translatable("screen.astronomical.astraldisplay.ylevel");
-	private static final Text ROTSPEED_TEXT = Text.translatable("screen.astronomical.astraldisplay.rotspeed");
-	private static final Text SPIN_TEXT = Text.translatable("screen.astronomical.astraldisplay.spin");
 	private AstralSlider yLevelSlider;
 	private AstralSlider rotSpeedSlider;
 	private AstralSlider spinSlider;
@@ -52,10 +49,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 	public void addSliders() {
 		if (this.handler.entity() == null) return;
-//		if (this.yLevelSlider == null) {
-//			this.yLevelSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel, (d) -> this.syncSlider(Astronomical.Y_LEVEL_PACKET, d));
-//			this.addDrawableChild(this.yLevelSlider);
-//		}
+
 		if (this.rotSpeedSlider == null) {
 			MinecraftClient mC = MinecraftClient.getInstance();
 			if(mC.world != null && mC.world.getBlockState(this.handler.entity.getPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)) {
@@ -66,6 +60,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 				this.addDrawableChild(this.rotSpeedSlider);
 			}
 		}
+
 		if (this.spinSlider == null) {
 			this.spinSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider(Astronomical.SPIN_PACKET, d), 0);
 			this.addDrawableChild(this.spinSlider);
@@ -85,9 +80,6 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		int x = (this.width - this.backgroundWidth) / 2;
 		int y = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-//		this.textRenderer.draw(matrices, YLEVEL_TEXT, x + 10 + 26 - this.textRenderer.getWidth(YLEVEL_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
-//		this.textRenderer.draw(matrices, ROTSPEED_TEXT, x + 65 + 26 - this.textRenderer.getWidth(ROTSPEED_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
-//		this.textRenderer.draw(matrices, SPIN_TEXT, x + 120 + 26 - this.textRenderer.getWidth(SPIN_TEXT) / 2f, y + (float) this.titleY + 31, 0x404040);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
