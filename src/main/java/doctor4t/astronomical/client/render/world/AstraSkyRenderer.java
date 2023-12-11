@@ -428,7 +428,7 @@ public class AstraSkyRenderer {
 		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
 	}
 
-	private static @NotNull Vec3d rotateViaQuat(float x, float y, float z, float ux, float uy, float uz, float scalar) {
+	public static @NotNull Vec3d rotateViaQuat(float x, float y, float z, float ux, float uy, float uz, float scalar) {
 
 		float cx = -y * uz + (z * uy);
 		float cy = -z * ux + (x * uz);
