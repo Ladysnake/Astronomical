@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "astronomical:astral_fragment"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "pattern": [
+    " A ",
+    "CGC",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "item": "astronomical:astral_container"
+  },
+  "show_notification": true
+}

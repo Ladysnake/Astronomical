@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "astronomical:astral_fragment"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "CAC",
+    "APA",
+    "CRC"
+  ],
+  "result": {
+    "count": 1,
+    "item": "astronomical:astral_display"
+  },
+  "show_notification": true
+}

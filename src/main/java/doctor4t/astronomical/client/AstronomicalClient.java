@@ -183,7 +183,7 @@ public class AstronomicalClient implements ClientModInitializer {
 		ModParticles.registerFactories();
 
 		// block special layers
-		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.MARSHMALLOW_CAN, ModBlocks.STARMALLOW_CAN);
+		BlockRenderLayerMap.put(RenderLayer.getCutout(), ModBlocks.MARSHMALLOW_CAN, ModBlocks.STARMALLOW_CAN, ModBlocks.ASTRAL_LANTERN);
 
 		HandledScreens.register(Astronomical.ASTRAL_DISPLAY_SCREEN_HANDLER, AstralDisplayScreen::new);
 		HandledScreens.register(Astronomical.PLANET_COLOR_SCREEN_HANDLER, PlanetColorScreen::new);

@@ -2,6 +2,7 @@ package doctor4t.astronomical.common.init;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
+import doctor4t.astronomical.common.block.AstralLanternBlock;
 import doctor4t.astronomical.common.block.MarshmallowCanBlock;
 import doctor4t.astronomical.common.item.MarshmallowCanBlockItem;
 import net.minecraft.block.Block;
@@ -23,9 +24,10 @@ import static doctor4t.astronomical.common.init.ModItems.ITEMS;
 public interface ModBlocks {
 	Map<Block, Identifier> BLOCKS = new LinkedHashMap<>();
 
-	Block ASTRAL_DISPLAY = createBlock("astral_display", new AstralDisplayBlock(QuiltBlockSettings.copy(Blocks.OBSERVER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
+	Block ASTRAL_DISPLAY = createBlock("astral_display", new AstralDisplayBlock(QuiltBlockSettings.copy(Blocks.OBSERVER).sounds(BlockSoundGroup.COPPER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 	Block MARSHMALLOW_CAN = createBlock("marshmallow_can", new MarshmallowCanBlock(QuiltBlockSettings.of(Material.METAL).breakInstantly().sounds(BlockSoundGroup.LANTERN).nonOpaque()), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 	Block STARMALLOW_CAN = createBlock("starmallow_can", new MarshmallowCanBlock(QuiltBlockSettings.copy(MARSHMALLOW_CAN)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
+	Block ASTRAL_LANTERN = createBlock("astral_lantern", new AstralLanternBlock(QuiltBlockSettings.copy(Blocks.LANTERN).sounds(BlockSoundGroup.COPPER)), true, ModItems.ASTRONOMICAL_ITEM_GROUP);
 
 	static void initialize() {
 		BLOCKS.keySet().forEach(block -> Registry.register(Registry.BLOCK, BLOCKS.get(block), block));
