@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ItemStackMixin",
-    "LivingEntityMixin",
     "PlayerEntityMixin",
     "SpyglassItemMixin",
     "StatusEffectUtilMixin"
@@ -22,7 +21,8 @@
     "PlayerEntityRendererMixin",
     "PlayFallenStarSoundInstanceClientPlayNetworkHandlerMixin",
     "VertexConsumerMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
