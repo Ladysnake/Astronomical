@@ -147,19 +147,19 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 					Vec3d diff = nextPos.subtract(playerPos);
 					Vec3d dirVec = nextNextPos.subtract(nextPos);
 					Color color = Astronomical.STAR_PURPLE;
-					VertexData d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), -(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f);
+					VertexData d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), -(time % 190) / 190f);
 
 					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 					diff = nextPos.subtract(playerPos).add(-0.0, -0.02, -0.0);
 
-					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), (-(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f + 0.1f) * 4f);
+					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), (-(time % 190) / 190f + 0.1f) * 4f);
 
 					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
 					diff = nextPos.subtract(playerPos).add(0.0, 0.02, 0.0);
 
-					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), (-(astralDisplayBlockEntity.getWorld().getTime() + tickDelta % 190) / 190f + 0.6f) * 2f);
+					d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, .1f, .1f, color, color.getAlpha(), (-(time % 190) / 190f + 0.6f) * 2f);
 
 					((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -bePos.getX() + playerPos.getX()), (float) ((float) -bePos.getY() + playerPos.getY()), (float) ((float) -bePos.getZ() + playerPos.getZ()))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
 
