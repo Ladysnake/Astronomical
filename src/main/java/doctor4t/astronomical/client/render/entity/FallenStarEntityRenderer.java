@@ -9,6 +9,7 @@ import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.client.render.world.VertexData;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.entity.FallenStarEntity;
+import doctor4t.astronomical.common.init.ModStatusEffects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -28,7 +29,7 @@ public class FallenStarEntityRenderer extends EntityRenderer<FallenStarEntity> {
 
 	@Override
 	public void render(FallenStarEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if (MinecraftClient.getInstance().player.hasStatusEffect(Astronomical.STARGAZING_EFFECT) && MinecraftClient.getInstance().player.getStatusEffect(Astronomical.STARGAZING_EFFECT).getAmplifier() > 0) {
+		if (MinecraftClient.getInstance().player.hasStatusEffect(ModStatusEffects.STARGAZING_EFFECT) && MinecraftClient.getInstance().player.getStatusEffect(ModStatusEffects.STARGAZING_EFFECT).getAmplifier() > 0) {
 			VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 			MinecraftClient client = MinecraftClient.getInstance();
 			Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;

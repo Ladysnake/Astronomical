@@ -38,5 +38,17 @@
       "astronomical:star_ambient"
     ],
     "subtitle": "subtitles.astronomical.entity.star.ambient"
+  },
+  "block.marshmallow_can.store": {
+    "sounds": [
+      "astronomical:marshmallow_can_store"
+    ],
+    "subtitle": "subtitles.astronomical.block.marshmallow_can.store"
+  },
+  "block.marshmallow_can.take": {
+    "sounds": [
+      "astronomical:marshmallow_can_take"
+    ],
+    "subtitle": "subtitles.astronomical.block.marshmallow_can.take"
   }
 }

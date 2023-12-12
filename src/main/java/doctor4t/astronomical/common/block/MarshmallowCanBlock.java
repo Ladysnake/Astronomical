@@ -3,6 +3,7 @@ package doctor4t.astronomical.common.block;
 import doctor4t.astronomical.common.block.entity.MarshmallowCanBlockEntity;
 import doctor4t.astronomical.common.init.ModBlocks;
 import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.init.ModSoundEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -78,12 +79,14 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 						player.getStackInHand(hand).decrement(1);
 						player.giveItemStack(new ItemStack(isStarmallow ? ModItems.STARMALLOW_STICK : ModItems.MARSHMALLOW_STICK));
 					}
+					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_TAKE, .5f, (float) (1.0f+world.random.nextGaussian()/20f));
 					return ActionResult.SUCCESS;
 				}
 			} else if (player.getStackInHand(hand).isOf(isStarmallow ? ModItems.STARMALLOW : ModItems.MARSHMALLOW)) {
 				int i = marshmallowCanBlockEntity.incrementMarshmallowCount(player.getStackInHand(hand).getCount());
 				if (i > 0) {
 					player.getStackInHand(hand).decrement(i);
+					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_STORE, .5f, (float) (1.0f+world.random.nextGaussian()/20f));
 					return ActionResult.SUCCESS;
 				}
 			}

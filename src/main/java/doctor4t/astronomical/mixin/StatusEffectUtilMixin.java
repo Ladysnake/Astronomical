@@ -1,6 +1,7 @@
 package doctor4t.astronomical.mixin;
 
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.init.ModStatusEffects;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.text.component.TranslatableComponent;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class StatusEffectUtilMixin {
 	@Inject(method = "durationToString", at = @At("HEAD"), cancellable = true)
 	private static void astronomical$untilMorning(@NotNull StatusEffectInstance effect, float multiplier, CallbackInfoReturnable<String> cir) {
-		if (effect.getEffectType() == Astronomical.STARGAZING_EFFECT || effect.getEffectType() == Astronomical.STARFALL_EFFECT) {
+		if (effect.getEffectType() == ModStatusEffects.STARGAZING_EFFECT || effect.getEffectType() == ModStatusEffects.STARFALL_EFFECT) {
 			var stringBuilder = new StringBuilder();
 			new TranslatableComponent("effect.astronomical.stargazing.time").visit(string -> {
 				stringBuilder.append(string);

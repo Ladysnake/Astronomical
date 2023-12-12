@@ -2,6 +2,7 @@ package doctor4t.astronomical.common.structure;
 
 import com.sammy.lodestone.systems.rendering.particle.Easing;
 import doctor4t.astronomical.common.Astronomical;
+import doctor4t.astronomical.common.init.ModStatusEffects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -72,7 +73,7 @@ public class InteractableStar extends Star {
 
 	@Override
 	public float getAlpha() {
-		float ret = MinecraftClient.getInstance().player.hasStatusEffect(Astronomical.STARGAZING_EFFECT) ? 1f : super.getAlpha();
+		float ret = MinecraftClient.getInstance().player.hasStatusEffect(ModStatusEffects.STARGAZING_EFFECT) ? 1f : super.getAlpha();
 
 		if (subjectForTermination && supernovaTicks >= 0) {
 			if (supernovaTicks > HOLD_COLLAPSE_TICKS && supernovaTicks <= START_FADE_OUT_TICKS) {

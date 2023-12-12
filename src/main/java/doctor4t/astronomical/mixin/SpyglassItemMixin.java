@@ -4,6 +4,7 @@ import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.cca.world.AstraSkyComponent;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModSoundEvents;
+import doctor4t.astronomical.common.init.ModStatusEffects;
 import doctor4t.astronomical.common.structure.CelestialObject;
 import doctor4t.astronomical.common.structure.InteractableStar;
 import net.minecraft.entity.LivingEntity;
@@ -61,9 +62,9 @@ public abstract class SpyglassItemMixin extends Item {
 						((InteractableStar) obj).crossFire = (k) -> {
 							int guaranteedStarfalls = 0;
 							int additionalTries = 2;
-							if (user.hasStatusEffect(Astronomical.STARFALL_EFFECT)) {
+							if (user.hasStatusEffect(ModStatusEffects.STARFALL_EFFECT)) {
 								guaranteedStarfalls = 1;
-								additionalTries += user.getStatusEffect(Astronomical.STARFALL_EFFECT).getAmplifier();
+								additionalTries += user.getStatusEffect(ModStatusEffects.STARFALL_EFFECT).getAmplifier();
 							}
 							for (int i = 0; i < guaranteedStarfalls + world.random.nextInt(additionalTries); i++) {
 								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 80, 0, world.random.nextGaussian() * 80);

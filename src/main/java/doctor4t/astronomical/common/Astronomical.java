@@ -33,8 +33,6 @@ public class Astronomical implements ModInitializer {
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
 	public static final String MOD_ID = "astronomical";
 	public static final Color STAR_PURPLE = new Color(0xC065FF);
-	public static final StatusEffect STARGAZING_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("stargazing"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
-	public static final StatusEffect STARFALL_EFFECT = Registry.register(Registry.STATUS_EFFECT, id("starfall"), new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
 	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
 	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 	// packets

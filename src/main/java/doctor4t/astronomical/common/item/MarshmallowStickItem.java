@@ -2,6 +2,7 @@ package doctor4t.astronomical.common.item;
 
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModItems;
+import doctor4t.astronomical.common.init.ModStatusEffects;
 import doctor4t.astronomical.common.util.BlockCastFinder;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -69,7 +70,7 @@ public class MarshmallowStickItem extends Item {
 						var ticks = nbt.getFloat("RoastTicks");
 						if (ticks < CookState.BURNT.cookTime + 3 * 20) {
 //							var growth = Math.max(0, (4f - headDistance) / 10f);
-							var growth = 1f;
+							var growth = 1.5f;
 							nbt.putFloat("RoastTicks", ticks + growth);
 						}
 					}
@@ -91,12 +92,11 @@ public class MarshmallowStickItem extends Item {
 			Criteria.CONSUME_ITEM.trigger(player, stack);
 		}
 		if (state == CookState.BURNT) {
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 4 * 20, 0, true, false, true));
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 2 * 20, 0, true, false, true));
-			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
+			user.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40, 0, true, false, true));
+//			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		} else {
 			if (state.givesEffect) {
-				user.addStatusEffect(new StatusEffectInstance(stack.isOf(ModItems.STARMALLOW_STICK) ? Astronomical.STARFALL_EFFECT : Astronomical.STARGAZING_EFFECT, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
+				user.addStatusEffect(new StatusEffectInstance(stack.isOf(ModItems.STARMALLOW_STICK) ? ModStatusEffects.STARFALL_EFFECT : ModStatusEffects.STARGAZING_EFFECT, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
 			}
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), user.getEatSound(stack), SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		}
@@ -116,16 +116,13 @@ public class MarshmallowStickItem extends Item {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack) {
-		if (CookState.getCookState(stack) == CookState.BURNT) {
-			return 64;
-		}
 		return 24;
 	}
 
 	public SoundEvent getEatSound(ItemStack stack) {
-		if (CookState.getCookState(stack) == CookState.BURNT) {
-			return SoundEvents.BLOCK_DRIPSTONE_BLOCK_HIT;
-		}
+//		if (CookState.getCookState(stack) == CookState.BURNT) {
+//			return SoundEvents.BLOCK_DRIPSTONE_BLOCK_HIT;
+//		}
 		return super.getEatSound();
 	}
 
@@ -146,11 +143,11 @@ public class MarshmallowStickItem extends Item {
 	}
 
 	public enum CookState {
-		RAW(0, -1, 0xFF2EFF27),
-		SLIGHTLY_COOKED(2 * 20, 0, 0xFFFBFF2D),
-		COOKED(10 * 20, 1, 0xFFFAB127),
-		PERFECT(16 * 20 + 10, 2, 0xFFF92922),
-		BURNT(17 * 20, -1, 0xFF5B8FE2);
+		RAW(0, -1, 0xA2A6A1),
+		SLIGHTLY_COOKED(2 * 20, 0, 0xC9B188),
+		COOKED(10 * 20, 1, 0xE8BC66),
+		PERFECT(16 * 20 + 10, 2, 0xFFC724),
+		BURNT(17 * 20, -1, 0x473D24);
 
 		public final int cookTime;
 		public final boolean givesEffect;
