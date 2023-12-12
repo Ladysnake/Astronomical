@@ -9,6 +9,7 @@ import com.sammy.lodestone.systems.rendering.particle.screen.emitter.ParticleEmi
 import doctor4t.astronomical.client.particle.AstralFragmentParticleEmitter;
 import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
+import doctor4t.astronomical.client.render.entity.block.AstralLanternBlockEntityRenderer;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
@@ -23,6 +24,7 @@ import doctor4t.astronomical.common.screen.PlanetColorScreen;
 import doctor4t.astronomical.common.screen.RingColorScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
@@ -38,6 +40,8 @@ import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -53,6 +57,9 @@ public class AstronomicalClient implements ClientModInitializer {
 	public static final RenderLayer STAR_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_1.png"));
 	public static final RenderLayer STAR_2 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_2.png"));
 	public static final RenderLayer STAR_3 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_3.png"));
+
+	public static long lastRenderTick = 0;
+	public static boolean renderStarsThisTick = false;
 
 	// centralized method to render all astral objects
 	// don't forget to push the matrix stack before and pop it after!!
@@ -178,6 +185,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 		// block entity renderers registration
 		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_DISPLAY, AstralDisplayBlockEntityRenderer::new);
+		BlockEntityRendererFactories.register(ModBlockEntities.ASTRAL_LANTERN, AstralLanternBlockEntityRenderer::new);
 
 		// particle renderers registration
 		ModParticles.registerFactories();
@@ -215,5 +223,10 @@ public class AstronomicalClient implements ClientModInitializer {
 		ModelPredicateProviderRegistry.register(ModItems.STARMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 
 		ScreenParticleHandler.registerItemParticleEmitter(ModItems.ASTRAL_FRAGMENT, AstralFragmentParticleEmitter::particleTick);
+
+		WorldRenderEvents.START.register(context -> {
+			AstronomicalClient.renderStarsThisTick = (context.world().getTime() != AstronomicalClient.lastRenderTick);
+			AstronomicalClient.lastRenderTick = context.world().getTime();
+		});
 	}
 }

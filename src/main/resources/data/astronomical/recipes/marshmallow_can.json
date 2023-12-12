@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:bucket"
+    },
+    {
+      "item": "astronomical:marshmallow"
+    }
+  ],
+  "result": {
+    "item": "astronomical:marshmallow_can"
+  },
+  "show_notification": true
+}
