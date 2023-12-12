@@ -29,9 +29,9 @@ public interface ModItems {
 	Item NANO_RING = createItem("nano_ring", new NanoRingItem(new Item.Settings().maxCount(1)));
 
 	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
-	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
 	Item STARMALLOW = createItem("starmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(4).saturationModifier(0.2F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
-	Item STARMALLOW_STICK = createItem("starmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).group(ASTRONOMICAL_ITEM_GROUP)));
+	Item STARMALLOW_STICK = createItem("starmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, Astronomical.id(name));
