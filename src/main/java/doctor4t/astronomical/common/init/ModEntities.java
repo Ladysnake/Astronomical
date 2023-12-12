@@ -16,7 +16,7 @@ import java.util.Map;
 public interface ModEntities {
 
 	Map<EntityType<? extends Entity>, Identifier> ENTITIES = new LinkedHashMap<>();
-	EntityType<FallenStarEntity> FALLEN_STAR = createEntity("fallen_star", QuiltEntityTypeBuilder.<FallenStarEntity>create(SpawnGroup.MISC, FallenStarEntity::new).setDimensions(EntityDimensions.fixed(0.5f, 0.5f)).build());
+	EntityType<FallenStarEntity> FALLEN_STAR = createEntity("fallen_star", QuiltEntityTypeBuilder.<FallenStarEntity>create(SpawnGroup.MISC, FallenStarEntity::new).setDimensions(EntityDimensions.fixed(0.5f, 0.5f)).maxChunkTrackingRange(16).build());
 
 	private static <T extends EntityType<? extends Entity>> T createEntity(String name, T entity) {
 		ENTITIES.put(entity, Astronomical.id(name));

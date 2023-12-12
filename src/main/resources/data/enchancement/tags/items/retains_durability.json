@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "astronomical:marshmallow_stick"
+    "astronomical:marshmallow_stick",
+    "astronomical:starmallow_stick"
   ]
 }
