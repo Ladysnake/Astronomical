@@ -1,13 +1,8 @@
 package doctor4t.astronomical.mixin;
 
-import com.sammy.lodestone.setup.LodestoneParticles;
-import com.sammy.lodestone.setup.LodestoneScreenParticles;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
-import com.sammy.lodestone.systems.rendering.particle.Easing;
-import com.sammy.lodestone.systems.rendering.particle.ParticleBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
-import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +13,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.random.RandomGenerator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -42,23 +36,27 @@ public abstract class AstralObjectItemRendererMixin {
 		if (stack.getItem() instanceof NanoAstralObjectItem) {
 			matrices.push();
 
+			boolean delayRender = false;
+
 			float scale = .25f;
 			if (renderMode == ModelTransformation.Mode.GROUND) {
 				scale = .13f;
-				matrices.translate(0, .13, 0);
+				matrices.translate(0, .13, .0);
 			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND) {
 				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
 				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90f));
-				matrices.translate(.2, .10, -.06);
+				matrices.translate(.2, .10, -(stack.isOf(ModItems.NANO_RING) ? .06 : .1));
 				scale = .17f;
 			} else if (renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND) {
 				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45f));
 				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90f));
-				matrices.translate(-.2, .10, -.06);
+				matrices.translate(-.2, .10, -(stack.isOf(ModItems.NANO_RING) ? .06 : .1));
 				scale = .17f;
 			} else if (renderMode == ModelTransformation.Mode.FIXED) {
 				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-180f));
-				matrices.translate(0, -.03, 0);
+				matrices.translate(0, -.03, -.05);
+				if (stack.isOf(ModItems.NANO_RING))
+					delayRender = true;
 				scale = .28f;
 			} else if (renderMode == ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND) {
 				scale = .14f;
@@ -69,9 +67,9 @@ public abstract class AstralObjectItemRendererMixin {
 			matrices.scale(1f, 1, 0.01f);
 			matrices.scale(scale, scale, scale);
 
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(stack.isOf(ModItems.NANO_RING) ? 90f : 15f));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
-			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, false);
+			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, delayRender);
 			matrices.pop();
 		}
 	}

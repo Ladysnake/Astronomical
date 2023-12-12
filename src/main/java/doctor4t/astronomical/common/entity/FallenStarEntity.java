@@ -8,6 +8,7 @@ import doctor4t.astronomical.common.init.ModEntities;
 import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModParticles;
 import doctor4t.astronomical.common.init.ModSoundEvents;
+import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoRingItem;
@@ -15,6 +16,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -22,8 +26,12 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
@@ -31,6 +39,8 @@ import net.minecraft.world.World;
 import java.awt.*;
 
 public class FallenStarEntity extends Entity {
+	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FallenStarEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+
 	public FallenStarEntity(EntityType<?> type, World world) {
 		super(type, world);
 	}
@@ -69,7 +79,7 @@ public class FallenStarEntity extends Entity {
 			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
 
 		ParticleBuilders.create(ModParticles.FALLEN_STAR)
-			.randomOffset(random.nextFloat() * Math.signum(random.nextGaussian()) *10f)
+			.randomOffset(random.nextFloat() * Math.signum(random.nextGaussian()) * 10f)
 			.setScale((.2f + this.world.random.nextFloat() / 10f))
 			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
 			.setAlpha(0, .5f, 0)
@@ -87,9 +97,9 @@ public class FallenStarEntity extends Entity {
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		if (!world.isClient) {
-			if (player.getStackInHand(hand).isOf(ModItems.ASTRAL_CONTAINER)) {
-				ItemStack retItemStack = ItemStack.EMPTY;
+		if (player.getStackInHand(hand).isOf(ModItems.ASTRAL_CONTAINER)) {
+			ItemStack retItemStack = this.getStack();
+			if (retItemStack.isEmpty()) {
 				int poolSize = NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE;
 				int ran = 1 + random.nextInt(poolSize);
 
@@ -115,31 +125,60 @@ public class FallenStarEntity extends Entity {
 					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
 				}
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", size);
-
-				player.getStackInHand(hand).decrement(1);
-				world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_COLLECT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
-				player.giveItemStack(retItemStack);
-				this.discard();
-			} else {
-				this.damage(DamageSource.GENERIC, 1.0f);
 			}
+
+			player.getStackInHand(hand).decrement(1);
+			world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_COLLECT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
+			player.giveItemStack(retItemStack);
+			this.discard();
+			return ActionResult.SUCCESS;
+		} else if (player.getStackInHand(hand).getItem() instanceof NanoAstralObjectItem) {
+			if (this.getStack().isEmpty()) {
+				this.setStack(player.getStackInHand(hand));
+				player.setStackInHand(hand, new ItemStack(ModItems.ASTRAL_CONTAINER));
+				world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_CRAFT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
+				return ActionResult.SUCCESS;
+			} else return ActionResult.CONSUME;
+		} else if (player.getStackInHand(hand).isOf(ModItems.ASTRAL_FRAGMENT) && !this.getStack().isEmpty()) {
+			int size = this.getStack().getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") + 1;
+			this.getStack().getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", size);
+			player.getStackInHand(hand).decrement(1);
+			world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_CRAFT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
+			player.sendMessage(Text.translatable("action.increase_star_size").append(Text.literal(" "+ size)).setStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)), true);
+			return ActionResult.SUCCESS;
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.PASS;
 	}
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.world instanceof ServerWorld serverWorld) {
 			serverWorld.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_BREAK, SoundCategory.NEUTRAL, 2f, (float) (1f + world.random.nextGaussian() * .1f));
-			for (int i = 0; i < 1 + random.nextInt(3); i++) {
+			int starsToReturn = 1;
+
+			if (!this.getStack().isEmpty()) {
+				world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_COLLECT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
+				starsToReturn = this.getStack().getOrCreateSubNbt(Astronomical.MOD_ID).getInt("size") - 1;
+
+				if ((source.getAttacker() instanceof PlayerEntity player && player.getMainHandStack().isOf(ModItems.ASTRAL_CONTAINER))) {
+					player.getMainHandStack().decrement(1);
+					ItemStack retItemStack = this.getStack();
+					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", 1);
+					player.giveItemStack(retItemStack);
+					starsToReturn--;
+				}
+			}
+
+			for (int i = 0; i < starsToReturn + random.nextInt(3); i++) {
 				ItemEntity itemEntity = new ItemEntity(serverWorld, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ(), new ItemStack(ModItems.ASTRAL_FRAGMENT));
 				Vec3d randomVel = new Vec3d(random.nextGaussian(), random.nextFloat(), random.nextGaussian()).normalize().multiply(.3f);
 				itemEntity.setVelocity(randomVel);
-				itemEntity.setPickupDelay(10);
+				itemEntity.setPickupDelay(20);
 				serverWorld.spawnEntity(itemEntity);
 			}
-			this.discard();
+
+			this.kill();
 		}
 
 		return super.damage(source, amount);
@@ -177,19 +216,32 @@ public class FallenStarEntity extends Entity {
 		super.onRemoved();
 	}
 
+	public void setStack(ItemStack item) {
+		this.getDataTracker().set(ITEM, Util.make(item.copy(), stack -> stack.setCount(1)));
+	}
+
+	public ItemStack getStack() {
+		return this.getDataTracker().get(ITEM);
+	}
+
 	@Override
 	protected void initDataTracker() {
+		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
+	}
+
+	@Override
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		ItemStack itemStack = this.getStack();
+		if (!itemStack.isEmpty()) {
+			nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
+		}
 
 	}
 
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound nbt) {
-
-	}
-
-	@Override
-	protected void writeCustomDataToNbt(NbtCompound nbt) {
-
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
+		this.setStack(itemStack);
 	}
 
 	@Override

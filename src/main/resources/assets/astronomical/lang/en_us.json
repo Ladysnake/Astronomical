@@ -28,5 +28,6 @@
   "effect.astronomical.stargazing": "Stargazing",
   "effect.astronomical.starfall": "Starfall",
   "effect.astronomical.stargazing.time": "Until Sunrise",
-  "container.astral_display": "Astral Display"
+  "container.astral_display": "Astral Display",
+  "action.increase_star_size": "Size increased to"
 }

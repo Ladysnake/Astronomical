@@ -162,7 +162,7 @@ public class RingColorScreen extends HandledScreen<RingColorScreenHandler> {
 			matrices.scale(scale, scale, scale);
 			matrices.translate(0f, -.925f, 0f);
 
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45f));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90f));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
 
 			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, false);

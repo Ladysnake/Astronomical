@@ -23,10 +23,10 @@ public interface ModItems {
 	Item ASTRAL_BUNDLE_STAR = createItem("astral_bundle_star", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.STAR));
 	Item ASTRAL_BUNDLE_COSMOS = createItem("astral_bundle_cosmos", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.COSMOS));
 	Item ASTRAL_BUNDLE_RING = createItem("astral_bundle_ring", new AstralBundleItem(new Item.Settings().group(ASTRONOMICAL_ITEM_GROUP), AstralBundleItem.Type.RING));
-	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings()));
-	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings()));
-	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings()));
-	Item NANO_RING = createItem("nano_ring", new NanoRingItem(new Item.Settings()));
+	Item NANO_PLANET = createItem("nano_planet", new NanoPlanetItem(new Item.Settings().maxCount(1)));
+	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().maxCount(1)));
+	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings().maxCount(1)));
+	Item NANO_RING = createItem("nano_ring", new NanoRingItem(new Item.Settings().maxCount(1)));
 
 	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
 	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));

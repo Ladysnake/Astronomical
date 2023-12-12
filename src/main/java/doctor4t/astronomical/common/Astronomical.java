@@ -1,14 +1,11 @@
 package doctor4t.astronomical.common;
 
-import doctor4t.astronomical.common.effects.StargazingStatusEffect;
 import doctor4t.astronomical.common.init.*;
 import doctor4t.astronomical.common.screen.AstralDisplayScreenHandler;
 import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import doctor4t.astronomical.common.screen.RingColorScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -34,10 +31,13 @@ public class Astronomical implements ModInitializer {
 	public static final String MOD_ID = "astronomical";
 	public static final Color STAR_PURPLE = new Color(0xC065FF);
 	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
-	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();
+	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 	// packets
-	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
-	public static Identifier ROT_SPEED_PACKET = id("rot_speed");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
+	public static Identifier Y_LEVEL_PACKET = id("y_level");
+	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
+	public static Identifier ROT_SPEED_PACKET = id("rot_speed");
+	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
 	public static Identifier SPIN_PACKET = id("spin");
 	public static Identifier HOLDING_PACKET = id("holding");
 	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");
@@ -105,7 +105,7 @@ public class Astronomical implements ModInitializer {
 
 	public static int getRandomStarTemperature(float delta) {
 		List<Integer> temperatures = new ArrayList<>(Astronomical.STAR_TEMPERATURE_COLORS.values());
-		return temperatures.get(MathHelper.ceil(delta * temperatures.size()) - 1);
+		return temperatures.get(MathHelper.clamp(MathHelper.ceil(delta * temperatures.size() - 1), 0, temperatures.size()));
 	}
 
 	@Override
@@ -116,6 +116,7 @@ public class Astronomical implements ModInitializer {
 		ModItems.initialize();
 		ModSoundEvents.initialize();
 		ModParticles.initialize();
+		ModStatusEffects.initialize();
 
 		ServerPlayNetworking.registerGlobalReceiver(Y_LEVEL_PACKET, (server, player, handler, buf, responseSender) -> {
 			double yLevel = buf.readDouble();
@@ -205,10 +206,6 @@ public class Astronomical implements ModInitializer {
 			});
 		});
 	}
-
-
-
-
 
 
 }
