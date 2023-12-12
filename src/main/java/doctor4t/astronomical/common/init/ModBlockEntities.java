@@ -21,13 +21,13 @@ public interface ModBlockEntities {
 		return entity;
 	}
 
-	BlockEntityType<AstralDisplayBlockEntity> ASTRAL_DISPLAY = createBlockEntity("astral_display", QuiltBlockEntityTypeBuilder.create(AstralDisplayBlockEntity::new, ModBlocks.ASTRAL_DISPLAY).build());
+	static void initialize() {
+		BLOCK_ENTITIES.keySet().forEach(entityType -> Registry.register(Registry.BLOCK_ENTITY_TYPE, BLOCK_ENTITIES.get(entityType), entityType));
+	}	BlockEntityType<AstralDisplayBlockEntity> ASTRAL_DISPLAY = createBlockEntity("astral_display", QuiltBlockEntityTypeBuilder.create(AstralDisplayBlockEntity::new, ModBlocks.ASTRAL_DISPLAY).build());
 	BlockEntityType<MarshmallowCanBlockEntity> MARSHMALLOW_CAN = createBlockEntity("marshmallow_can", QuiltBlockEntityTypeBuilder.create(MarshmallowCanBlockEntity::new, ModBlocks.MARSHMALLOW_CAN).build());
 	BlockEntityType<AstralLanternBlockEntity> ASTRAL_LANTERN = createBlockEntity("astral_lantern", QuiltBlockEntityTypeBuilder.create(AstralLanternBlockEntity::new, ModBlocks.ASTRAL_LANTERN).build());
 
-	static void initialize() {
-		BLOCK_ENTITIES.keySet().forEach(entityType -> Registry.register(Registry.BLOCK_ENTITY_TYPE, BLOCK_ENTITIES.get(entityType), entityType));
-	}
+
 
 
 }

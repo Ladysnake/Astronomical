@@ -32,6 +32,10 @@ public class MarshmallowCanBlockEntity extends BlockEntity {
 		return marshmallowCount;
 	}
 
+	public void setMarshmallowCount(int marshmallowCount) {
+		this.marshmallowCount = marshmallowCount;
+	}
+
 	public int incrementMarshmallowCount(int count) {
 		if (this.marshmallowCount + count <= 64) {
 			this.marshmallowCount += count;
@@ -61,10 +65,6 @@ public class MarshmallowCanBlockEntity extends BlockEntity {
 			return true;
 		}
 		return false;
-	}
-
-	public void setMarshmallowCount(int marshmallowCount) {
-		this.marshmallowCount = marshmallowCount;
 	}
 
 	public void updateBlockState() {

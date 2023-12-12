@@ -59,6 +59,7 @@ public class NanoRingItem extends NanoAstralObjectItem {
 		public static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 		public final Identifier texture;
+
 		RingTexture(Identifier texture) {
 			this.texture = texture;
 		}

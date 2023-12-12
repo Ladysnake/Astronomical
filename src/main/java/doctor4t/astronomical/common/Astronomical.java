@@ -32,15 +32,12 @@ public class Astronomical implements ModInitializer {
 	public static final Color STAR_PURPLE = new Color(0xC065FF);
 	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
 	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();
-	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 	// packets
-	public static Identifier Y_LEVEL_PACKET = id("y_level");
-	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
+	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
 	public static Identifier ROT_SPEED_PACKET = id("rot_speed");
-	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
-	public static Identifier SPIN_PACKET = id("spin");
+	public static Identifier SPIN_PACKET = id("spin");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
 	public static Identifier HOLDING_PACKET = id("holding");
-	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");
+	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
 	public static Identifier RING_COLOR_CHANGE_PACKET = id("ring_color_change");
 
 	static {
@@ -206,6 +203,12 @@ public class Astronomical implements ModInitializer {
 			});
 		});
 	}
+
+
+
+
+
+
 
 
 }

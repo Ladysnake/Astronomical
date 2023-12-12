@@ -14,11 +14,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.random.LegacySimpleRandom;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 

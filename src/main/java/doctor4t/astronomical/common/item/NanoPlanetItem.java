@@ -62,6 +62,7 @@ public class NanoPlanetItem extends NanoAstralObjectItem {
 		public static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 		public final Identifier texture;
+
 		PlanetTexture(Identifier texture) {
 			this.texture = texture;
 		}

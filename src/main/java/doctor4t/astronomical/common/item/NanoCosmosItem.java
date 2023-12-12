@@ -39,6 +39,7 @@ public class NanoCosmosItem extends NanoAstralObjectItem {
 		public static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 		public final Identifier texture;
+
 		CosmosTexture(Identifier texture) {
 			this.texture = texture;
 		}

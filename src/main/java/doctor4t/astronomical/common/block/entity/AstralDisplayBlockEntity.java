@@ -75,7 +75,7 @@ public class AstralDisplayBlockEntity extends LockableContainerBlockEntity imple
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-		if(!isAstral(stack)) {
+		if (!isAstral(stack)) {
 			return;
 		}
 		this.inventory.setStack(slot, stack);

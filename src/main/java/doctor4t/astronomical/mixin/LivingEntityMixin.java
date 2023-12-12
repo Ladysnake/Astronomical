@@ -3,7 +3,6 @@ package doctor4t.astronomical.mixin;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;

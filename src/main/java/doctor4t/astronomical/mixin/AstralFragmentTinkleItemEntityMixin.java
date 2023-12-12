@@ -23,18 +23,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemEntity.class)
 public abstract class AstralFragmentTinkleItemEntityMixin extends Entity {
 	@Shadow
-	public abstract int getItemAge();
-
-	@Shadow
 	@Final
 	public float uniqueOffset;
-
-	@Shadow
-	public abstract ItemStack getStack();
 
 	public AstralFragmentTinkleItemEntityMixin(EntityType<?> type, World world) {
 		super(type, world);
 	}
+
+	@Shadow
+	public abstract int getItemAge();
+
+	@Shadow
+	public abstract ItemStack getStack();
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	public void tick(CallbackInfo ci) {

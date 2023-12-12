@@ -113,7 +113,7 @@ public class FallenStarEntity extends Entity {
 			this.getStack().getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", size);
 			player.getStackInHand(hand).decrement(1);
 			world.playSound(null, this.getX(), this.getY(), this.getZ(), ModSoundEvents.STAR_CRAFT, SoundCategory.NEUTRAL, 1f, (float) (1f + world.random.nextGaussian() * .1f));
-			player.sendMessage(Text.translatable("action.increase_star_size").append(Text.literal(" "+ size)).setStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)), true);
+			player.sendMessage(Text.translatable("action.increase_star_size").append(Text.literal(" " + size)).setStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)), true);
 			return ActionResult.SUCCESS;
 		}
 
@@ -185,12 +185,12 @@ public class FallenStarEntity extends Entity {
 		super.onRemoved();
 	}
 
-	public void setStack(ItemStack item) {
-		this.getDataTracker().set(ITEM, Util.make(item.copy(), stack -> stack.setCount(1)));
-	}
-
 	public ItemStack getStack() {
 		return this.getDataTracker().get(ITEM);
+	}
+
+	public void setStack(ItemStack item) {
+		this.getDataTracker().set(ITEM, Util.make(item.copy(), stack -> stack.setCount(1)));
 	}
 
 	@Override

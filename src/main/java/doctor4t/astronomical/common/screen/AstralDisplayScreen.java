@@ -52,7 +52,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 
 		if (this.rotSpeedSlider == null) {
 			MinecraftClient mC = MinecraftClient.getInstance();
-			if(mC.world != null && mC.world.getBlockState(this.handler.entity.getPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)) {
+			if (mC.world != null && mC.world.getBlockState(this.handler.entity.getPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)) {
 				this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider(Astronomical.Y_LEVEL_PACKET, d), 1);
 				this.addDrawableChild(this.rotSpeedSlider);
 			} else {
@@ -135,7 +135,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 			this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 			i = this.isHoveredOrFocused() ? 1 : 0;
 			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
-			this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 21)), this.y, type * 20, i*20, 20, 20);
+			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 21)), this.y, type * 20, i * 20, 20, 20);
 			//this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		}
 	}

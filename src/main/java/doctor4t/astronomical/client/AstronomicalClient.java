@@ -4,8 +4,6 @@ import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.handlers.ScreenParticleHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
-import com.sammy.lodestone.systems.rendering.particle.screen.emitter.ItemParticleEmitter;
-import com.sammy.lodestone.systems.rendering.particle.screen.emitter.ParticleEmitter;
 import doctor4t.astronomical.client.particle.AstralFragmentParticleEmitter;
 import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
@@ -40,8 +38,6 @@ import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
 
 import java.awt.*;
 import java.util.HashMap;

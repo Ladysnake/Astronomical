@@ -2,7 +2,6 @@ package doctor4t.astronomical.mixin;
 
 import doctor4t.astronomical.cca.AstraCardinalComponents;
 import doctor4t.astronomical.cca.world.AstraSkyComponent;
-import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModSoundEvents;
 import doctor4t.astronomical.common.init.ModStatusEffects;
 import doctor4t.astronomical.common.structure.CelestialObject;
@@ -68,8 +67,8 @@ public abstract class SpyglassItemMixin extends Item {
 							}
 							for (int i = 0; i < guaranteedStarfalls + world.random.nextInt(additionalTries); i++) {
 								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 80, 0, world.random.nextGaussian() * 80);
-								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z))+1, pos.z));
-								serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), ModSoundEvents.STAR_FALL, SoundCategory.AMBIENT, 20f, 1f + (float)world.random.nextGaussian()/5f);
+								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)) + 1, pos.z));
+								serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), ModSoundEvents.STAR_FALL, SoundCategory.AMBIENT, 20f, 1f + (float) world.random.nextGaussian() / 5f);
 							}
 						};
 						supernovad = obj;

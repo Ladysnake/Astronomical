@@ -117,7 +117,7 @@ public class AstraSkyRenderer {
 				VertexData p = createVertexData(vector, UP, (scale + i * .02f) * c.getSize(), 95, yuh, Color.WHITE);
 				apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.getX(), v.getY(), v.getZ()).color(supernovaColor.getRed(), supernovaColor.getGreen(), supernovaColor.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p);
 
-				yuh += c.getRandomOffset()/10f;
+				yuh += c.getRandomOffset() / 10f;
 			}
 		}
 		drawWithShader(bufferBuilder.end());
@@ -242,7 +242,7 @@ public class AstraSkyRenderer {
 						float size = world.random.nextFloat() * 20;
 						Vec3f randomMotion = new Vec3f((float) (world.random.nextGaussian()), 0, (float) (world.random.nextGaussian()));
 						randomMotion.normalize();
-						randomMotion.scale(1/8f);
+						randomMotion.scale(1 / 8f);
 						float randomSpin = (float) (world.random.nextGaussian() * .01f);
 
 						ParticleBuilders.create(ModParticles.STAR_IMPACT_EXPLOSION)

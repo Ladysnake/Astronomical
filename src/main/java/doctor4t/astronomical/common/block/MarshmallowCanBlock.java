@@ -20,7 +20,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -40,6 +39,11 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	public static final IntProperty LEVEL = IntProperty.of("level", 0, 8);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 10.0, 12.0);
 
+	public MarshmallowCanBlock(Settings settings) {
+		super(settings);
+		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, 8));
+	}
+
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
@@ -48,11 +52,6 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
-	}
-
-	public MarshmallowCanBlock(Settings settings) {
-		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, 8));
 	}
 
 	@Nullable
@@ -79,14 +78,14 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 						player.getStackInHand(hand).decrement(1);
 						player.giveItemStack(new ItemStack(isStarmallow ? ModItems.STARMALLOW_STICK : ModItems.MARSHMALLOW_STICK));
 					}
-					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_TAKE, .5f, (float) (1.0f+world.random.nextGaussian()/20f));
+					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_TAKE, .5f, (float) (1.0f + world.random.nextGaussian() / 20f));
 					return ActionResult.SUCCESS;
 				}
 			} else if (player.getStackInHand(hand).isOf(isStarmallow ? ModItems.STARMALLOW : ModItems.MARSHMALLOW)) {
 				int i = marshmallowCanBlockEntity.incrementMarshmallowCount(player.getStackInHand(hand).getCount());
 				if (i > 0) {
 					player.getStackInHand(hand).decrement(i);
-					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_STORE, .5f, (float) (1.0f+world.random.nextGaussian()/20f));
+					player.playSound(ModSoundEvents.MARSHMALLOW_CAN_STORE, .5f, (float) (1.0f + world.random.nextGaussian() / 20f));
 					return ActionResult.SUCCESS;
 				}
 			}

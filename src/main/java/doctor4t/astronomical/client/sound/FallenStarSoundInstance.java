@@ -2,13 +2,9 @@ package doctor4t.astronomical.client.sound;
 
 import doctor4t.astronomical.common.entity.FallenStarEntity;
 import doctor4t.astronomical.common.init.ModSoundEvents;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 
 public class FallenStarSoundInstance extends MovingSoundInstance {
 	protected final FallenStarEntity fallenStar;

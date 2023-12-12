@@ -24,6 +24,89 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 
 	}
 
+	public static VertexData createFadeoutVertexData(Vec3d pos, Vec3d up, float beginSize, float endSize, Color c, int endAlpha, float vOffset) {
+		Vec3d b = pos.normalize();
+		float x = (float) b.x;
+		float y = (float) b.y;
+		float z = (float) b.z;
+
+		Vec3d dir = up.normalize();
+		float ux = (float) -dir.x;
+		float uy = (float) -dir.y;
+		float uz = (float) -dir.z;
+
+		float t1x = -y * uz + (z * uy);
+		float t1y = -z * ux + (x * uz);
+		float t1z = -x * uy + (y * ux);
+
+		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
+
+		t1x /= t1d2;
+		t1y /= t1d2;
+		t1z /= t1d2;
+
+		x = (float) pos.x;
+		y = (float) pos.y;
+		z = (float) pos.z;
+
+		ux = (float) up.x;
+		uy = (float) up.y;
+		uz = (float) up.z;
+
+		return new VertexData(new Vec3f[]{new Vec3f(x + t1x * endSize + ux, y + t1y * endSize + uy, z + t1z * endSize + uz), new Vec3f(x - t1x * endSize + ux, y - t1y * endSize + uy, z - t1z * endSize + uz), new Vec3f(x - t1x * beginSize, y - t1y * beginSize, z - t1z * beginSize), new Vec3f(x + t1x * beginSize, y + t1y * beginSize, z + t1z * beginSize)}, new Color[]{new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), c, c}, new Vec2f[]{new Vec2f(0, 6 + vOffset), new Vec2f(1, 6 + vOffset), new Vec2f(1, 0 + vOffset), new Vec2f(0, 0 + vOffset)});
+	}
+
+	public static VertexData createVertexData(Vec3d pos, Vec3d up, float size, Color c) {
+		Vec3d b = pos.normalize();
+		float x = (float) b.x;
+		float y = (float) b.y;
+		float z = (float) b.z;
+
+		float ux = (float) up.x;
+		float uy = (float) up.y;
+		float uz = (float) up.z;
+
+		float t1x = -y * uz + (z * uy);
+		float t1y = -z * ux + (x * uz);
+		float t1z = -x * uy + (y * ux);
+
+		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
+
+		t1x /= t1d2;
+		t1y /= t1d2;
+		t1z /= t1d2;
+
+		float t2x = -y * t1z + (z * t1y);
+		float t2y = -z * t1x + (x * t1z);
+		float t2z = -x * t1y + (y * t1x);
+
+		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
+
+		t2x /= t2d2;
+		t2y /= t2d2;
+		t2z /= t2d2;
+		t1x *= size;
+		t1y *= size;
+		t1z *= size;
+		t2x *= size;
+		t2y *= size;
+		t2z *= size;
+
+		x = (float) pos.x;
+		y = (float) pos.y;
+		z = (float) pos.z;
+
+		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
+	}
+
+	public static Quaternion invert(Quaternion in) {
+		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
+		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
+	}
+
+	public static float distanceSquared(float x, float y, float z) {
+		return x * x + y * y + z * z;
+	}
 
 	@Override
 	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vec3f[] positions, float width, float height) {
@@ -108,90 +191,6 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 			}
 		}
 		return this;
-	}
-
-	public static VertexData createFadeoutVertexData(Vec3d pos, Vec3d up, float beginSize, float endSize, Color c, int endAlpha, float vOffset) {
-		Vec3d b = pos.normalize();
-		float x = (float) b.x;
-		float y = (float) b.y;
-		float z = (float) b.z;
-
-		Vec3d dir = up.normalize();
-		float ux = (float) -dir.x;
-		float uy = (float) -dir.y;
-		float uz = (float) -dir.z;
-
-		float t1x = -y * uz + (z * uy);
-		float t1y = -z * ux + (x * uz);
-		float t1z = -x * uy + (y * ux);
-
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
-
-		t1x /= t1d2;
-		t1y /= t1d2;
-		t1z /= t1d2;
-
-		x = (float) pos.x;
-		y = (float) pos.y;
-		z = (float) pos.z;
-
-		ux = (float) up.x;
-		uy = (float) up.y;
-		uz = (float) up.z;
-
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x * endSize + ux, y + t1y * endSize + uy, z + t1z * endSize + uz), new Vec3f(x - t1x * endSize + ux, y - t1y * endSize + uy, z - t1z * endSize + uz), new Vec3f(x - t1x * beginSize, y - t1y * beginSize, z - t1z * beginSize), new Vec3f(x + t1x * beginSize, y + t1y * beginSize, z + t1z * beginSize)}, new Color[]{new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), c, c}, new Vec2f[]{new Vec2f(0, 6 + vOffset), new Vec2f(1, 6 + vOffset), new Vec2f(1, 0 + vOffset), new Vec2f(0, 0 + vOffset)});
-	}
-
-	public static VertexData createVertexData(Vec3d pos, Vec3d up, float size, Color c) {
-		Vec3d b = pos.normalize();
-		float x = (float) b.x;
-		float y = (float) b.y;
-		float z = (float) b.z;
-
-		float ux = (float) up.x;
-		float uy = (float) up.y;
-		float uz = (float) up.z;
-
-		float t1x = -y * uz + (z * uy);
-		float t1y = -z * ux + (x * uz);
-		float t1z = -x * uy + (y * ux);
-
-		float t1d2 = (float) Math.sqrt(distanceSquared(t1x, t1y, t1z));
-
-		t1x /= t1d2;
-		t1y /= t1d2;
-		t1z /= t1d2;
-
-		float t2x = -y * t1z + (z * t1y);
-		float t2y = -z * t1x + (x * t1z);
-		float t2z = -x * t1y + (y * t1x);
-
-		float t2d2 = (float) Math.sqrt(distanceSquared(t2x, t2y, t2z));
-
-		t2x /= t2d2;
-		t2y /= t2d2;
-		t2z /= t2d2;
-		t1x *= size;
-		t1y *= size;
-		t1z *= size;
-		t2x *= size;
-		t2y *= size;
-		t2z *= size;
-
-		x = (float) pos.x;
-		y = (float) pos.y;
-		z = (float) pos.z;
-
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
-	}
-
-	public static Quaternion invert(Quaternion in) {
-		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
-		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
-	}
-
-	public static float distanceSquared(float x, float y, float z) {
-		return x * x + y * y + z * z;
 	}
 
 }

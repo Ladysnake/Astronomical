@@ -1,6 +1,5 @@
 package doctor4t.astronomical.mixin;
 
-import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModStatusEffects;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
