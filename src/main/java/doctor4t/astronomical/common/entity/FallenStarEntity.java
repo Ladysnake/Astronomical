@@ -58,36 +58,38 @@ public class FallenStarEntity extends Entity {
 			this.damage(DamageSource.GENERIC, 1.0f);
 		}
 
-		ParticleBuilders.create(ModParticles.FALLEN_STAR)
-			.setScale((.8f + this.world.random.nextFloat() / 3f))
-			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
-			.setAlpha(0, 0.3f, 0)
-			.enableNoClip()
-			.setLifetime(20)
-			.setSpinOffset(random.nextFloat() * 360f)
-			.setSpin((float) (this.world.random.nextGaussian() / 100f))
-			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+		if (world.isClient) {
+			ParticleBuilders.create(ModParticles.FALLEN_STAR)
+				.setScale((.8f + this.world.random.nextFloat() / 3f))
+				.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
+				.setAlpha(0, 0.3f, 0)
+				.enableNoClip()
+				.setLifetime(20)
+				.setSpinOffset(random.nextFloat() * 360f)
+				.setSpin((float) (this.world.random.nextGaussian() / 100f))
+				.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
 
-		ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
-			.setScale((6f + this.world.random.nextFloat() * 5f))
-			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
-			.setAlpha(0, 0.2f, 0)
-			.enableNoClip()
-			.setLifetime(20)
-			.setSpinOffset(random.nextFloat() * 360f)
-			.setSpin((float) (this.world.random.nextGaussian() / 100f))
-			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+			ParticleBuilders.create(ModParticles.STAR_IMPACT_FLARE)
+				.setScale((6f + this.world.random.nextFloat() * 5f))
+				.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
+				.setAlpha(0, 0.2f, 0)
+				.enableNoClip()
+				.setLifetime(20)
+				.setSpinOffset(random.nextFloat() * 360f)
+				.setSpin((float) (this.world.random.nextGaussian() / 100f))
+				.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
 
-		ParticleBuilders.create(ModParticles.FALLEN_STAR)
-			.randomOffset(random.nextFloat() * Math.signum(random.nextGaussian()) * 10f)
-			.setScale((.2f + this.world.random.nextFloat() / 10f))
-			.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
-			.setAlpha(0, .5f, 0)
-			.enableNoClip()
-			.setLifetime(20 + random.nextInt(20))
-			.setSpinOffset(random.nextFloat() * 360f)
-			.setSpin((float) (this.world.random.nextGaussian() / 50f))
-			.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+			ParticleBuilders.create(ModParticles.FALLEN_STAR)
+				.randomOffset(random.nextFloat() * Math.signum(random.nextGaussian()) * 10f)
+				.setScale((.2f + this.world.random.nextFloat() / 10f))
+				.setColor(Astronomical.STAR_PURPLE, Astronomical.STAR_PURPLE)
+				.setAlpha(0, .5f, 0)
+				.enableNoClip()
+				.setLifetime(20 + random.nextInt(20))
+				.setSpinOffset(random.nextFloat() * 360f)
+				.setSpin((float) (this.world.random.nextGaussian() / 50f))
+				.spawn(this.world, this.getX(), this.getY() + this.getHeight() / 2f, this.getZ());
+		}
 	}
 
 	@Override
