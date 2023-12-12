@@ -73,7 +73,7 @@ public class InteractableStar extends Star {
 
 	@Override
 	public float getAlpha() {
-		float ret = MinecraftClient.getInstance().player.hasStatusEffect(ModStatusEffects.STARGAZING_EFFECT) ? 1f : super.getAlpha();
+		float ret = MinecraftClient.getInstance().player.hasStatusEffect(ModStatusEffects.STARGAZING) ? 1f : super.getAlpha();
 
 		if (subjectForTermination && supernovaTicks >= 0) {
 			if (supernovaTicks > HOLD_COLLAPSE_TICKS && supernovaTicks <= START_FADE_OUT_TICKS) {

@@ -13,8 +13,8 @@ import java.util.Map;
 public interface ModStatusEffects {
 	Map<StatusEffect, Identifier> STATUS_EFFECTS = new LinkedHashMap<>();
 
-	StatusEffect STARGAZING_EFFECT = createStatusEffect("stargazing", new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
-	StatusEffect STARFALL_EFFECT = createStatusEffect("starfall", new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
+	StatusEffect STARGAZING = createStatusEffect("stargazing", new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
+	StatusEffect STARFALL = createStatusEffect("starfall", new StargazingStatusEffect(StatusEffectType.BENEFICIAL, 0x6300E5));
 
 
 	private static <T extends StatusEffect> T createStatusEffect(String name, T statusEffect) {

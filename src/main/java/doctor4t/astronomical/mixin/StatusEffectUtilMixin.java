@@ -16,7 +16,7 @@ import java.util.Optional;
 public class StatusEffectUtilMixin {
 	@Inject(method = "durationToString", at = @At("HEAD"), cancellable = true)
 	private static void astronomical$untilMorning(@NotNull StatusEffectInstance effect, float multiplier, CallbackInfoReturnable<String> cir) {
-		if (effect.getEffectType() == ModStatusEffects.STARGAZING_EFFECT || effect.getEffectType() == ModStatusEffects.STARFALL_EFFECT) {
+		if (effect.getEffectType() == ModStatusEffects.STARGAZING || effect.getEffectType() == ModStatusEffects.STARFALL) {
 			var stringBuilder = new StringBuilder();
 			new TranslatableComponent("effect.astronomical.stargazing.time").visit(string -> {
 				stringBuilder.append(string);

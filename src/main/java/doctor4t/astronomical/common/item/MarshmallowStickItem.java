@@ -95,7 +95,7 @@ public class MarshmallowStickItem extends Item {
 //			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		} else {
 			if (state.givesEffect) {
-				user.addStatusEffect(new StatusEffectInstance(stack.isOf(ModItems.STARMALLOW_STICK) ? ModStatusEffects.STARFALL_EFFECT : ModStatusEffects.STARGAZING_EFFECT, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
+				user.addStatusEffect(new StatusEffectInstance(stack.isOf(ModItems.STARMALLOW_STICK) ? ModStatusEffects.STARFALL : ModStatusEffects.STARGAZING, Integer.MAX_VALUE, state.effectAmplifier, true, false, true));
 			}
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), user.getEatSound(stack), SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F);
 		}

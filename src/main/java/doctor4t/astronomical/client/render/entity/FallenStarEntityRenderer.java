@@ -70,30 +70,6 @@ public class FallenStarEntityRenderer extends EntityRenderer<FallenStarEntity> {
 				.spawn(entity.world, entity.getX(), entity.getY() + entity.getHeight() / 2f, entity.getZ());
 		}
 
-		if (MinecraftClient.getInstance().player.hasStatusEffect(ModStatusEffects.STARGAZING_EFFECT) && MinecraftClient.getInstance().player.getStatusEffect(ModStatusEffects.STARGAZING_EFFECT).getAmplifier() > 0) {
-			MinecraftClient client = MinecraftClient.getInstance();
-			Vec3d playerPos = client.player != null ? client.player.getCameraPosVec(tickDelta) : Vec3d.ZERO;
-			Vec3d diff = entity.getPos().subtract(playerPos);
-			float easein = MathHelper.lerp(Easing.SINE_OUT.ease(MathHelper.clamp(entity.age / 100f, 0, 1), 0, 1, 1), 0f, 1f);
-			Vec3d dirVec = new Vec3d(0, easein * 100f, 0);
-			Color color = Astronomical.STAR_PURPLE.darker();
-			VertexData d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, -(entity.world.getTime() + tickDelta % 190) / 190f);
-
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein * (1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-
-			diff = entity.getPos().subtract(playerPos).add(-0.08, -0.08, -0.08);
-
-			d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, (-(entity.world.getTime() + tickDelta % 190) / 190f + 0.1f) * 1.2f);
-
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein * (1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-
-			diff = entity.getPos().subtract(playerPos).add(0.08, 0.08, 0.08);
-
-			d = AstraWorldVFXBuilder.createFadeoutVertexData(diff, dirVec, 1f, 1f, color, 0, (-(entity.world.getTime() + tickDelta % 190) / 190f + 0.6f) * 0.9f);
-
-			((AstraWorldVFXBuilder) builder.setOffset((float) ((float) -entity.getX() + playerPos.getX()), (float) ((float) -entity.getY() + playerPos.getY()), (float) ((float) -entity.getZ() + playerPos.getZ())).setAlpha(easein * (1 - MathHelper.clamp(25 / (float) diff.length(), 0, 1)))).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(AstraSkyRenderer.SHIMMER)), matrices, d, builder::setPosColorTexLightmapDefaultFormat);
-		}
-
 		if (!entity.getStack().isEmpty()) {
 			float time = ((float) (MinecraftClient.getInstance().world.getTime() % 2400000L) + MinecraftClient.getInstance().getTickDelta());
 			ItemStack visualStack = entity.getStack();

@@ -61,9 +61,9 @@ public abstract class SpyglassItemMixin extends Item {
 						((InteractableStar) obj).crossFire = (k) -> {
 							int guaranteedStarfalls = 0;
 							int additionalTries = 2;
-							if (user.hasStatusEffect(ModStatusEffects.STARFALL_EFFECT)) {
+							if (user.hasStatusEffect(ModStatusEffects.STARFALL)) {
 								guaranteedStarfalls = 1;
-								additionalTries += user.getStatusEffect(ModStatusEffects.STARFALL_EFFECT).getAmplifier();
+								additionalTries += user.getStatusEffect(ModStatusEffects.STARFALL).getAmplifier();
 							}
 							for (int i = 0; i < guaranteedStarfalls + world.random.nextInt(additionalTries); i++) {
 								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 80, 0, world.random.nextGaussian() * 80);
