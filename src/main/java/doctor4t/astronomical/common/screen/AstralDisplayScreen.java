@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.block.AstralDisplayBlock;
 import doctor4t.astronomical.common.block.entity.AstralDisplayBlockEntity;
+import doctor4t.astronomical.common.util.ScaledDouble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,6 +14,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -20,17 +22,18 @@ import net.minecraft.util.math.MathHelper;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.function.Consumer;
 
 public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandler> {
 	public static final Identifier ASTRAL_WIDGETS_TEXTURE = Astronomical.id("textures/gui/astral_widgets.png");
 	private static final Identifier TEXTURE = Astronomical.id("textures/gui/astral_display.png");
-	private AstralSlider yLevelSlider;
-	private AstralSlider rotSpeedSlider;
-	private AstralSlider spinSlider;
+	private AstralSlider topSlider;
+	private AstralSlider bottomSlider;
 
 	public AstralDisplayScreen(AstralDisplayScreenHandler handler, PlayerInventory inventory, Text title) {
-		super(handler, inventory, title);
+		super(handler, inventory, title.copy().setStyle(Style.EMPTY.withColor(0xD5B271)));
 	}
 
 	@Override
@@ -50,20 +53,20 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	public void addSliders() {
 		if (this.handler.entity() == null) return;
 
-		if (this.rotSpeedSlider == null) {
+		if (this.topSlider == null) {
 			MinecraftClient mC = MinecraftClient.getInstance();
 			if (mC.world != null && mC.world.getBlockState(this.handler.entity.getPos()).get(AstralDisplayBlock.FACING).equals(Direction.UP)) {
-				this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider(Astronomical.Y_LEVEL_PACKET, d), 1);
-				this.addDrawableChild(this.rotSpeedSlider);
+				this.topSlider = new AstralSlider(this.handler.entity().yLevel, this.x + 8, this.y + 35, 161, 6, this.handler.entity().yLevel.getValue(), (d) -> this.syncSlider(Astronomical.Y_LEVEL_PACKET, d), 1);
+				this.addDrawableChild(this.topSlider);
 			} else {
-				this.rotSpeedSlider = new AstralSlider(this, this.x + 8, this.y + 31, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider(Astronomical.ROT_SPEED_PACKET, d), 2);
-				this.addDrawableChild(this.rotSpeedSlider);
+				this.topSlider = new AstralSlider(this.handler.entity().rotSpeed, this.x + 8, this.y + 35, 161, 6, this.handler.entity().rotSpeed.getValue(), (d) -> this.syncSlider(Astronomical.ROT_SPEED_PACKET, d), 2);
+				this.addDrawableChild(this.topSlider);
 			}
 		}
 
-		if (this.spinSlider == null) {
-			this.spinSlider = new AstralSlider(this, this.x + 8, this.y + 55, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider(Astronomical.SPIN_PACKET, d), 0);
-			this.addDrawableChild(this.spinSlider);
+		if (this.bottomSlider == null) {
+			this.bottomSlider = new AstralSlider(this.handler.entity().spin, this.x + 8, this.y + 58, 161, 6, this.handler.entity().spin.getValue(), (d) -> this.syncSlider(Astronomical.SPIN_PACKET, d), 0);
+			this.addDrawableChild(this.bottomSlider);
 		}
 	}
 
@@ -100,11 +103,13 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	private static final class AstralSlider extends SliderWidget {
 		private final byte type;
 		private final Consumer<Double> syncConsumer;
+		private final ScaledDouble scaledDouble;
 
-		private AstralSlider(AstralDisplayScreen screen, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer, int type) {
+		private AstralSlider(ScaledDouble scaledDouble, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer, int type) {
 			super(x, y, width, 20, Text.empty(), value);
 			this.type = (byte) MathHelper.clamp(type, 0, 7);
 			this.syncConsumer = syncConsumer;
+			this.scaledDouble = scaledDouble;
 		}
 
 		@Override
@@ -123,20 +128,31 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		}
 
 		@Override
+		public Text getMessage() {
+			DecimalFormat df = new DecimalFormat("#.##");
+			df.setRoundingMode(RoundingMode.CEILING);
+			return Text.literal(df.format(this.scaledDouble.getScaledValue()));
+		}
+
+		@Override
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.enableDepthTest();
-			int i = this.getYImage(this.isHoveredOrFocused());
-			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-			this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-			this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-			i = this.isHoveredOrFocused() ? 1 : 0;
+//			int i = this.getYImage(this.isHoveredOrFocused());
+//			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+//			this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+//			this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+			int i = this.isHoveredOrFocused() ? 1 : 0;
 			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
 			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 21)), this.y, type * 20, i * 20, 20, 20);
-			//this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
+
+			var minecraftClient = MinecraftClient.getInstance();
+			drawCenteredText(
+				matrices, minecraftClient.textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xD5B271 | MathHelper.ceil(this.alpha * 255.0F) << 24
+			);
 		}
 	}
 }

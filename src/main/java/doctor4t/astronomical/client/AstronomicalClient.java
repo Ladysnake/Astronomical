@@ -249,7 +249,7 @@ public class AstronomicalClient implements ClientModInitializer {
 				if (blockEntity instanceof AstralDisplayBlockEntity astralDisplayBlockEntity && blockState.isOf(ModBlocks.ASTRAL_DISPLAY) && blockState.get(AstralDisplayBlock.POWERED)) {
 
 					double distance;
-					float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()));
+					float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()*5f));
 					double speedModifier;
 
 					Vec3d bePos = Vec3d.ofCenter(blockPos);
@@ -318,7 +318,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 						// update orbit position hashmap
 						distance = parentPos.distanceTo(bePos);
-						speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue();
+						speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue()/10f;
 
 						float offset = switch (blockState.get(AstralDisplayBlock.FACING)) {
 							case SOUTH -> (float) Math.PI;

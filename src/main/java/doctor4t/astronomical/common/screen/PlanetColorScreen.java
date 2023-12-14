@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
@@ -31,14 +32,14 @@ import java.util.function.Function;
 
 public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 	private static final Identifier TEXTURE = Astronomical.id("textures/gui/color_change.png");
-	private static final Identifier WIDGETS_TEXTURE = new Identifier("minecraft", "textures/gui/widgets.png");
+	public static final Identifier ASTRAL_WIDGETS_TEXTURE = Astronomical.id("textures/gui/astral_widgets.png");
 	VFXBuilders.WorldVFXBuilder builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
-	private SliderWidget red1Slider;
-	private SliderWidget red2Slider;
-	private SliderWidget green1Slider;
-	private SliderWidget green2Slider;
-	private SliderWidget blue1Slider;
-	private SliderWidget blue2Slider;
+	private AstralSlider red1Slider;
+	private AstralSlider red2Slider;
+	private AstralSlider green1Slider;
+	private AstralSlider green2Slider;
+	private AstralSlider blue1Slider;
+	private AstralSlider blue2Slider;
 	private int color1;
 	private int color2;
 	private ItemStack retItemStack;
@@ -78,42 +79,42 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		int offsetX2 = 5;
 		int offsetY = -81;
 
-		this.red1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color1) & 0xFF, (m) -> Text.literal("Red: %.0f".formatted(m)), (r) -> {
+		this.red1Slider = this.addSlider(0xFF7A8B, this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color1) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (r) -> {
 			color1 &= 0xFF00FFFF;
 			color1 |= ((r & 0xFF) << 16);
 			this.refreshSliders();
 		});
-		this.green1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color1 >> 8) & 0xFF, (m) -> Text.literal("Green: %.0f".formatted(m)), (g) -> {
+		this.green1Slider = this.addSlider(0x86FFAC, this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color1 >> 8) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (g) -> {
 			color1 &= 0xFFFF00FF;
 			color1 |= ((g & 0xFF) << 8);
 			this.refreshSliders();
 		});
-		this.blue1Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color1 >> 16) & 0xFF, (m) -> Text.literal("Blue: %.0f".formatted(m)), (b) -> {
+		this.blue1Slider = this.addSlider(0x86E8FF, this.width / 2 + RENDER_WIDTH / 2 + offsetX1, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color1 >> 16) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (b) -> {
 			color1 &= 0xFFFFFF00;
 			color1 |= (b & 0xFF);
 			this.refreshSliders();
 		});
 
-		this.red2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color2) & 0xFF, (m) -> Text.literal("Red: %.0f".formatted(m)), (r) -> {
+		this.red2Slider = this.addSlider(0xFF7A8B, this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY, 0, 255, (color2) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (r) -> {
 			color2 &= 0xFF00FFFF;
 			color2 |= ((r & 0xFF) << 16);
 			this.refreshSliders();
 		});
-		this.green2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color2 >> 8) & 0xFF, (m) -> Text.literal("Green: %.0f".formatted(m)), (g) -> {
+		this.green2Slider = this.addSlider(0x86FFAC, this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 20, 0, 255, (color2 >> 8) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (g) -> {
 			color2 &= 0xFFFF00FF;
 			color2 |= ((g & 0xFF) << 8);
 			this.refreshSliders();
 		});
-		this.blue2Slider = this.addSlider(this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color2 >> 16) & 0xFF, (m) -> Text.literal("Blue: %.0f".formatted(m)), (b) -> {
+		this.blue2Slider = this.addSlider(0x86E8FF, this.width / 2 + RENDER_WIDTH / 2 + offsetX2, this.height / 2 - RENDER_HEIGHT / 2 + offsetY + 40, 0, 255, (color2 >> 16) & 0xFF, (m) -> Text.literal("%.0f".formatted(m)), (b) -> {
 			color2 &= 0xFFFFFF00;
 			color2 |= (b & 0xFF);
 			this.refreshSliders();
 		});
 	}
 
-	private @NotNull SliderWidget addSlider(int x, int y, double min, double max, double value, Function<Double, Text> message, @NotNull Consumer<Integer> consumer) {
+	private @NotNull AstralSlider addSlider(int textColor, int x, int y, double min, double max, double value, Function<Double, Text> message, @NotNull Consumer<Integer> consumer) {
 		var floatVal = (value - min) / (max - min);
-		var slider = new SliderWidget(x, y, 55, 20, message.apply(value), floatVal) {
+		var slider = new AstralSlider(this, textColor, x, y, 54, 20, floatVal, (d) -> this.refreshSliders()) {
 			@Override
 			protected void updateMessage() {
 				this.setMessage(message.apply(this.value * (max - min) + min));
@@ -217,14 +218,16 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static final class AstralSlider extends SliderWidget {
+	private static class AstralSlider extends SliderWidget {
 		private final int backgroundHeight;
 		private final Consumer<Double> syncConsumer;
+		private final int textColor;
 
-		private AstralSlider(PlanetColorScreen screen, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer) {
+		private AstralSlider(PlanetColorScreen screen, int textColor, int x, int y, int width, int height, double value, Consumer<Double> syncConsumer) {
 			super(x, y, width, 20, Text.empty(), value);
 			this.backgroundHeight = height;
 			this.syncConsumer = syncConsumer;
+			this.textColor = textColor;
 		}
 
 		@Override
@@ -246,7 +249,7 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			var minecraftClient = MinecraftClient.getInstance();
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, PlanetColorScreen.WIDGETS_TEXTURE);
+			RenderSystem.setShaderTexture(0, PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 			var i = this.getYImage(this.isHoveredOrFocused());
 			RenderSystem.enableBlend();
@@ -257,6 +260,18 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 			this.drawTexture(matrices, this.x + this.width / 2, this.y + this.height / 2 - this.backgroundHeight / 2, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.backgroundHeight - 1);
 			this.drawTexture(matrices, this.x + this.width / 2, this.y + this.height / 2 - this.backgroundHeight / 2 + this.backgroundHeight - 1, 200 - this.width / 2, 46 + i * 20, this.width / 2, 1);
 			this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
+			drawCenteredText(
+				matrices, minecraftClient.textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, this.textColor | MathHelper.ceil(this.alpha * 255.0F) << 24
+			);
+		}
+
+		@Override
+		protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			int i = (this.isHoveredOrFocused() ? 2 : 1) * 20;
+			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
+			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 4, 46 + i, 4, 20);
 		}
 	}
 }

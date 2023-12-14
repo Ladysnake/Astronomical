@@ -27,7 +27,7 @@ public class AstralDisplayScreenHandler extends ScreenHandler {
 			this.entity = blockEntity;
 		}
 		for (var i = 0; i < 5; i++) {
-			this.addSlot(new Slot(inventory, i, 44 + i * 18, 8) {
+			this.addSlot(new Slot(inventory, i, 44 + i * 18, 11) {
 				public boolean canInsert(ItemStack stack) {
 					return AstralDisplayBlockEntity.isAstral(stack);
 				}
