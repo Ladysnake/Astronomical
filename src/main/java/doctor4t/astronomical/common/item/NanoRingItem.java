@@ -51,11 +51,10 @@ public class NanoRingItem extends NanoAstralObjectItem {
 		ASTEROIDS(Astronomical.id("textures/astral_object/ring/asteroids.png")),
 		ORGANIC(Astronomical.id("textures/astral_object/ring/organic.png")),
 		HALO(Astronomical.id("textures/astral_object/ring/halo.png")),
-		DUST(Astronomical.id("textures/astral_object/ring/dust.png")),
-		EYE_OF_THE_UNIVERSE(Astronomical.id("textures/astral_object/ring/eye_of_the_universe.png"));
+		DUST(Astronomical.id("textures/astral_object/ring/dust.png"));
 
 
-		private static final List<RingTexture> VALUES = Arrays.stream(values()).filter(ringTexture -> ringTexture != EYE_OF_THE_UNIVERSE).toList();
+		private static final List<RingTexture> VALUES = List.of(values());
 		public static final int SIZE = VALUES.size();
 		private static final Random RANDOM = new Random();
 		public final Identifier texture;

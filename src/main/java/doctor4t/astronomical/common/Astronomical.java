@@ -203,12 +203,4 @@ public class Astronomical implements ModInitializer {
 			});
 		});
 	}
-
-
-
-
-
-
-
-
 }

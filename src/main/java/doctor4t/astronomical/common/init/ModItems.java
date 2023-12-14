@@ -27,6 +27,7 @@ public interface ModItems {
 	Item NANO_STAR = createItem("nano_star", new NanoStarItem(new Item.Settings().maxCount(1)));
 	Item NANO_COSMOS = createItem("nano_cosmos", new NanoCosmosItem(new Item.Settings().maxCount(1)));
 	Item NANO_RING = createItem("nano_ring", new NanoRingItem(new Item.Settings().maxCount(1)));
+	Item THE_EYE_OF_THE_UNIVERSE = createItem("the_eye_of_the_universe", new TheEyeOfTheUniverse(new Item.Settings().maxCount(1)));
 
 	Item MARSHMALLOW = createItem("marshmallow", new Item(new QuiltItemSettings().food(new FoodComponent.Builder().snack().hunger(2).saturationModifier(0.1F).alwaysEdible().build()).group(ASTRONOMICAL_ITEM_GROUP)));
 	Item MARSHMALLOW_STICK = createItem("marshmallow_stick", new MarshmallowStickItem(new QuiltItemSettings().maxCount(1).maxDamage(1).group(ASTRONOMICAL_ITEM_GROUP)));

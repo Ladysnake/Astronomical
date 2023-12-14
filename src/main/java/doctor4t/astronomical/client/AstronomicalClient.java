@@ -36,6 +36,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
@@ -52,13 +53,19 @@ public class AstronomicalClient implements ClientModInitializer {
 	public static final HashMap<BlockPos, Vec3d> ASTRAL_OBJECTS_TO_RENDER = new HashMap<>();
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
 
-	// common / misc layers
+	// static render layers
 	public static final RenderLayer SOLID_BALL = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/white.png"));
-
-	// star layer
 	public static final RenderLayer STAR_1 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_1.png"));
 	public static final RenderLayer STAR_2 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_2.png"));
 	public static final RenderLayer STAR_3 = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/star/star_3.png"));
+	public static final RenderLayer EOTU_PLANET = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_planet.png"));
+	public static final RenderLayer EOTU_PLANET_STORM = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_planet_storm.png"));
+	public static final RenderLayer EOTU_CLOUD_3D = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_cloud_3d.png"));
+	public static final RenderLayer EOTU_STORM = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_storm.png"));
+	public static final RenderLayer EOTU_SYMBOL = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_symbol.png"));
+	public static float eotuStormAlpha = 0f;
+	public static float eotuStormRotation = 0f;
+	public static float eotuStormSize = 0f;
 
 	public static long lastRenderTick = 0;
 	public static boolean renderStarsThisTick = false;
@@ -151,10 +158,7 @@ public class AstronomicalClient implements ClientModInitializer {
 		} else if (stackToDisplay.isOf(ModItems.NANO_RING)) {
 			int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 			NanoRingItem.RingTexture ringTexture = NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture"));
-			RenderLayer renderLayer = (ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? LodestoneRenderLayers.ADDITIVE_TEXTURE : LodestoneRenderLayers.TRANSPARENT_TEXTURE).applyAndCache(ringTexture.texture);
-			float scale = (ringTexture == NanoRingItem.RingTexture.EYE_OF_THE_UNIVERSE ? 2f : 1f);
-
-			matrixStack.scale(scale, scale, scale);
+			RenderLayer renderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(ringTexture.texture);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
 
 			builder.setColor(new Color(color))
@@ -174,6 +178,149 @@ public class AstronomicalClient implements ClientModInitializer {
 					matrixStack,
 					1
 				);
+		} else if (stackToDisplay.isOf(ModItems.THE_EYE_OF_THE_UNIVERSE)) {
+			builder.setColor(new Color(0x252525))
+				.setAlpha(1f)
+				.renderSphere(
+					vertexConsumerProvider.getBuffer(EOTU_PLANET),
+					matrixStack,
+					1,
+					sphereDetail,
+					sphereDetail);
+
+			if (eotuStormAlpha > 0f) {
+				builder.setColor(new Color(0x4644A2))
+					.setAlpha(Math.min(1f, eotuStormAlpha*2f))
+					.renderSphere(
+						vertexConsumerProvider.getBuffer(EOTU_PLANET_STORM),
+						matrixStack,
+						1,
+						sphereDetail,
+						sphereDetail);
+			}
+
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time / 3f));
+			matrixStack.push();
+			matrixStack.translate(0, -2f, 0);
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+			matrixStack.scale(2f, 8f, 8f);
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+			builder.setColor(new Color(0x151439))
+				.setAlpha(1f)
+				.renderSphere(
+					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+					matrixStack,
+					-1,
+					sphereDetail,
+					sphereDetail);
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+			builder.setColor(new Color(0x4644A2))
+				.setAlpha(1f)
+				.renderSphere(
+					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+					matrixStack,
+					1,
+					sphereDetail,
+					sphereDetail);
+			matrixStack.pop();
+
+			matrixStack.push();
+			matrixStack.translate(0, 0.4f, 0);
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90f));
+			matrixStack.scale(1.5f, 2f, 2f);
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+			builder.setColor(new Color(0x4644A2))
+				.setAlpha(1f)
+				.renderSphere(
+					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+					matrixStack,
+					-1,
+					sphereDetail,
+					sphereDetail);
+			matrixStack.pop();
+
+			if (eotuStormAlpha > 0f) {
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time / 3f));
+
+				matrixStack.push();
+				matrixStack.translate(0, -2f, 0);
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+				matrixStack.scale(2f, 8f, 8f);
+				builder.setColor(new Color(0x9998FF))
+					.setAlpha(eotuStormAlpha)
+					.renderSphere(
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_STORM),
+						matrixStack,
+						1,
+						sphereDetail,
+						sphereDetail);
+				matrixStack.pop();
+
+				matrixStack.push();
+				matrixStack.translate(0, -13f, 0);
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+				matrixStack.scale(12.5f, 25f, 25f);
+				builder.setColor(new Color(0x9998FF))
+					.setAlpha(Math.min(1f, eotuStormAlpha/2f))
+					.renderSphere(
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_SYMBOL),
+						matrixStack,
+						1,
+						sphereDetail,
+						sphereDetail);
+				matrixStack.pop();
+			}
+
+			if (renderStarsThisTick) {
+				RandomGenerator random = MinecraftClient.getInstance().world.random;
+				if (eotuStormAlpha <= 0f && random.nextInt(20) == 0) {
+					eotuStormAlpha = .5f + random.nextFloat() / 2f;
+				}
+
+				eotuStormAlpha = MathHelper.clamp(eotuStormAlpha - .1f, 0f, 1f);
+			}
+
+
+//			matrixStack.push();
+//			float scale = 16f;
+//			matrixStack.translate(0, -1.5f, 0);
+//			matrixStack.scale(scale,scale,scale);
+//			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
+//			builder.setColor(new Color(0x807FFA))
+//				.setAlpha(1f)
+//				.renderQuad(
+//					(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_SYMBOL),
+//					matrixStack,
+//					1
+//				);
+//			matrixStack.pop();
+
+//			Color color = new Color(0x4644A2);
+//			for (int i = 0; i < 3; i++) {
+//				matrixStack.push();
+//				matrixStack.scale(3f + i, 3f + i, 3f + i);
+//				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
+//
+//				builder.setColor(color)
+//					.setAlpha(1f)
+//					.renderQuad(
+//						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD),
+//						matrixStack,
+//						1
+//					);
+//
+//				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180f));
+//
+//				builder
+//					.setAlpha(1f)
+//					.renderQuad(
+//						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD),
+//						matrixStack,
+//						1
+//					);
+//				matrixStack.pop();
+//				color = color.darker();
+//			}
 		}
 	}
 
@@ -249,7 +396,7 @@ public class AstronomicalClient implements ClientModInitializer {
 				if (blockEntity instanceof AstralDisplayBlockEntity astralDisplayBlockEntity && blockState.isOf(ModBlocks.ASTRAL_DISPLAY) && blockState.get(AstralDisplayBlock.POWERED)) {
 
 					double distance;
-					float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue()*5f));
+					float selfRotation = (float) (-time * (astralDisplayBlockEntity.spin.getScaledValue() * 5f));
 					double speedModifier;
 
 					Vec3d bePos = Vec3d.ofCenter(blockPos);
@@ -318,7 +465,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 						// update orbit position hashmap
 						distance = parentPos.distanceTo(bePos);
-						speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue()/10f;
+						speedModifier = astralDisplayBlockEntity.rotSpeed.getScaledValue() / 10f;
 
 						float offset = switch (blockState.get(AstralDisplayBlock.FACING)) {
 							case SOUTH -> (float) Math.PI;
