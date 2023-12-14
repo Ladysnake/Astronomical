@@ -81,6 +81,10 @@ dependencies {
 
 	// ease of multiplayer testing & game control
 	modImplementation "carpet:fabric-carpet:${project.minecraft_version}-${project.carpet_core_version}"
+
+	// midnightlib
+	modImplementation include("maven.modrinth:midnightlib:${midnightlib_version}")
+
 }
 
 processResources {

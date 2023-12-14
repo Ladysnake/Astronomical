@@ -54,15 +54,15 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			Vec3f flo = blockState.get(AstralDisplayBlock.FACING).getUnitVector();
 			VertexData data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.45f + 0.05f * MathHelper.sin(time / 16), time / 32, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
 			data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.4f + 0.1f * MathHelper.sin(-time / 17), -time / 37, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
 			data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.6f, 0, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
 			matrices.pop();
 		}

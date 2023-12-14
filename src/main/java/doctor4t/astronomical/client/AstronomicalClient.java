@@ -4,6 +4,7 @@ import com.sammy.lodestone.handlers.RenderHandler;
 import com.sammy.lodestone.handlers.ScreenParticleHandler;
 import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
+import doctor4t.astronomical.AstronomicalConfig;
 import doctor4t.astronomical.client.particle.AstralFragmentParticleEmitter;
 import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
 import doctor4t.astronomical.client.render.entity.block.AstralDisplayBlockEntityRenderer;
@@ -63,9 +64,8 @@ public class AstronomicalClient implements ClientModInitializer {
 	public static final RenderLayer EOTU_CLOUD_3D = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_cloud_3d.png"));
 	public static final RenderLayer EOTU_STORM = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_storm.png"));
 	public static final RenderLayer EOTU_SYMBOL = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/eotu_symbol.png"));
+	public static final RenderLayer OUTER_WILDS_SPOILER = AstraWorldVFXBuilder.TEXTURE_ACTUAL_TRIANGLE_ADDITIVE.apply(new Identifier(Astronomical.MOD_ID, "textures/astral_object/outer_wilds_spoiler.png"));
 	public static float eotuStormAlpha = 0f;
-	public static float eotuStormRotation = 0f;
-	public static float eotuStormSize = 0f;
 
 	public static long lastRenderTick = 0;
 	public static boolean renderStarsThisTick = false;
@@ -179,77 +179,46 @@ public class AstronomicalClient implements ClientModInitializer {
 					1
 				);
 		} else if (stackToDisplay.isOf(ModItems.THE_EYE_OF_THE_UNIVERSE)) {
-			builder.setColor(new Color(0x252525))
-				.setAlpha(1f)
-				.renderSphere(
-					vertexConsumerProvider.getBuffer(EOTU_PLANET),
-					matrixStack,
-					1,
-					sphereDetail,
-					sphereDetail);
-
-			if (eotuStormAlpha > 0f) {
-				builder.setColor(new Color(0x4644A2))
-					.setAlpha(Math.min(1f, eotuStormAlpha*2f))
+			if (AstronomicalConfig.finishedOuterWilds) {
+				builder.setColor(new Color(0x626262))
+					.setAlpha(1f)
 					.renderSphere(
-						vertexConsumerProvider.getBuffer(EOTU_PLANET_STORM),
+						vertexConsumerProvider.getBuffer(EOTU_PLANET),
 						matrixStack,
 						1,
 						sphereDetail,
 						sphereDetail);
-			}
 
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time / 3f));
-			matrixStack.push();
-			matrixStack.translate(0, -2f, 0);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
-			matrixStack.scale(2f, 8f, 8f);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
-			builder.setColor(new Color(0x151439))
-				.setAlpha(1f)
-				.renderSphere(
-					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
-					matrixStack,
-					-1,
-					sphereDetail,
-					sphereDetail);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
-			builder.setColor(new Color(0x4644A2))
-				.setAlpha(1f)
-				.renderSphere(
-					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
-					matrixStack,
-					1,
-					sphereDetail,
-					sphereDetail);
-			matrixStack.pop();
+				if (eotuStormAlpha > 0f) {
+					builder.setColor(new Color(0x4644A2))
+						.setAlpha(Math.min(1f, eotuStormAlpha * 2f))
+						.renderSphere(
+							vertexConsumerProvider.getBuffer(EOTU_PLANET_STORM),
+							matrixStack,
+							1,
+							sphereDetail,
+							sphereDetail);
+				}
 
-			matrixStack.push();
-			matrixStack.translate(0, 0.4f, 0);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90f));
-			matrixStack.scale(1.5f, 2f, 2f);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
-			builder.setColor(new Color(0x4644A2))
-				.setAlpha(1f)
-				.renderSphere(
-					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
-					matrixStack,
-					-1,
-					sphereDetail,
-					sphereDetail);
-			matrixStack.pop();
-
-			if (eotuStormAlpha > 0f) {
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time / 3f));
-
 				matrixStack.push();
 				matrixStack.translate(0, -2f, 0);
 				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
 				matrixStack.scale(2f, 8f, 8f);
-				builder.setColor(new Color(0x9998FF))
-					.setAlpha(eotuStormAlpha)
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				builder.setColor(new Color(0x151439))
+					.setAlpha(1f)
 					.renderSphere(
-						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_STORM),
+						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+						matrixStack,
+						-1,
+						sphereDetail,
+						sphereDetail);
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				builder.setColor(new Color(0x4644A2))
+					.setAlpha(1f)
+					.renderSphere(
+						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
 						matrixStack,
 						1,
 						sphereDetail,
@@ -257,70 +226,68 @@ public class AstronomicalClient implements ClientModInitializer {
 				matrixStack.pop();
 
 				matrixStack.push();
-				matrixStack.translate(0, -13f, 0);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
-				matrixStack.scale(12.5f, 25f, 25f);
-				builder.setColor(new Color(0x9998FF))
-					.setAlpha(Math.min(1f, eotuStormAlpha/2f))
+				matrixStack.translate(0, 0.4f, 0);
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90f));
+				matrixStack.scale(1.5f, 2f, 2f);
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				builder.setColor(new Color(0x4644A2))
+					.setAlpha(1f)
 					.renderSphere(
-						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_SYMBOL),
+						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+						matrixStack,
+						-1,
+						sphereDetail,
+						sphereDetail);
+				matrixStack.pop();
+
+				if (eotuStormAlpha > 0f) {
+					matrixStack.push();
+					matrixStack.translate(0, -2f, 0);
+					matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+					matrixStack.scale(2f, 8f, 8f);
+					builder.setColor(new Color(0x9998FF))
+						.setAlpha(eotuStormAlpha)
+						.renderSphere(
+							(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_STORM),
+							matrixStack,
+							1,
+							sphereDetail,
+							sphereDetail);
+					matrixStack.pop();
+
+					matrixStack.push();
+					matrixStack.translate(0, -12.3f, 0);
+					matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+					matrixStack.scale(12.5f, 25f, 25f);
+					builder.setColor(new Color(0x9998FF))
+						.setAlpha(Math.min(1f, eotuStormAlpha / 2f))
+						.renderSphere(
+							(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_SYMBOL),
+							matrixStack,
+							1,
+							sphereDetail,
+							sphereDetail);
+					matrixStack.pop();
+				}
+
+				if (renderStarsThisTick) {
+					RandomGenerator random = MinecraftClient.getInstance().world.random;
+					if (eotuStormAlpha <= 0f && random.nextInt(20) == 0) {
+						eotuStormAlpha = .5f + random.nextFloat() / 2f;
+					}
+
+					eotuStormAlpha = MathHelper.clamp(eotuStormAlpha - .1f, 0f, 1f);
+				}
+			} else {
+				builder.setColor(new Color(0xFFFFFF))
+					.setAlpha(1f)
+					.renderSphere(
+						vertexConsumerProvider.getBuffer(OUTER_WILDS_SPOILER),
 						matrixStack,
 						1,
 						sphereDetail,
 						sphereDetail);
-				matrixStack.pop();
 			}
-
-			if (renderStarsThisTick) {
-				RandomGenerator random = MinecraftClient.getInstance().world.random;
-				if (eotuStormAlpha <= 0f && random.nextInt(20) == 0) {
-					eotuStormAlpha = .5f + random.nextFloat() / 2f;
-				}
-
-				eotuStormAlpha = MathHelper.clamp(eotuStormAlpha - .1f, 0f, 1f);
-			}
-
-
-//			matrixStack.push();
-//			float scale = 16f;
-//			matrixStack.translate(0, -1.5f, 0);
-//			matrixStack.scale(scale,scale,scale);
-//			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
-//			builder.setColor(new Color(0x807FFA))
-//				.setAlpha(1f)
-//				.renderQuad(
-//					(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_SYMBOL),
-//					matrixStack,
-//					1
-//				);
-//			matrixStack.pop();
-
-//			Color color = new Color(0x4644A2);
-//			for (int i = 0; i < 3; i++) {
-//				matrixStack.push();
-//				matrixStack.scale(3f + i, 3f + i, 3f + i);
-//				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
-//
-//				builder.setColor(color)
-//					.setAlpha(1f)
-//					.renderQuad(
-//						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD),
-//						matrixStack,
-//						1
-//					);
-//
-//				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180f));
-//
-//				builder
-//					.setAlpha(1f)
-//					.renderQuad(
-//						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD),
-//						matrixStack,
-//						1
-//					);
-//				matrixStack.pop();
-//				color = color.darker();
-//			}
 		}
 	}
 
@@ -328,6 +295,8 @@ public class AstronomicalClient implements ClientModInitializer {
 	public void onInitializeClient(ModContainer mod) {
 		// init model layers
 //		ModModelLayers.initialize();
+		// load config
+		AstronomicalConfig.init(Astronomical.MOD_ID, AstronomicalConfig.class);
 
 		// entity renderers registration
 		EntityRendererRegistry.register(ModEntities.FALLEN_STAR, FallenStarEntityRenderer::new);

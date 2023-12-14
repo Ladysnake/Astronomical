@@ -6,6 +6,7 @@
   "item.astronomical.nano_star": "Nano-Star",
   "item.astronomical.nano_cosmos": "Nano-Cosmos",
   "item.astronomical.nano_ring": "Nano-Ring",
+  "item.astronomical.the_eye_of_the_universe": "The Eye of the Universe",
   "item.astronomical.astral_bundle_planet": "Nano-Planet Bundle",
   "item.astronomical.astral_bundle_star": "Nano-Star Bundle",
   "item.astronomical.astral_bundle_cosmos": "Nano-Cosmos Bundle",
@@ -29,5 +30,6 @@
   "effect.astronomical.starfall": "Starfall",
   "effect.astronomical.stargazing.time": "Until Sunrise",
   "container.astral_display": "Astral Display",
-  "action.increase_star_size": "Size increased to"
+  "action.increase_star_size": "Size increased to",
+  "astronomical.midnightconfig.finishedOuterWilds": "Have you played and finished Outer Wilds?"
 }

@@ -4,14 +4,12 @@ import com.sammy.lodestone.setup.LodestoneParticles;
 import com.sammy.lodestone.systems.rendering.particle.Easing;
 import com.sammy.lodestone.systems.rendering.particle.ParticleBuilders;
 import doctor4t.astronomical.common.Astronomical;
-import doctor4t.astronomical.common.init.ModEntities;
-import doctor4t.astronomical.common.init.ModItems;
-import doctor4t.astronomical.common.init.ModParticles;
-import doctor4t.astronomical.common.init.ModSoundEvents;
+import doctor4t.astronomical.common.init.*;
 import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import doctor4t.astronomical.common.item.NanoCosmosItem;
 import doctor4t.astronomical.common.item.NanoPlanetItem;
 import doctor4t.astronomical.common.item.NanoRingItem;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -20,7 +18,9 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnderEyeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -32,6 +32,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
@@ -69,29 +70,38 @@ public class FallenStarEntity extends Entity {
 		if (player.getStackInHand(hand).isOf(ModItems.ASTRAL_CONTAINER)) {
 			ItemStack retItemStack = this.getStack();
 			if (retItemStack.isEmpty()) {
-				int poolSize = NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE;
-				int ran = 1 + random.nextInt(poolSize);
+				boolean eotu = false;
+				if (player.hasStatusEffect(ModStatusEffects.STARGAZING) && player.getStatusEffect(ModStatusEffects.STARGAZING).getAmplifier() >= 2 && player.hasStatusEffect(ModStatusEffects.STARFALL) && player.getStatusEffect(ModStatusEffects.STARFALL).getAmplifier() >= 2 && player.getOffHandStack().isOf(Items.ENDER_EYE)) {
+					eotu = true;
+				}
 
 				int size = 1 + player.getRandom().nextInt(3);
-				if (ran <= NanoPlanetItem.PlanetTexture.SIZE) {
-					retItemStack = new ItemStack(ModItems.NANO_PLANET);
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
-					String texture = NanoPlanetItem.PlanetTexture.getRandom().name();
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
-				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size()) {
-					retItemStack = new ItemStack(ModItems.NANO_STAR);
-					int temp = Astronomical.getRandomStarTemperature(player.getRandom());
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("temperature", temp);
-				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE) {
-					retItemStack = new ItemStack(ModItems.NANO_COSMOS);
-					String texture = NanoCosmosItem.CosmosTexture.getRandom().name();
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
-				} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE) {
-					retItemStack = new ItemStack(ModItems.NANO_RING);
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
-					String texture = NanoRingItem.RingTexture.getRandom().name();
-					retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+				if (eotu) {
+					retItemStack = new ItemStack(ModItems.THE_EYE_OF_THE_UNIVERSE);
+				} else {
+					int poolSize = NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE;
+					int ran = 1 + random.nextInt(poolSize);
+
+					if (ran <= NanoPlanetItem.PlanetTexture.SIZE) {
+						retItemStack = new ItemStack(ModItems.NANO_PLANET);
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+						String texture = NanoPlanetItem.PlanetTexture.getRandom().name();
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+					} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size()) {
+						retItemStack = new ItemStack(ModItems.NANO_STAR);
+						int temp = Astronomical.getRandomStarTemperature(player.getRandom());
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("temperature", temp);
+					} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE) {
+						retItemStack = new ItemStack(ModItems.NANO_COSMOS);
+						String texture = NanoCosmosItem.CosmosTexture.getRandom().name();
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+					} else if (ran <= NanoPlanetItem.PlanetTexture.SIZE + Astronomical.STAR_TEMPERATURE_COLORS.size() + NanoRingItem.RingTexture.SIZE + NanoCosmosItem.CosmosTexture.SIZE) {
+						retItemStack = new ItemStack(ModItems.NANO_RING);
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color", new Color(player.getRandom().nextFloat(), player.getRandom().nextFloat(), player.getRandom().nextFloat()).getRGB());
+						String texture = NanoRingItem.RingTexture.getRandom().name();
+						retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putString("texture", texture);
+					}
 				}
 				retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("size", size);
 			}
