@@ -277,7 +277,7 @@ public class AstronomicalClient implements ClientModInitializer {
 						matrices.translate(x, y, z);
 
 						parentPos = Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos());
-						orbitCenter = AstronomicalClient.ASTRAL_OBJECTS_TO_RENDER.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ZERO);
+						orbitCenter = AstronomicalClient.ASTRAL_OBJECTS_TO_RENDER.getOrDefault(astralDisplayBlockEntity.getParentPos(), Vec3d.ofCenter(astralDisplayBlockEntity.getParentPos()));
 
 						// astral link connecting displays
 						double v = bePos.distanceTo(parentPos);
