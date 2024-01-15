@@ -6,9 +6,14 @@
 		"version": "${version}",
 		"metadata": {
 			"name": "Astronomical",
-			"description": "Star deco mod.",
+			"description": "Stargazing, stars, planets and marshmallows in the palm of your hand.",
 			"contributors": {
-				"doctor4t": "Owner"
+				"doctor4t": "Main Author",
+				"Arathain": "Programmer",
+				"AmyMialee": "Programmer",
+				"Luxintrus": "Texture Artist",
+				"Diansu": "Texture Artist",
+				"Merp": "Audio Artist"
 			},
 			"icon": "assets/astronomical/icon.png"
 		},
