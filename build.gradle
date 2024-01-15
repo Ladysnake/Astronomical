@@ -59,9 +59,6 @@ dependencies {
 	modCompileOnly "com.terraformersmc:modmenu:${mod_menu_version}"
 	modRuntimeOnly "com.terraformersmc:modmenu:${mod_menu_version}"
 
-	// mixin extras
-	include( implementation( annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixin_extras_version}")))
-
 	// mialee misc
 	modImplementation include ("xyz.amymialee:mialeemisc:${project.mialeemisc_version}")
 
@@ -80,7 +77,7 @@ dependencies {
 	modImplementation include("maven.modrinth:midnightlib:$project.midnightlib_version")
 
 	// ease of multiplayer testing & game control
-	modImplementation "carpet:fabric-carpet:${project.minecraft_version}-${project.carpet_core_version}"
+	modImplementation "carpet:fabric-carpet:${project.carpet_core_version}"
 
 	// midnightlib
 	modImplementation include("maven.modrinth:midnightlib:${midnightlib_version}")
