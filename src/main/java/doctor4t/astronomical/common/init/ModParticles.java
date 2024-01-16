@@ -4,8 +4,9 @@ import doctor4t.astronomical.client.particle.ExplosionParticleType;
 import doctor4t.astronomical.common.Astronomical;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.function.BiConsumer;
 
@@ -15,7 +16,7 @@ public interface ModParticles {
 	ExplosionParticleType FALLEN_STAR = new ExplosionParticleType();
 
 	static void initialize() {
-		initParticles(bind(Registry.PARTICLE_TYPE));
+		initParticles(bind(Registries.PARTICLE_TYPE));
 	}
 
 	static void registerFactories() {

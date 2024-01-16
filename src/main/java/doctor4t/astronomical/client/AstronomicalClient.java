@@ -1,9 +1,5 @@
 package doctor4t.astronomical.client;
 
-import com.sammy.lodestone.handlers.RenderHandler;
-import com.sammy.lodestone.handlers.ScreenParticleHandler;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
-import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.AstronomicalConfig;
 import doctor4t.astronomical.client.particle.AstralFragmentParticleEmitter;
 import doctor4t.astronomical.client.render.entity.FallenStarEntityRenderer;
@@ -39,9 +35,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
+import team.lodestar.lodestone.handlers.RenderHandler;
+import team.lodestar.lodestone.handlers.screenparticle.ParticleEmitterHandler;
+import team.lodestar.lodestone.setup.LodestoneRenderLayers;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -116,28 +117,28 @@ public class AstronomicalClient implements ClientModInitializer {
 				matrixStack.scale(1f + layer / scaleDiv, 1f + layer / scaleDiv, 1f + layer / scaleDiv);
 				RenderLayer renderLayer = AstronomicalClient.STAR_1;
 				switch (layer % 6) {
-					case 0 -> matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(time / speedDiv));
+					case 0 -> matrixStack.multiply(Axis.X_POSITIVE.rotationDegrees(time / speedDiv));
 					case 1 -> {
 						renderLayer = AstronomicalClient.STAR_2;
-						matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(time / speedDiv));
+						matrixStack.multiply(Axis.X_NEGATIVE.rotationDegrees(time / speedDiv));
 					}
 					case 2 -> {
 						renderLayer = AstronomicalClient.STAR_3;
-						matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time / speedDiv));
+						matrixStack.multiply(Axis.Y_POSITIVE.rotationDegrees(time / speedDiv));
 					}
-					case 3 -> matrixStack.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(time / speedDiv));
+					case 3 -> matrixStack.multiply(Axis.Y_NEGATIVE.rotationDegrees(time / speedDiv));
 					case 4 -> {
 						renderLayer = AstronomicalClient.STAR_2;
-						matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(time / speedDiv));
+						matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(time / speedDiv));
 					}
 					case 5 -> {
 						renderLayer = AstronomicalClient.STAR_3;
-						matrixStack.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(time / speedDiv));
+						matrixStack.multiply(Axis.Z_NEGATIVE.rotationDegrees(time / speedDiv));
 					}
 				}
 				builder.setColor(new Color(color))
 					.setAlpha(.3f).renderSphere(
-						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
 						matrixStack,
 						1,
 						sphereDetail,
@@ -159,22 +160,22 @@ public class AstronomicalClient implements ClientModInitializer {
 			int color = stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getInt("color");
 			NanoRingItem.RingTexture ringTexture = NanoRingItem.RingTexture.byName(stackToDisplay.getOrCreateSubNbt(Astronomical.MOD_ID).getString("texture"));
 			RenderLayer renderLayer = LodestoneRenderLayers.TRANSPARENT_TEXTURE.applyAndCache(ringTexture.texture);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90f));
+			matrixStack.multiply(Axis.X_POSITIVE.rotationDegrees(-90f));
 
 			builder.setColor(new Color(color))
 				.setAlpha(1f)
 				.renderQuad(
-					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
+					(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
 					matrixStack,
 					1
 				);
 
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180f));
+			matrixStack.multiply(Axis.X_POSITIVE.rotationDegrees(180f));
 
 			builder.setColor(new Color(color))
 				.setAlpha(1f)
 				.renderQuad(
-					(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
+					(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(renderLayer),
 					matrixStack,
 					1
 				);
@@ -200,25 +201,25 @@ public class AstronomicalClient implements ClientModInitializer {
 							sphereDetail);
 				}
 
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-time / 3f));
+				matrixStack.multiply(Axis.Y_POSITIVE.rotationDegrees(-time / 3f));
 				matrixStack.push();
 				matrixStack.translate(0, -2f, 0);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+				matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(-90f));
 				matrixStack.scale(2f, 8f, 8f);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(180f));
 				builder.setColor(new Color(0x151439))
 					.setAlpha(1f)
 					.renderSphere(
-						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
 						matrixStack,
 						-1,
 						sphereDetail,
 						sphereDetail);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(180f));
 				builder.setColor(new Color(0x4644A2))
 					.setAlpha(1f)
 					.renderSphere(
-						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
 						matrixStack,
 						1,
 						sphereDetail,
@@ -227,13 +228,13 @@ public class AstronomicalClient implements ClientModInitializer {
 
 				matrixStack.push();
 				matrixStack.translate(0, 0.4f, 0);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90f));
+				matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(90f));
 				matrixStack.scale(1.5f, 2f, 2f);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180f));
+				matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(180f));
 				builder.setColor(new Color(0x4644A2))
 					.setAlpha(1f)
 					.renderSphere(
-						(delayRender ? RenderHandler.EARLY_DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
+						(delayRender ? RenderHandler.DELAYED_RENDER : vertexConsumerProvider).getBuffer(EOTU_CLOUD_3D),
 						matrixStack,
 						-1,
 						sphereDetail,
@@ -243,7 +244,7 @@ public class AstronomicalClient implements ClientModInitializer {
 				if (eotuStormAlpha > 0f) {
 					matrixStack.push();
 					matrixStack.translate(0, -2f, 0);
-					matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+					matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(-90f));
 					matrixStack.scale(2f, 8f, 8f);
 					builder.setColor(new Color(0x9998FF))
 						.setAlpha(eotuStormAlpha)
@@ -257,7 +258,7 @@ public class AstronomicalClient implements ClientModInitializer {
 
 					matrixStack.push();
 					matrixStack.translate(0, -12.3f, 0);
-					matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90f));
+					matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(-90f));
 					matrixStack.scale(12.5f, 25f, 25f);
 					builder.setColor(new Color(0x9998FF))
 						.setAlpha(Math.min(1f, eotuStormAlpha / 2f))
@@ -340,7 +341,7 @@ public class AstronomicalClient implements ClientModInitializer {
 		ModelPredicateProviderRegistry.register(ModItems.MARSHMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 		ModelPredicateProviderRegistry.register(ModItems.STARMALLOW_STICK, Astronomical.id("marshmallow"), (stack, world, entity, seed) -> MarshmallowStickItem.CookState.getCookState(stack).ordinal() / (float) MarshmallowStickItem.CookState.values().length);
 
-		ScreenParticleHandler.registerItemParticleEmitter(ModItems.ASTRAL_FRAGMENT, AstralFragmentParticleEmitter::particleTick);
+		ParticleEmitterHandler.registerItemParticleEmitter(ModItems.ASTRAL_FRAGMENT, AstralFragmentParticleEmitter::particleTick);
 
 		this.builder = new AstraWorldVFXBuilder().setPosColorTexLightmapDefaultFormat();
 		WorldRenderEvents.START.register(context -> {
@@ -459,7 +460,7 @@ public class AstronomicalClient implements ClientModInitializer {
 							double z = astralPos.getZ() - cameraPos.getZ();
 							matrices.translate(x, y, z);
 
-							matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(selfRotation));
+							matrices.multiply(Axis.Y_POSITIVE.rotationDegrees(selfRotation));
 							matrices.scale(scale, scale, scale);
 
 							AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stackToDisplay, circlePrecision, time, true);
@@ -533,7 +534,6 @@ public class AstronomicalClient implements ClientModInitializer {
 		y *= 0.501f;
 		z *= 0.501f;
 
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c, c, c, c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
+		return new VertexData(new Vector3f[]{new Vector3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vector3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vector3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vector3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c, c, c, c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
 	}
-
 }

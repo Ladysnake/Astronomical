@@ -1,8 +1,5 @@
 package doctor4t.astronomical.client.render.entity.block;
 
-import com.sammy.lodestone.handlers.RenderHandler;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
-import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.client.render.world.VertexData;
@@ -21,9 +18,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Unique;
+import team.lodestar.lodestone.handlers.RenderHandler;
+import team.lodestar.lodestone.setup.LodestoneRenderLayers;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity> implements BlockEntityRenderer<T> {
 
@@ -51,18 +51,18 @@ public class AstralDisplayBlockEntityRenderer<T extends AstralDisplayBlockEntity
 			matrices.push();
 			matrices.translate(0.5f, 0.5f, 0.5f);
 
-			Vec3f flo = blockState.get(AstralDisplayBlock.FACING).getUnitVector();
-			VertexData data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.45f + 0.05f * MathHelper.sin(time / 16), time / 32, Astronomical.STAR_PURPLE);
+			Vector3f flo = blockState.get(AstralDisplayBlock.FACING).getUnitVector();
+			VertexData data = AstronomicalClient.createVertexData(new Vec3d(flo.x(), flo.y(), flo.z()), AstronomicalClient.UP, 0.45f + 0.05f * MathHelper.sin(time / 16), time / 32, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
-			data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.4f + 0.1f * MathHelper.sin(-time / 17), -time / 37, Astronomical.STAR_PURPLE);
+			data = AstronomicalClient.createVertexData(new Vec3d(flo.x(), flo.y(), flo.z()), AstronomicalClient.UP, 0.4f + 0.1f * MathHelper.sin(-time / 17), -time / 37, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
-			data = AstronomicalClient.createVertexData(new Vec3d(flo.getX(), flo.getY(), flo.getZ()), AstronomicalClient.UP, 0.6f, 0, Astronomical.STAR_PURPLE);
+			data = AstronomicalClient.createVertexData(new Vec3d(flo.x(), flo.y(), flo.z()), AstronomicalClient.UP, 0.6f, 0, Astronomical.STAR_PURPLE);
 
-			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.EARLY_DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
+			((AstraWorldVFXBuilder) builder.setAlpha(0.9f)).renderQuad(RenderHandler.DELAYED_RENDER.getBuffer(LodestoneRenderLayers.ADDITIVE_TEXTURE.applyAndCache(InteractableStar.INTERACTABLE_TEX)), matrices, data, builder::setPosColorTexLightmapDefaultFormat);
 
 			matrices.pop();
 		}

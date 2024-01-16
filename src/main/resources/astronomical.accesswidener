@@ -3,19 +3,7 @@ accessWidener   v2        named
 accessible field net/minecraft/client/render/RenderPhase POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER Lnet/minecraft/client/render/RenderPhase$Shader;
 accessible field net/minecraft/client/render/RenderPhase NO_TRANSPARENCY Lnet/minecraft/client/render/RenderPhase$Transparency;
 accessible field net/minecraft/client/render/RenderPhase TRANSLUCENT_TRANSPARENCY Lnet/minecraft/client/render/RenderPhase$Transparency;
-accessible field net/minecraft/util/math/Matrix4f a00 F
-accessible field net/minecraft/util/math/Matrix4f a01 F
-accessible field net/minecraft/util/math/Matrix4f a02 F
-accessible field net/minecraft/util/math/Matrix4f a03 F
-accessible field net/minecraft/util/math/Matrix4f a10 F
-accessible field net/minecraft/util/math/Matrix4f a11 F
-accessible field net/minecraft/util/math/Matrix4f a12 F
-accessible field net/minecraft/util/math/Matrix4f a13 F
-accessible field net/minecraft/util/math/Matrix4f a20 F
-accessible field net/minecraft/util/math/Matrix4f a21 F
-accessible field net/minecraft/util/math/Matrix4f a22 F
-accessible field net/minecraft/util/math/Matrix4f a23 F
 accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask
-accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask$C_iinezlaz
 accessible method net/minecraft/client/gui/widget/SliderWidget setValue (D)V
 accessible field net/minecraft/client/render/WorldRenderer entityRenderDispatcher Lnet/minecraft/client/render/entity/EntityRenderDispatcher;
+accessible class net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk$RebuildTask$RenderedChunkData

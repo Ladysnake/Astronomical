@@ -88,7 +88,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 
 	@Override
 	public void serverTick() {
-		if (obj.getTime() % 40 == 0 && obj.random.nextFloat() > 0.4f) { // TODO CHANGE BACK TO % 400
+		if (obj.getTime() % 40 == 0 && obj.random.nextFloat() > 0.4f) {
 			regenerate();
 		}
 		interactStarTick();

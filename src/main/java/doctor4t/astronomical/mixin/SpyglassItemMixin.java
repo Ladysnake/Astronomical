@@ -12,13 +12,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpyglassItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 import static doctor4t.astronomical.common.Astronomical.rotateViaQuat;
 
@@ -28,12 +29,14 @@ public abstract class SpyglassItemMixin extends Item {
 		super(settings);
 	}
 
+	@Unique
 	private float astra$getSkyAngle(long time) {
 		double d = MathHelper.fractionalPart((double) time / 24000.0 - 0.25);
 		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
 		return (float) (d * 2.0 + e) / 3.0F;
 	}
 
+	@Unique
 	public float getStarBrightness(World w) {
 		float f = w.getSkyAngle(1);
 		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.25F);
@@ -47,7 +50,7 @@ public abstract class SpyglassItemMixin extends Item {
 			return;
 		}
 
-		Quaternion rotation = Vec3f.POSITIVE_Z.getDegreesQuaternion(world.getSkyAngle(1) * 360.0F);
+		Quaternionf rotation = Axis.Z_POSITIVE.rotationDegrees(world.getSkyAngle(1) * 360.0F);
 		//rotation.normalize();
 		Vec3d vec = user.getRotationVector();
 		AstraSkyComponent c = world.getComponent(AstraCardinalComponents.SKY);
@@ -67,7 +70,7 @@ public abstract class SpyglassItemMixin extends Item {
 							}
 							for (int i = 0; i < guaranteedStarfalls + world.random.nextInt(additionalTries); i++) {
 								Vec3d pos = user.getPos().add(world.random.nextGaussian() * 80, 0, world.random.nextGaussian() * 80);
-								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), rotateViaQuat(obj.getDirectionVector(), Vec3f.POSITIVE_Z.getDegreesQuaternion(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)) + 1, pos.z));
+								world.getComponent(AstraCardinalComponents.FALL).addFall(10 + world.random.nextInt(11), rotateViaQuat(obj.getDirectionVector(), Axis.Z_POSITIVE.rotationDegrees(k.getSkyAngle(1) * 360.0F)).normalize(), new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, MathHelper.floor(pos.x), MathHelper.floor(pos.z)) + 1, pos.z));
 								serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), ModSoundEvents.STAR_FALL, SoundCategory.AMBIENT, 20f, 1f + (float) world.random.nextGaussian() / 5f);
 							}
 						};

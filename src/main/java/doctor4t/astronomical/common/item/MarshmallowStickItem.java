@@ -30,7 +30,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.amymialee.mialeemisc.util.MialeeText;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -127,7 +126,7 @@ public class MarshmallowStickItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, @NotNull List<Text> tooltip, TooltipContext context) {
-		tooltip.add(MialeeText.withColor(Text.translatable("tooltip.astronomical.cook_level." + CookState.getCookState(stack).name().toLowerCase()), CookState.getCookState(stack).color));
+		tooltip.add(withColor(Text.translatable("tooltip.astronomical.cook_level." + CookState.getCookState(stack).name().toLowerCase()), CookState.getCookState(stack).color));
 		super.appendTooltip(stack, world, tooltip, context);
 	}
 
@@ -139,6 +138,19 @@ public class MarshmallowStickItem extends Item {
 	@Override
 	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		return false;
+	}
+
+	static Text withColor(@NotNull Text text, int color) {
+		List<Text> textList = text.setStyle(text.getStyle().withColor(color));
+		if (textList.isEmpty()) {
+			return Text.literal("");
+		} else {
+			var first = textList.get(0);
+			for (var i = 1; i < textList.size(); i++) {
+				first = first.copy().append(textList.get(i));
+			}
+			return first;
+		}
 	}
 
 	public enum CookState {

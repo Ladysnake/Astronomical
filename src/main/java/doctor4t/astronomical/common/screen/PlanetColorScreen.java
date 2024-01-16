@@ -2,7 +2,6 @@ package doctor4t.astronomical.common.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalClient;
 import doctor4t.astronomical.client.render.world.AstraWorldVFXBuilder;
 import doctor4t.astronomical.common.Astronomical;
@@ -11,6 +10,7 @@ import doctor4t.astronomical.common.item.NanoAstralObjectItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -21,11 +21,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -149,16 +150,13 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+	protected void drawBackground(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, TEXTURE);
 		var x = (this.width - this.backgroundWidth) / 2;
 		var y = (this.height - this.backgroundHeight) / 2;
-		matrices.push();
-		//matrices.translate(0f,0f,-450f);
-		drawTexture(matrices, x, y, -400, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-		matrices.pop();
+
+		graphics.drawTexture(TEXTURE, x, y, -400, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
+		drawMouseoverTooltip(graphics, mouseX, mouseY);
 
 		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color1", color1);
 		retItemStack.getOrCreateSubNbt(Astronomical.MOD_ID).putInt("color2", color2);
@@ -191,8 +189,8 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 			matrices.scale(scale, scale, scale);
 			matrices.translate(0f, -.925f, 0f);
 
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(15f));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(time));
+			matrices.multiply(Axis.X_POSITIVE.rotationDegrees(15f));
+			matrices.multiply(Axis.Y_POSITIVE.rotationDegrees(time));
 
 			AstronomicalClient.renderAstralObject(matrices, vertexConsumerProvider, this.builder, stack, 20, time, false);
 			matrices.pop();
@@ -202,11 +200,6 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 
 		matrixStack.pop();
 		RenderSystem.applyModelViewMatrix();
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		super.drawForeground(matrices, mouseX, mouseY);
 	}
 
 	@Override
@@ -246,32 +239,28 @@ public class PlanetColorScreen extends HandledScreen<PlanetColorScreenHandler> {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		public void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 			var minecraftClient = MinecraftClient.getInstance();
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-			var i = this.getYImage(this.isHoveredOrFocused());
+			// todo what
+//			var i = this.getYImage(this.isHoveredOrFocused());
+			int i = 0;
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.enableDepthTest();
-			this.drawTexture(matrices, this.x, this.y + this.height / 2 - this.backgroundHeight / 2, 0, 46 + i * 20, this.width / 2, this.backgroundHeight - 1);
-			this.drawTexture(matrices, this.x, this.y + this.height / 2 - this.backgroundHeight / 2 + this.backgroundHeight - 1, 0, 46 + i * 20, this.width / 2, 1);
-			this.drawTexture(matrices, this.x + this.width / 2, this.y + this.height / 2 - this.backgroundHeight / 2, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.backgroundHeight - 1);
-			this.drawTexture(matrices, this.x + this.width / 2, this.y + this.height / 2 - this.backgroundHeight / 2 + this.backgroundHeight - 1, 200 - this.width / 2, 46 + i * 20, this.width / 2, 1);
-			this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
-			drawCenteredText(
-				matrices, minecraftClient.textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, this.textColor | MathHelper.ceil(this.alpha * 255.0F) << 24
-			);
-		}
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX(), this.getY() + this.height / 2 - this.backgroundHeight / 2, 0, 46 + i * 20, this.width / 2, this.backgroundHeight - 1);
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX(), this.getY() + this.height / 2 - this.backgroundHeight / 2 + this.backgroundHeight - 1, 0, 46 + i * 20, this.width / 2, 1);
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX() + this.width / 2, this.getY() + this.height / 2 - this.backgroundHeight / 2, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.backgroundHeight - 1);
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX() + this.width / 2, this.getY() + this.height / 2 - this.backgroundHeight / 2 + this.backgroundHeight - 1, 200 - this.width / 2, 46 + i * 20, this.width / 2, 1);
 
-		@Override
-		protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
+			// background
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int i = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
-			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 4, 46 + i, 4, 20);
+			i = (this.isHoveredOrFocused() ? 2 : 1) * 20;
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 0, 46 + i, 4, 20);
+			graphics.drawTexture(PlanetColorScreen.ASTRAL_WIDGETS_TEXTURE, this.getX() + (int) (this.value * (double) (this.width - 8)) + 4, this.getY(), 4, 46 + i, 4, 20);
+
+			graphics.drawCenteredShadowedText(minecraftClient.textRenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, this.textColor | MathHelper.ceil(this.alpha * 255.0F) << 24);
 		}
 	}
 }

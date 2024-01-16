@@ -48,40 +48,30 @@ repositories {
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:intermediary-v2"
-
-	modImplementation "org.quiltmc:quilt-loader:${project.loader_version}"
-
-	modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"
+	minecraft libs.minecraft
+	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
+	modImplementation libs.quilt.loader
+	modImplementation libs.quilted.fabric.api
 
 	// mod menu
 	modCompileOnly "com.terraformersmc:modmenu:${mod_menu_version}"
 	modRuntimeOnly "com.terraformersmc:modmenu:${mod_menu_version}"
 
-	// mialee misc
-	modImplementation include ("xyz.amymialee:mialeemisc:${project.mialeemisc_version}")
-
 	// CCA
-	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
-	// Adds a dependency on a specific module
-	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
-	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca_version}"
-	// Includes Cardinal Components API as a Jar-in-Jar dependency (optional)
-	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
-	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+	include modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}")
+	include modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
+	include modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca_version}")
 	// lodestone lib
-	modImplementation include ("com.github.Arathain:LodestoneLib-Quilt:${project.lodestone_version}"){ transitive = false }
+	include modApi("com.github.Arathain:LodestoneLib-Quilt:${project.lodestone_version}"){ transitive = false }
 
-	modImplementation include("io.github.ladysnake:satin:${project.satin_version}")
-	modImplementation include("maven.modrinth:midnightlib:$project.midnightlib_version")
-
-	// ease of multiplayer testing & game control
-	modImplementation "carpet:fabric-carpet:${project.carpet_core_version}"
+	include modApi("io.github.ladysnake:satin:${project.satin_version}")
+	include modApi("maven.modrinth:midnightlib:$project.midnightlib_version")
 
 	// midnightlib
 	modImplementation include("maven.modrinth:midnightlib:${midnightlib_version}")
 
+	// ease of multiplayer testing & game control
+	modRuntimeOnly "carpet:fabric-carpet:${project.carpet_core_version}"
 }
 
 processResources {
@@ -134,4 +124,9 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+project.configurations.configureEach {
+	exclude(group: "net.fabricmc", module: "fabric-loader")
+	exclude(group: "net.fabricmc.fabric-api")
 }

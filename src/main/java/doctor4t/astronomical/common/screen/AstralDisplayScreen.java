@@ -8,10 +8,10 @@ import doctor4t.astronomical.common.util.ScaledDouble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Style;
@@ -77,18 +77,12 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+	protected void drawBackground(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, TEXTURE);
 		int x = (this.width - this.backgroundWidth) / 2;
 		int y = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		super.drawForeground(matrices, mouseX, mouseY);
+		graphics.drawTexture(TEXTURE, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawMouseoverTooltip(graphics, mouseX, mouseY);
 	}
 
 	@Override
@@ -135,7 +129,7 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		public void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 			RenderSystem.enableBlend();
@@ -146,13 +140,9 @@ public class AstralDisplayScreen extends HandledScreen<AstralDisplayScreenHandle
 //			this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 //			this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 			int i = this.isHoveredOrFocused() ? 1 : 0;
-			RenderSystem.setShaderTexture(0, ASTRAL_WIDGETS_TEXTURE);
-			this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 21)), this.y, type * 20, i * 20, 20, 20);
-
+			graphics.drawTexture(ASTRAL_WIDGETS_TEXTURE, this.getX() + (int) (this.value * (double) (this.width - 21)), this.getY(), type * 20, i * 20, 20, 20);
 			var minecraftClient = MinecraftClient.getInstance();
-			drawCenteredText(
-				matrices, minecraftClient.textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xD5B271 | MathHelper.ceil(this.alpha * 255.0F) << 24
-			);
+			graphics.drawCenteredShadowedText(minecraftClient.textRenderer, getMessage(), getX() + width / 2, getY() + (height - 8) / 2, 0xD5B271 | MathHelper.ceil(this.alpha * 255.0F) << 24);
 		}
 	}
 }

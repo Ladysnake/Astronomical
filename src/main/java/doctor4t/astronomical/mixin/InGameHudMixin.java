@@ -4,11 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.item.MarshmallowStickItem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 import org.spongepowered.asm.mixin.Final;
@@ -20,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
-public abstract class InGameHudMixin extends DrawableHelper {
+public abstract class InGameHudMixin {
 	@Unique
 	private static final Identifier MARSHMALLOW_TEXTURE = Astronomical.id("textures/gui/marshmallow.png");
 	@Shadow
@@ -43,8 +41,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
 		return state;
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V", shift = At.Shift.AFTER))
-	private void astronomical$renderCrosshair(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/gui/GuiGraphics;)V", shift = At.Shift.AFTER))
+	private void astronomical$renderCrosshair(GuiGraphics graphics, float tickDelta, CallbackInfo ci) {
 		var gameOptions = this.client.options;
 		if (!gameOptions.getPerspective().isFirstPerson() || this.client.interactionManager == null || this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
 			return;
@@ -60,9 +58,6 @@ public abstract class InGameHudMixin extends DrawableHelper {
 			var progress = player.getMainHandStack().getOrCreateNbt().getInt("RoastTicks") / 10 + 1;
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-			RenderSystem.setShaderTexture(0, MARSHMALLOW_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			for (var i = 0; i < width; i++) {
@@ -71,7 +66,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
 				var rgb = new float[]{state.color >> 16 & 255, state.color >> 8 & 255, state.color & 255, state.color >> 24 & 255};
 				RenderSystem.setShaderColor(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, 1.0f);
 				var u = i < 4 ? i : i > width - 5 ? 7 + i - width + 4 : 5;
-				drawTexture(matrices, x + i, y, u, progressed ? 5 : 0, 2, 5, 16, 16);
+				graphics.drawTexture(MARSHMALLOW_TEXTURE, x + i, y, u, progressed ? 5 : 0, 2, 5, 16, 16);
 			}
 			RenderSystem.disableBlend();
 		}

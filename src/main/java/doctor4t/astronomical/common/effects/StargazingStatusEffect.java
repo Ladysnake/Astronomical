@@ -18,7 +18,7 @@ public class StargazingStatusEffect extends StatusEffect {
 
 	@Override
 	public void applyUpdateEffect(@NotNull LivingEntity entity, int amplifier) {
-		if (!entity.world.isClient() && entity.world.isDay()) {
+		if (!entity.getWorld().isClient() && entity.getWorld().isDay()) {
 			entity.removeStatusEffect(this, StatusEffectRemovalReason.EXPIRED);
 		}
 	}

@@ -3,21 +3,27 @@ package doctor4t.astronomical.client.render.world;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormats;
-import com.sammy.lodestone.helpers.RenderHelper;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
-import com.sammy.lodestone.setup.LodestoneShaders;
-import com.sammy.lodestone.systems.rendering.Phases;
-import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalShaders;
+import doctor4t.astronomical.mixin.WorldVFXBuilderAccessor;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import team.lodestar.lodestone.helpers.RenderHelper;
+import team.lodestar.lodestone.setup.LodestoneRenderLayers;
+import team.lodestar.lodestone.setup.LodestoneShaders;
+import team.lodestar.lodestone.systems.rendering.Phases;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.awt.*;
 
 public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.TRIANGLES, RenderPhase.POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER, Phases.NO_TRANSPARENCY, texture));
-	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_ADDITIVE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_additive", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.TRIANGLES, LodestoneShaders.ADDITIVE_TEXTURE.phase, Phases.ADDITIVE_TRANSPARENCY, texture));
+	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_ADDITIVE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_additive", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.TRIANGLES, LodestoneShaders.LODESTONE_TEXTURE.phase, Phases.ADDITIVE_TRANSPARENCY, texture));
 	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_transparent", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.TRIANGLES, AstronomicalShaders.TRANSPARENT_NO_CULL_TEXTURE.phase, Phases.NORMAL_TRANSPARENCY, texture));
 
 	public AstraWorldVFXBuilder() {
@@ -53,7 +59,7 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 		uy = (float) up.y;
 		uz = (float) up.z;
 
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x * endSize + ux, y + t1y * endSize + uy, z + t1z * endSize + uz), new Vec3f(x - t1x * endSize + ux, y - t1y * endSize + uy, z - t1z * endSize + uz), new Vec3f(x - t1x * beginSize, y - t1y * beginSize, z - t1z * beginSize), new Vec3f(x + t1x * beginSize, y + t1y * beginSize, z + t1z * beginSize)}, new Color[]{new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), c, c}, new Vec2f[]{new Vec2f(0, 6 + vOffset), new Vec2f(1, 6 + vOffset), new Vec2f(1, 0 + vOffset), new Vec2f(0, 0 + vOffset)});
+		return new VertexData(new Vector3f[]{new Vector3f(x + t1x * endSize + ux, y + t1y * endSize + uy, z + t1z * endSize + uz), new Vector3f(x - t1x * endSize + ux, y - t1y * endSize + uy, z - t1z * endSize + uz), new Vector3f(x - t1x * beginSize, y - t1y * beginSize, z - t1z * beginSize), new Vector3f(x + t1x * beginSize, y + t1y * beginSize, z + t1z * beginSize)}, new Color[]{new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), new Color(c.getRed(), c.getGreen(), c.getBlue(), endAlpha), c, c}, new Vec2f[]{new Vec2f(0, 6 + vOffset), new Vec2f(1, 6 + vOffset), new Vec2f(1, 0 + vOffset), new Vec2f(0, 0 + vOffset)});
 	}
 
 	public static VertexData createVertexData(Vec3d pos, Vec3d up, float size, Color c) {
@@ -96,12 +102,12 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 		y = (float) pos.y;
 		z = (float) pos.z;
 
-		return new VertexData(new Vec3f[]{new Vec3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vec3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vec3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vec3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
+		return new VertexData(new Vector3f[]{new Vector3f(x + t1x + t2x, y + t1y + t2y, z + t1z + t2z), new Vector3f(x - t1x + t2x, y - t1y + t2y, z - t1z + t2z), new Vector3f(x - t1x - t2x, y - t1y - t2y, z - t1z - t2z), new Vector3f(x + t1x - t2x, y + t1y - t2y, z + t1z - t2z)}, new Color[]{c}, new Vec2f[]{new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0), new Vec2f(0, 0)});
 	}
 
-	public static Quaternion invert(Quaternion in) {
-		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
-		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
+	public static Quaternionf invert(Quaternionf in) {
+		float invNorm = 1.0f / Math.fma(in.x(), in.x(), Math.fma(in.y(), in.y(), Math.fma(in.z(), in.z(), in.w() * in.w())));
+		return new Quaternionf(-in.x() * invNorm, -in.y() * invNorm, -in.z() * invNorm, in.w() * invNorm);
 	}
 
 	public static float distanceSquared(float x, float y, float z) {
@@ -109,13 +115,13 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	}
 
 	@Override
-	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vec3f[] positions, float width, float height) {
+	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vector3f[] positions, float width, float height) {
 		Matrix4f last = stack.peek().getModel();
 
-		this.supplier.placeVertex(vertexConsumer, last, positions[0].getX() + xOffset, positions[0].getY() + yOffset, positions[0].getZ() + zOffset, this.u0, this.v1);
-		this.supplier.placeVertex(vertexConsumer, last, positions[1].getX() + xOffset, positions[1].getY() + yOffset, positions[1].getZ() + zOffset, this.u1, this.v1);
-		this.supplier.placeVertex(vertexConsumer, last, positions[2].getX() + xOffset, positions[2].getY() + yOffset, positions[2].getZ() + zOffset, this.u1, this.v0);
-		this.supplier.placeVertex(vertexConsumer, last, positions[3].getX() + xOffset, positions[3].getY() + yOffset, positions[3].getZ() + zOffset, this.u0, this.v0);
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, positions[0].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), positions[0].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), positions[0].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), ((WorldVFXBuilderAccessor) this).astronomical$getU0(), ((WorldVFXBuilderAccessor) this).astronomical$getV1());
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, positions[1].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), positions[1].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), positions[1].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), ((WorldVFXBuilderAccessor) this).astronomical$getU1(), ((WorldVFXBuilderAccessor) this).astronomical$getV1());
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, positions[2].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), positions[2].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), positions[2].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), ((WorldVFXBuilderAccessor) this).astronomical$getU1(), ((WorldVFXBuilderAccessor) this).astronomical$getV0());
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, positions[3].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), positions[3].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), positions[3].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), ((WorldVFXBuilderAccessor) this).astronomical$getU0(), ((WorldVFXBuilderAccessor) this).astronomical$getV0());
 
 		return this;
 	}
@@ -126,16 +132,16 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 		setVertexSupplier((c, l, x, y, z, u, v) -> {
 			Color col = data.color()[iter[0]];
 			if (l == null)
-				c.vertex(x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
+				c.vertex(x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * ((WorldVFXBuilderAccessor) this).astronomical$getA()).uv(u, v).light(((WorldVFXBuilderAccessor) this).astronomical$getLight()).next();
 			else
-				c.vertex(l, x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
+				c.vertex(l, x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * ((WorldVFXBuilderAccessor) this).astronomical$getA()).uv(u, v).light(((WorldVFXBuilderAccessor) this).astronomical$getLight()).next();
 			iter[0]++;
 		}).setFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[0].getX() + xOffset, data.vertices()[0].getY() + yOffset, data.vertices()[0].getZ() + zOffset, data.uv()[0].x, data.uv()[0].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[1].getX() + xOffset, data.vertices()[1].getY() + yOffset, data.vertices()[1].getZ() + zOffset, data.uv()[1].x, data.uv()[1].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[2].getX() + xOffset, data.vertices()[2].getY() + yOffset, data.vertices()[2].getZ() + zOffset, data.uv()[2].x, data.uv()[2].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[3].getX() + xOffset, data.vertices()[3].getY() + yOffset, data.vertices()[3].getZ() + zOffset, data.uv()[3].x, data.uv()[3].y);
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, data.vertices()[0].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), data.vertices()[0].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), data.vertices()[0].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), data.uv()[0].x, data.uv()[0].y);
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, data.vertices()[1].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), data.vertices()[1].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), data.vertices()[1].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), data.uv()[1].x, data.uv()[1].y);
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, data.vertices()[2].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), data.vertices()[2].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), data.vertices()[2].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), data.uv()[2].x, data.uv()[2].y);
+		((WorldVFXBuilderAccessor) this).astronomical$getSupplier().placeVertex(vertexConsumer, last, data.vertices()[3].x() + ((WorldVFXBuilderAccessor) this).astronomical$getXOffset(), data.vertices()[3].y() + ((WorldVFXBuilderAccessor) this).astronomical$getYOffset(), data.vertices()[3].z() + ((WorldVFXBuilderAccessor) this).astronomical$getZOffset(), data.uv()[3].x, data.uv()[3].y);
 
 		r.run();
 
@@ -181,13 +187,13 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 				float textureUN = un / endU * radius;
 				float textureVN = vn / endV * radius;
 
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p0x, p0y, p0z, r, g, b, a, textureU, textureV, light);
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p2x, p2y, p2z, r, g, b, a, textureUN, textureV, light);
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p1x, p1y, p1z, r, g, b, a, textureU, textureVN, light);
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p0x, p0y, p0z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureU, textureV, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p2x, p2y, p2z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureUN, textureV, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p1x, p1y, p1z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureU, textureVN, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
 
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p3x, p3y, p3z, r, g, b, a, textureUN, textureVN, light);
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p1x, p1y, p1z, r, g, b, a, textureU, textureVN, light);
-				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p2x, p2y, p2z, r, g, b, a, textureUN, textureV, light);
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p3x, p3y, p3z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureUN, textureVN, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p1x, p1y, p1z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureU, textureVN, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
+				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p2x, p2y, p2z, ((WorldVFXBuilderAccessor) this).astronomical$getR(), ((WorldVFXBuilderAccessor) this).astronomical$getG(), ((WorldVFXBuilderAccessor) this).astronomical$getB(), ((WorldVFXBuilderAccessor) this).astronomical$getA(), textureUN, textureV, ((WorldVFXBuilderAccessor) this).astronomical$getLight());
 			}
 		}
 		return this;

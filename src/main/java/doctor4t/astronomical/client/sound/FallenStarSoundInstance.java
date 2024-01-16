@@ -10,7 +10,7 @@ public class FallenStarSoundInstance extends MovingSoundInstance {
 	protected final FallenStarEntity fallenStar;
 
 	public FallenStarSoundInstance(FallenStarEntity entity) {
-		super(ModSoundEvents.STAR_AMBIENT, SoundCategory.AMBIENT, SoundInstance.method_43221());
+		super(ModSoundEvents.STAR_AMBIENT, SoundCategory.AMBIENT, SoundInstance.createRandom());
 		this.fallenStar = entity;
 		this.x = (float) entity.getX();
 		this.y = (float) entity.getY();

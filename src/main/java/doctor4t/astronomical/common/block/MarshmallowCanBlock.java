@@ -6,7 +6,6 @@ import doctor4t.astronomical.common.init.ModItems;
 import doctor4t.astronomical.common.init.ModSoundEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -148,11 +147,6 @@ public class MarshmallowCanBlock extends BlockWithEntity {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		Direction direction = Direction.DOWN;
 		return Block.sideCoversSmallSquare(world, pos.offset(direction), direction.getOpposite());
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	@Override

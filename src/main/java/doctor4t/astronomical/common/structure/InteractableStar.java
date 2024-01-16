@@ -1,6 +1,5 @@
 package doctor4t.astronomical.common.structure;
 
-import com.sammy.lodestone.systems.rendering.particle.Easing;
 import doctor4t.astronomical.common.Astronomical;
 import doctor4t.astronomical.common.init.ModStatusEffects;
 import net.minecraft.client.MinecraftClient;
@@ -9,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import team.lodestar.lodestone.systems.rendering.particle.Easing;
 
 import java.util.function.Consumer;
 

@@ -6,17 +6,21 @@ import doctor4t.astronomical.common.screen.PlanetColorScreenHandler;
 import doctor4t.astronomical.common.screen.RingColorScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.feature_flags.FeatureFlagBitSet;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
@@ -30,15 +34,17 @@ public class Astronomical implements ModInitializer {
 	public static final Vec3d UP = new Vec3d(0, 1, 0);
 	public static final String MOD_ID = "astronomical";
 	public static final Color STAR_PURPLE = new Color(0xC065FF);
-	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(Registry.BLOCK_KEY, id("heat_sources"));
+	public static final TagKey<Block> HEAT_SOURCES = TagKey.of(RegistryKeys.BLOCK, id("heat_sources"));
 	public static final HashMap<Integer, Integer> STAR_TEMPERATURE_COLORS = new HashMap<>();
 	// packets
-	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new));
+	public static Identifier Y_LEVEL_PACKET = id("y_level");	public static final ScreenHandlerType<AstralDisplayScreenHandler> ASTRAL_DISPLAY_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER_TYPE, id("astral_display"), new ScreenHandlerType<>(AstralDisplayScreenHandler::new, FeatureFlagBitSet.empty()));
 	public static Identifier ROT_SPEED_PACKET = id("rot_speed");
-	public static Identifier SPIN_PACKET = id("spin");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new));
+	public static Identifier SPIN_PACKET = id("spin");	public static final ScreenHandlerType<PlanetColorScreenHandler> PLANET_COLOR_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER_TYPE, id("planet_color"), new ScreenHandlerType<>(PlanetColorScreenHandler::new, FeatureFlagBitSet.empty()));
 	public static Identifier HOLDING_PACKET = id("holding");
-	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registry.SCREEN_HANDLER, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new));
+	public static Identifier PLANET_COLOR_CHANGE_PACKET = id("planet_color_change");	public static final ScreenHandlerType<RingColorScreenHandler> RING_COLOR_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER_TYPE, id("ring_color"), new ScreenHandlerType<>(RingColorScreenHandler::new, FeatureFlagBitSet.empty()));
 	public static Identifier RING_COLOR_CHANGE_PACKET = id("ring_color_change");
+
+	public static ItemGroup ASTRONOMICAL_ITEM_GROUP;
 
 	static {
 		STAR_TEMPERATURE_COLORS.put(10000, 0x1F8CFF);
@@ -53,16 +59,16 @@ public class Astronomical implements ModInitializer {
 		STAR_TEMPERATURE_COLORS.put(1000, 0xFF0000);
 	}
 
-	public static @NotNull Vec3d rotateViaQuat(@NotNull Vec3d rot, @NotNull Quaternion quat) {
+	public static @NotNull Vec3d rotateViaQuat(@NotNull Vec3d rot, @NotNull Quaternionf quat) {
 		float x = (float) rot.x;
 		float y = (float) rot.y;
 		float z = (float) rot.z;
 
-		float ux = quat.getX();
-		float uy = quat.getY();
-		float uz = quat.getZ();
+		float ux = quat.x();
+		float uy = quat.y();
+		float uz = quat.z();
 
-		float scalar = quat.getW();
+		float scalar = quat.w();
 
 		float cx = -y * uz + (z * uy);
 		float cy = -z * ux + (x * uz);
@@ -79,9 +85,9 @@ public class Astronomical implements ModInitializer {
 		return new Vec3d(vpx, vpy, vpz);
 	}
 
-	public static @NotNull Quaternion invert(@NotNull Quaternion in) {
-		float invNorm = 1.0f / Math.fma(in.getX(), in.getX(), Math.fma(in.getY(), in.getY(), Math.fma(in.getZ(), in.getZ(), in.getW() * in.getW())));
-		return new Quaternion(-in.getX() * invNorm, -in.getY() * invNorm, -in.getZ() * invNorm, in.getW() * invNorm);
+	public static @NotNull Quaternionf invert(@NotNull Quaternionf in) {
+		float invNorm = 1.0f / Math.fma(in.x(), in.x(), Math.fma(in.y(), in.y(), Math.fma(in.z(), in.z(), in.w() * in.w())));
+		return new Quaternionf(-in.x() * invNorm, -in.y() * invNorm, -in.z() * invNorm, in.w() * invNorm);
 	}
 
 	public static @NotNull Identifier id(String path) {
