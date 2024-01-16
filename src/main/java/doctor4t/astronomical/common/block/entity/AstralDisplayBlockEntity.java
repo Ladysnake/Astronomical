@@ -25,10 +25,10 @@ import net.minecraft.util.math.BlockPos;
 public class AstralDisplayBlockEntity extends LockableContainerBlockEntity implements InventoryChangedListener {
 	public static final int SIZE = 9;
 	private final SimpleInventory inventory = new SimpleInventory(SIZE);
-	// yLevel, rotSpeed and spin are all values between 0 and 1, scale accordingly
 	public ScaledDouble yLevel = new ScaledDouble(0.0, 0, 32);
-	public ScaledDouble rotSpeed = new ScaledDouble(0.0, 0, 1);
-	public ScaledDouble spin = new ScaledDouble(0.0, 0, 1);
+	// rotSpeed and spin are all values between -1 and 1, scale accordingly, the value 0.5 is the center of the slider, in this case 0.5 is a speed/spin of 0
+	public ScaledDouble rotSpeed = new ScaledDouble(0.5, -1, 1);
+	public ScaledDouble spin = new ScaledDouble(0.5, -1, 1);
 	private BlockPos parentPos;
 
 	public AstralDisplayBlockEntity(BlockPos pos, BlockState state) {
