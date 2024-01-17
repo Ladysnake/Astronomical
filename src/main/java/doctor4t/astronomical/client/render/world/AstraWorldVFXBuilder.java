@@ -9,6 +9,7 @@ import com.sammy.lodestone.setup.LodestoneShaders;
 import com.sammy.lodestone.systems.rendering.Phases;
 import com.sammy.lodestone.systems.rendering.VFXBuilders;
 import doctor4t.astronomical.client.AstronomicalShaders;
+import doctor4t.astronomical.mixin.WorldVFXBuilderAccessor;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.*;
@@ -112,10 +113,24 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	public VFXBuilders.WorldVFXBuilder renderQuad(VertexConsumer vertexConsumer, MatrixStack stack, Vec3f[] positions, float width, float height) {
 		Matrix4f last = stack.peek().getModel();
 
-		this.supplier.placeVertex(vertexConsumer, last, positions[0].getX() + xOffset, positions[0].getY() + yOffset, positions[0].getZ() + zOffset, this.u0, this.v1);
-		this.supplier.placeVertex(vertexConsumer, last, positions[1].getX() + xOffset, positions[1].getY() + yOffset, positions[1].getZ() + zOffset, this.u1, this.v1);
-		this.supplier.placeVertex(vertexConsumer, last, positions[2].getX() + xOffset, positions[2].getY() + yOffset, positions[2].getZ() + zOffset, this.u1, this.v0);
-		this.supplier.placeVertex(vertexConsumer, last, positions[3].getX() + xOffset, positions[3].getY() + yOffset, positions[3].getZ() + zOffset, this.u0, this.v0);
+		//Start mixin magic - needed for older versions of lodestone api
+		final WorldVFXBuilderAccessor accessor = (WorldVFXBuilderAccessor) this;
+		final WorldVertexPlacementSupplier supplier = accessor.supplier();
+
+		float xOffset = accessor.xOffset();
+		float yOffset = accessor.yOffset();
+		float zOffset = accessor.zOffset();
+
+		float u0 = accessor.u0();
+		float v0 = accessor.v0();
+		float u1 = accessor.u1();
+		float v1 = accessor.v1();
+		//End mixin magic
+
+		supplier.placeVertex(vertexConsumer, last, positions[0].getX() + xOffset, positions[0].getY() + yOffset, positions[0].getZ() + zOffset, u0, v1);
+		supplier.placeVertex(vertexConsumer, last, positions[1].getX() + xOffset, positions[1].getY() + yOffset, positions[1].getZ() + zOffset, u1, v1);
+		supplier.placeVertex(vertexConsumer, last, positions[2].getX() + xOffset, positions[2].getY() + yOffset, positions[2].getZ() + zOffset, u1, v0);
+		supplier.placeVertex(vertexConsumer, last, positions[3].getX() + xOffset, positions[3].getY() + yOffset, positions[3].getZ() + zOffset, u0, v0);
 
 		return this;
 	}
@@ -126,16 +141,25 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 		setVertexSupplier((c, l, x, y, z, u, v) -> {
 			Color col = data.color()[iter[0]];
 			if (l == null)
-				c.vertex(x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
+				c.vertex(x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * ((WorldVFXBuilderAccessor) this).a()).uv(u, v).light(((WorldVFXBuilderAccessor) this).light()).next();
 			else
-				c.vertex(l, x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * this.a).uv(u, v).light(this.light).next();
+				c.vertex(l, x, y, z).color(col.getRed() / 255f, col.getGreen() / 255f, col.getBlue() / 255f, col.getAlpha() / 255f * ((WorldVFXBuilderAccessor) this).a()).uv(u, v).light(((WorldVFXBuilderAccessor) this).light()).next();
 			iter[0]++;
 		}).setFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
 
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[0].getX() + xOffset, data.vertices()[0].getY() + yOffset, data.vertices()[0].getZ() + zOffset, data.uv()[0].x, data.uv()[0].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[1].getX() + xOffset, data.vertices()[1].getY() + yOffset, data.vertices()[1].getZ() + zOffset, data.uv()[1].x, data.uv()[1].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[2].getX() + xOffset, data.vertices()[2].getY() + yOffset, data.vertices()[2].getZ() + zOffset, data.uv()[2].x, data.uv()[2].y);
-		this.supplier.placeVertex(vertexConsumer, last, data.vertices()[3].getX() + xOffset, data.vertices()[3].getY() + yOffset, data.vertices()[3].getZ() + zOffset, data.uv()[3].x, data.uv()[3].y);
+		//Start mixin magic - needed for older versions of lodestone api
+		final WorldVFXBuilderAccessor accessor = (WorldVFXBuilderAccessor) this;
+		final WorldVertexPlacementSupplier supplier = accessor.supplier();
+
+		float xOffset = accessor.xOffset();
+		float yOffset = accessor.yOffset();
+		float zOffset = accessor.zOffset();
+		//End mixin magic
+
+		supplier.placeVertex(vertexConsumer, last, data.vertices()[0].getX() + xOffset, data.vertices()[0].getY() + yOffset, data.vertices()[0].getZ() + zOffset, data.uv()[0].x, data.uv()[0].y);
+		supplier.placeVertex(vertexConsumer, last, data.vertices()[1].getX() + xOffset, data.vertices()[1].getY() + yOffset, data.vertices()[1].getZ() + zOffset, data.uv()[1].x, data.uv()[1].y);
+		supplier.placeVertex(vertexConsumer, last, data.vertices()[2].getX() + xOffset, data.vertices()[2].getY() + yOffset, data.vertices()[2].getZ() + zOffset, data.uv()[2].x, data.uv()[2].y);
+		supplier.placeVertex(vertexConsumer, last, data.vertices()[3].getX() + xOffset, data.vertices()[3].getY() + yOffset, data.vertices()[3].getZ() + zOffset, data.uv()[3].x, data.uv()[3].y);
 
 		r.run();
 
@@ -180,6 +204,17 @@ public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 				float textureV = v / endV * radius;
 				float textureUN = un / endU * radius;
 				float textureVN = vn / endV * radius;
+
+				//Start mixin magic - needed for older versions of lodestone api
+				final WorldVFXBuilderAccessor accessor = (WorldVFXBuilderAccessor) this;
+
+				float r = accessor.r();
+				float g = accessor.g();
+				float b = accessor.b();
+				float a = accessor.a();
+
+				int light = accessor.light();
+				//End mixin magic
 
 				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p0x, p0y, p0z, r, g, b, a, textureU, textureV, light);
 				RenderHelper.vertexPosColorUVLight(vertexConsumer, last, p2x, p2y, p2z, r, g, b, a, textureUN, textureV, light);

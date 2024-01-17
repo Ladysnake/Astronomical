@@ -7,7 +7,8 @@
     "ItemStackMixin",
     "PlayerEntityMixin",
     "SpyglassItemMixin",
-    "StatusEffectUtilMixin"
+    "StatusEffectUtilMixin",
+    "WorldVFXBuilderAccessor"
   ],
   "client": [
     "AstralFragmentTinkleItemEntityMixin",
