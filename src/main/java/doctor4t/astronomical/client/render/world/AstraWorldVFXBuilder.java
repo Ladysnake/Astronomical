@@ -3,7 +3,6 @@ package doctor4t.astronomical.client.render.world;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormats;
-import doctor4t.astronomical.client.AstronomicalShaders;
 import doctor4t.astronomical.mixin.WorldVFXBuilderAccessor;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,8 +22,8 @@ import java.awt.*;
 
 public class AstraWorldVFXBuilder extends VFXBuilders.WorldVFXBuilder {
 	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.TRIANGLES, RenderPhase.POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER, Phases.NO_TRANSPARENCY, texture));
+	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_transparent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.TRIANGLES, LodestoneShaders.LODESTONE_TEXTURE.phase, Phases.NORMAL_TRANSPARENCY, texture));
 	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_ADDITIVE = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_additive", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.TRIANGLES, LodestoneShaders.LODESTONE_TEXTURE.phase, Phases.ADDITIVE_TRANSPARENCY, texture));
-	public static final LodestoneRenderLayers.RenderLayerProvider TEXTURE_ACTUAL_TRIANGLE_TRANSPARENT = new LodestoneRenderLayers.RenderLayerProvider((texture) -> LodestoneRenderLayers.createGenericRenderLayer(texture.getNamespace(), "texture_actual_triangle_transparent", VertexFormats.POSITION_COLOR_TEXTURE, VertexFormat.DrawMode.TRIANGLES, AstronomicalShaders.TRANSPARENT_NO_CULL_TEXTURE.phase, Phases.NORMAL_TRANSPARENCY, texture));
 
 	public AstraWorldVFXBuilder() {
 

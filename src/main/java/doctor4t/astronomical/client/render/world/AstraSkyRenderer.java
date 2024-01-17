@@ -45,7 +45,6 @@ import java.util.List;
 
 public class AstraSkyRenderer {
 	public static final Identifier SHIMMER = Astronomical.id("textures/vfx/shimmer.png");
-	public static final Color STARFALL = new Color(90, 214, 255, 255);
 	private static final Vec3d UP = new Vec3d(0, 1, 0);
 	private static VertexBuffer stars = null;
 	private static boolean shouldTankPerformanceForAFewFrames = false;

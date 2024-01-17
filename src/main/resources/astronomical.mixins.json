@@ -18,7 +18,6 @@
 	"HeldItemRendererMixin",
 	"InGameHudMixin",
 	"LivingEntityMixin",
-	"LoadAstronomicalShadersGameRendererMixin",
 	"MinecraftClientMixin",
 	"PlayerEntityRendererMixin",
 	"PlayFallenStarSoundInstanceClientPlayNetworkHandlerMixin",
