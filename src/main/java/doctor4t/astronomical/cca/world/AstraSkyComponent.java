@@ -1,5 +1,6 @@
 package doctor4t.astronomical.cca.world;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
@@ -19,30 +20,40 @@ import net.minecraft.world.World;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private static final Identifier def = Astronomical.id("star");
 	private static final int maximumStars = 5;
 	private final List<CelestialObject> heavenlySpheres = new LinkedList<>();
-	private final RandomGenerator random;
+	private final Supplier<RandomGenerator> random;
 	private final World obj;
 
 	public AstraSkyComponent(World object) {
 		this.obj = object;
-		long seed = this.getWorldSeed(this.obj);
-		this.random = RandomGenerator.createLegacy(seed);
+		// litematica fake schematic world crashing with astronomical fix
+		// litematica worldschematic extends world and has this.mc null, need to wait a bit
+		// generate random when it's called instead of during construction
+		this.random = Suppliers.memoize(() -> {
+			long seed = getWorldSeed(this.obj);
+			return RandomGenerator.createLegacy(seed);
+		});
+	}
+
+	private RandomGenerator random() {
+		return this.random.get();
 	}
 
 	private Vec3d generateDirectionalVector() {
-		double x = this.random.nextGaussian();
-		double y = this.random.nextGaussian();
-		double z = this.random.nextGaussian();
+		double x = this.random().nextGaussian();
+		double y = this.random().nextGaussian();
+		double z = this.random().nextGaussian();
 		return new Vec3d(x, y, z).normalize();
 	}
 
-	private long getWorldSeed(World w) {
+	private static long getWorldSeed(World w) {
 		//not sure how to do this so
-		return 666L + obj.getTime() % 1000 >> 7;
+		return 666L + w.getTime() % 1000 >> 7;
 	}
 
 	@Override
@@ -119,7 +130,7 @@ public class AstraSkyComponent implements AutoSyncedComponent, ServerTickingComp
 		while (rot.dotProduct(up) < 0) {
 			rot = generateDirectionalVector();
 		}
-		return new InteractableStar(rot.normalize(), 1.5f, .3f, Astronomical.getStarColorForTemperature(Astronomical.getRandomStarTemperature(this.random)), 1 + random.nextInt(10));
+		return new InteractableStar(rot.normalize(), 1.5f, .3f, Astronomical.getStarColorForTemperature(Astronomical.getRandomStarTemperature(this.random())), 1 + this.random().nextInt(10));
 	}
 
 	@Override
