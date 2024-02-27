@@ -1,5 +1,5 @@
 ------------------------------------------------------
-Effective 1.0.1 - 1.19.2
+Astronomical 1.0.1 - 1.19.2
 ------------------------------------------------------
 - Fixed a crash with Litematica
 - Fixed a crash with Create
