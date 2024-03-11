@@ -42,6 +42,6 @@ public interface WorldVFXBuilderAccessor {
 	@Accessor("u1")
 	float astronomical$getU1();
 
-	@Accessor("u1")
+	@Accessor("v1")
 	float astronomical$getV1();
 }
