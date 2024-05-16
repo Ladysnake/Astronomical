@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+public abstract class NoHandSwingWithMarshmallowStickLivingEntityMixin {
 	@Shadow
 	public abstract ItemStack getStackInHand(Hand hand);
 
