@@ -12,7 +12,7 @@ import doctor4t.astronomical.common.structure.InteractableStar;
 import doctor4t.astronomical.common.structure.Star;
 import doctor4t.astronomical.common.structure.Starfall;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
@@ -28,12 +28,15 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
+import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
 import team.lodestar.lodestone.helpers.RenderHelper;
 import team.lodestar.lodestone.setup.LodestoneParticles;
 import team.lodestar.lodestone.setup.LodestoneRenderLayers;
+import team.lodestar.lodestone.setup.LodestoneScreenParticles;
 import team.lodestar.lodestone.setup.LodestoneShaders;
 import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 import team.lodestar.lodestone.systems.rendering.particle.Easing;
+import team.lodestar.lodestone.systems.rendering.particle.ScreenParticleBuilder;
 import team.lodestar.lodestone.systems.rendering.particle.WorldParticleBuilder;
 import team.lodestar.lodestone.systems.rendering.particle.data.ColorParticleData;
 import team.lodestar.lodestone.systems.rendering.particle.data.GenericParticleData;
@@ -80,7 +83,7 @@ public class AstraSkyRenderer {
 
 		// interactable stars
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
-		RenderSystem.setShader(LodestoneShaders.LODESTONE_TEXTURE.getInstance());
+		RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
 		RenderSystem.setShaderTexture(0, InteractableStar.INTERACTABLE_TEX);
 		float scale = .2f;
 		AstraSkyComponent com = world.getComponent(AstraCardinalComponents.SKY);
@@ -104,7 +107,7 @@ public class AstraSkyRenderer {
 			VertexData p4 = createVertexData(vector, UP, (scale + 0.4f * ((1 + MathHelper.sin(rot4)) / 2f)) * .5f * c.getSize(), 95, rot4, Color.WHITE);
 			apply((v, col, u) -> bufferBuilder.vertex(matrix4f, v.x(), v.y(), v.z()).color(col.getRed(), col.getGreen(), col.getBlue(), alpha).uv(u.x, u.y).light(RenderHelper.FULL_BRIGHT).next(), p4);
 		}
-		drawWithShader(bufferBuilder.end());
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 
 		// supernovae explosions
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
@@ -125,7 +128,7 @@ public class AstraSkyRenderer {
 				yuh += c.getRandomOffset() / 10f;
 			}
 		}
-		drawWithShader(bufferBuilder.end());
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 
 		// supernovae explosions dust
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
@@ -144,38 +147,13 @@ public class AstraSkyRenderer {
 				yuh += c.getRandomOffset();
 			}
 		}
-		drawWithShader(bufferBuilder.end());
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 
 		RenderSystem.disableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		matrices.pop();
 		renderStarfalls(matrices, tickDelta, world, client);
 		RenderSystem.defaultBlendFunc();
-	}
-
-	private static VertexBuffer upload(BufferBuilder.RenderedBuffer renderedBuffer) {
-		RenderSystem.assertOnRenderThread();
-		if (renderedBuffer.isEmpty()) {
-			renderedBuffer.release();
-			return null;
-		} else {
-			VertexBuffer vertexBuffer = getAndBindBuffer(renderedBuffer.getParameters().getVertexFormat());
-			vertexBuffer.upload(renderedBuffer);
-			return vertexBuffer;
-		}
-	}
-
-	private static VertexBuffer getAndBindBuffer(VertexFormat format) {
-		VertexBuffer vertexBuffer = format.getBuffer();
-		vertexBuffer.bind();
-		return vertexBuffer;
-	}
-
-	private static void drawWithShader(BufferBuilder.RenderedBuffer renderedBuffer) {
-		VertexBuffer vertexBuffer = upload(renderedBuffer);
-		if (vertexBuffer != null) {
-			vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), LodestoneShaders.LODESTONE_TEXTURE.instance);
-		}
 	}
 
 	public static void redrawStars() {
@@ -226,9 +204,12 @@ public class AstraSkyRenderer {
 						h /= 300;
 						h *= (MinecraftClient.getInstance().cameraEntity.getRotationVecClient().dotProduct(new Vec3d(one.getX(), one.getY(), one.getZ()).subtract(MinecraftClient.getInstance().player.getPos()).normalize()) + 1) / 2;
 
-						// todo lmao
-//						ScreenParticleBuilder b2 = ScreenParticleBuilder.create(LodestoneScreenParticles.SPARKLE).setAlpha((float) h, 0f).setScale(100000f).setColor(color, color).setLifetime(10).overrideRenderOrder(ScreenParticle.RenderOrder.AFTER_EVERYTHING);
-//						b2.repeat(0, 0, 1);
+						ScreenParticleBuilder.create(LodestoneScreenParticles.SPARKLE, ScreenParticleHandler.LATE_PARTICLES)
+							.setColorData(ColorParticleData.create(color, color).build())
+							.setTransparencyData(GenericParticleData.create((float)h, 0f).build())
+							.setScaleData(GenericParticleData.create(100000f).build())
+							.setLifetime(10)
+							.spawn(0, 0);
 
 						ScreenshakeHandler.addScreenshake(new ScreenshakeInstance((int) (50 * h)).setIntensity(0f, 1f, 0f).setEasing(Easing.EXPO_OUT, Easing.SINE_OUT));
 					}
